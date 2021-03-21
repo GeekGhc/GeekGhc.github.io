@@ -1,10 +1,12 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
     <meta charset="utf-8" />
 <meta name="description" content="" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<title>Gridea | GeekGhc&#39;s Story</title>
+<title>搜索 | GeekGhc&#39;s Story</title>
 
 <link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1616337919244">
 
@@ -33,10 +35,20 @@
 <!--<script src="media/scripts/index.js"></script>-->
 
 
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.0/dist/fuse.basic.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ejs@3.1.3/ejs.min.js"></script>
+    <script src="https://GeekGhc.github.io/media/gridea-search/gridea-search.js"></script>
+    <script src="https://GeekGhc.github.io/media/gridea-search/result-template.ejs" type="text/ejs"></script>
 </head>
+
 <body>
-<div class="main gt-bg-theme-color-first">
-    <div class="main-content">
+    <style>
+        .searched-keyword {
+            background-color: yellow;
+            color: red;
+        }
+    </style>
+    <div class="main gt-bg-theme-color-first">
         <style>
     /* 导航栏样式 */
     .navbar {
@@ -198,52 +210,16 @@
         }
     }
 </script>
-        <div class="current-tag-container">
-            <h2 class="title gt-c-content-color-first">
-                #Gridea
-            </h2>
-        </div>
-        <div class="post-list-container">
-    <div class="post-inner">
-        
-            <div class="post gt-bg-theme-color-second">
-                <div class="post-left">
-                    <div>
-                        
-                        <a href="https://GeekGhc.github.io/post/hello-gridea/">
-                            <span class="post-title gt-c-content-color-first">Hello Gridea</span>
-                        </a>
-                    </div>
-                    <div class="gt-post-content post-abstract gt-c-content-color-second">
-                        <p>👏  欢迎使用 <strong>Gridea</strong> ！<br>
-✍️  <strong>Gridea</strong> 一个静态博客写作客户端。你可以用它来记录你的生活、心情、知识、笔记、创意... ...</p>
-
-                    </div>
-                    <div class="post-info">
-                        <time class="post-time gt-c-content-color-first">
-                            发布于 · 2018-12-12 ·
-                        </time>
-                        
-                            <a href="https://GeekGhc.github.io/tag/KoqS106I6/" class="post-tag">
-                                # Gridea
-                            </a>
-                        
-                    </div>
-                </div>
-                
-                    <a href="https://GeekGhc.github.io/post/hello-gridea/" class="post-feature-image"
-                       style="background-image: url('https://GeekGhc.github.io/post-images/hello-gridea.png')">
-                    </a>
-                
+        <div id="gridea-search-result" data-update="1616337919244">
+            <div class="searching" style="font-size: 18px; margin-top: 50px;">
+                <i class="fa fa-sync-alt fa-spin"></i>&nbsp;&nbsp;搜索中......
+                <br><br>
+                <span style="font-size: 65%; color: #aaa">第一次搜索可能需要耗费较长时间构建索引，请耐心等待...</span>
             </div>
-        
-    </div>
-</div>
-        <div class="pagination-container">
-    
-    
-</div>
-
+            <div class="no-result" style="display:none; font-size: 20px; margin-top: 50px;">
+                <i class="fa fa-exclamation-triangle"></i>&nbsp;&nbsp;未搜索到相关文章，请更换关键词
+            </div>
+        </div>
         <div class="site-footer gt-c-content-color-first">
     <div class="slogan gt-c-content-color-first">生活不止于工作。是的，我很棒 ^=^</div>
     <div class="social-container">
@@ -275,6 +251,6 @@
 </script>
 
     </div>
-</div>
 </body>
+
 </html>
