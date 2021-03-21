@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://GeekGhc.github.io</id>
-    <title>Gridea</title>
-    <updated>2021-03-21T14:25:21.454Z</updated>
+    <title>GeekGhc&apos;s Story</title>
+    <updated>2021-03-21T14:27:45.978Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://GeekGhc.github.io"/>
     <link rel="self" href="https://GeekGhc.github.io/atom.xml"/>
-    <subtitle>温故而知新</subtitle>
+    <subtitle>生活不止于工作。是的，我很棒 ^=^</subtitle>
     <logo>https://GeekGhc.github.io/images/avatar.png</logo>
     <icon>https://GeekGhc.github.io/favicon.ico</icon>
-    <rights>All rights reserved 2021, Gridea</rights>
+    <rights>All rights reserved 2021, GeekGhc&apos;s Story</rights>
     <entry>
         <title type="html"><![CDATA[Hello Gridea]]></title>
         <id>https://GeekGhc.github.io/post/hello-gridea/</id>
