@@ -2,11 +2,11 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://GeekGhc.github.io</id>
     <title>GeekGhc&apos;s Story</title>
-    <updated>2021-03-21T16:21:06.722Z</updated>
+    <updated>2021-03-21T16:21:48.366Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://GeekGhc.github.io"/>
     <link rel="self" href="https://GeekGhc.github.io/atom.xml"/>
-    <subtitle>生活不止于工作。是的，我很棒 ^=^</subtitle>
+    <subtitle>生活不止于工作，是的，我很棒 ^=^</subtitle>
     <logo>https://GeekGhc.github.io/images/avatar.png</logo>
     <icon>https://GeekGhc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, GeekGhc&apos;s Story</rights>
