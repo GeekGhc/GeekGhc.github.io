@@ -4,7 +4,7 @@
 <meta name="description" content="" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<title>ElementUI 集成组件化开发 | GeekGhc&#39;s Story</title>
+<title>Kafka的实践和使用 | GeekGhc&#39;s Story</title>
 
 <link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1616765414663">
 
@@ -202,74 +202,113 @@
         <div class="post-detail gt-bg-theme-color-second">
             <article class="gt-post-content">
                 <h2 class="post-title">
-                    ElementUI 集成组件化开发
+                    Kafka的实践和使用
                 </h2>
                 <div class="post-info">
                     <time class="post-time gt-c-content-color-first">
-                        · 2017-01-20 ·
+                        · 2018-10-24 ·
                     </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/cMTfBGOGU/" class="post-tags">
+                            # Kafka
+                        </a>
                     
                 </div>
                 <div class="post-content">
-                    <p>Element，一套为开发者、设计师和产品经理准备的基于 Vue 2.0 的组件库，提供了配套设计资源，使用起来还是很方便的。</p>
-<h2 id="介绍">介绍</h2>
-<p>寒假期间正在学习用脚手架来进行<code>vue</code>的<strong>组件化开发</strong> 之前的话因为是期初阶段 每一个组件用起来就感觉把一个个的盒子去拆分</p>
-<p>特别是在打包时多多少少会有一些尴尬的事情 在接触也就是我要介绍的<a href="http://element.eleme.io/#/zh-CN/component/installation">element</a>组件解决方案后这个项目进行起来就很舒服了</p>
-<p>其实用起来真的很是方便 因为本身就是基于<code>vue 2.0</code>开发的 知道最近在写自己的项目时想想还是记录一下  确实是一个很好的解决方案</p>
-<h2 id="1安装">1.安装</h2>
-<p>我们可以采取<code>CDN</code>以及<code>npm</code>安装的方式<br>
-因为我是集成在用脚手架搭建的<code>vue</code>项目里的 我自然选择了<code>npm</code>安装的方式:</p>
-<pre><code>$ npm i element-ui -S
+                    <p><code>kafka</code>作为一个分布式的流处理平台 在实际的项目中有这广泛的应用 而其可以用于两大类别的应用分类</p>
+<ol>
+<li>构造实时流数据管道，它可以在系统或应用之间可靠地获取数据。 (相当于<code>message queue</code>)</li>
+<li>构建实时流式应用程序，对这些流数据进行转换或者影响。 (就是流处理，通过<code>kafka stream topic</code>和<code>topic</code>之间内部进行变化)</li>
+</ol>
+<p>这里我们以<code>php</code>作为后端语言为例 引入<code>kafka</code>来解决一些实际问题</p>
+<h3 id="php引入kafka">PHP引入kafka</h3>
+<p>本地环境为<code>mac</code>环境<br>
+首先通过<code>brew</code>安装工具</p>
+<pre><code class="language-shell">$ brew install kafka 
 </code></pre>
-<p>安装完成后会在<code>package.json</code>里看到已经成功安装:</p>
-<pre><code class="language-php?start_inline=1">&quot;dependencies&quot;: {
-    &quot;axios&quot;: &quot;^0.15.3&quot;,
-    &quot;element-ui&quot;: &quot;^1.2.3&quot;,
-    &quot;vue&quot;: &quot;^2.1.10&quot;,
-    &quot;vue-axios&quot;: &quot;^1.2.2&quot;,
-    &quot;vue-router&quot;: &quot;^2.2.0&quot;,
-    &quot;vuex&quot;: &quot;^2.1.3&quot;
-},
+<p>安装的同时会自动安装依赖<code>zookeeper</code></p>
+<p>而在安装<code>kafka</code>的扩展之前，在安装<code>php-rdkafka</code>之前，需要先安装<code>librdkafka</code></p>
+<pre><code class="language-shell">$ git clone https://github.com/edenhill/librdkafka.git
+$ cd  librdkafka
+$ ./configure
+$ make &amp;&amp; make install
 </code></pre>
-<h2 id="2组件引入">2.组件引入</h2>
-<p>1.在引入我们的<code>Element</code>时 我们可以选择完整引入和按需引入(如果你想省些事的话就完整引入吧)</p>
-<p>完整引入时只需要在<code>main.js</code>里<code>import</code>后<code>use</code>声明下 这和我们去引用其他类似<code>vue-axios</code>是一样的</p>
+<p>开始安装<code>kafka</code>扩展</p>
+<pre><code class="language-shell">$ git clone https://github.com/arnaud-lb/php-rdkafka.git
+$ cd php-rdkafka
+$ phpize
+$ ./configure  --with-php-config=/usr/local/php/bin/php-config  ###你安装的php下的php-config路径
+$ make &amp;&amp; make install
+</code></pre>
+<p>编译完成之后再<code>php.ini</code>中加入扩展 <code>extension=rdkafaka.so</code></p>
+<h3 id="kafka启动执行">kafka启动执行</h3>
+<p>进入<code>mac</code>环境下的<code>kafka</code>编译后的目录  可以看到<code>kafka</code>和<code>zookeeper</code>的配置文件 <code>server.proprties</code>和<code>zookeeper.properties</code><br>
+<img src="https://GeekGhc.github.io/post-images/1616765328749.png" alt="" loading="lazy"></p>
+<p>启动<code>zookeeper</code></p>
+<pre><code class="language-shell">$ zookeeper-server-start /usr/local/etc/kafka/zookeeper.properties
+</code></pre>
+<p><img src="https://GeekGhc.github.io/post-images/1616765337354.png" alt="" loading="lazy"><br>
+启动服务后 端口是绑定到了<strong>2181</strong>端口</p>
+<p>启动<code>kafaka</code><br>
+进入服务的文件目录 可以看到关于<code>kafka</code>的一些命令列表 其中包含了镜像管理和日志管理<br>
+<img src="https://GeekGhc.github.io/post-images/1616765344075.png" alt="" loading="lazy"></p>
+<pre><code class="language-shell">$ kafka-server-start /usr/local/etc/kafka/server.properties
+</code></pre>
+<p>其实有关<code>kafka</code>的基本概念可以查看其官方文档的一些说明</p>
+<p>在这里为了测试可以先创建一个<code>topic</code> 当然可以先看一下所有的<code>topics</code></p>
+<pre><code class="language-shell">$ kafka-topics --list --zookeeper localhost:2181
+</code></pre>
+<p><img src="https://GeekGhc.github.io/post-images/1616765369023.png" alt="" loading="lazy"><br>
+让我们创建一个名为<code>“test”</code>的<code>topic</code>，它有<strong>3</strong>个分区和1个副本</p>
+<pre><code class="language-shell">$ kafka-topics --create --zookeeper localhost:2181 --replication-factor 1 --partitions 3 --topic test
+</code></pre>
+<p>再次查看所有<code>topics</code>信息<br>
+<img src="https://GeekGhc.github.io/post-images/1616765377192.png" alt="" loading="lazy"></p>
+<p>查看刚创建的话题信息<br>
+<img src="https://GeekGhc.github.io/post-images/1616765385846.png" alt="" loading="lazy"></p>
+<p>启动生产者</p>
+<pre><code class="language-shell">$ kafka-console-producer --broker-list localhost:9092 --topic test
+</code></pre>
 <blockquote>
-<p>这些在官方文档里都有介绍</p>
+<p>这里的9092是kafaka的端口地址 并非zookeeper端口地址</p>
 </blockquote>
-<p>为实现按需引入我们需要去安装<code>babel-plugin-component</code>这个<code>plugin</code>:</p>
-<pre><code>$ npm install babel-plugin-component -D
-</code></pre>
-<p>安装完毕后我们需要去修改一下我们的<code>babel</code>配置文件<code>.babelrc</code>:</p>
-<pre><code class="language-php?start_inline=1">{
-  &quot;presets&quot;: [
-    [&quot;es2015&quot;, { &quot;modules&quot;: false }]
-  ],
-  &quot;plugins&quot;: [[&quot;component&quot;, [
-    {
-      &quot;libraryName&quot;: &quot;element-ui&quot;,
-      &quot;styleLibraryName&quot;: &quot;theme-default&quot;
-    }
-  ]]]
-}
+<p>启动消费者</p>
+<pre><code class="language-shell">$ kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning
 </code></pre>
 <blockquote>
-<p>接下来就是引入我们需要的组件 具体的文档也有介绍</p>
+<p>这里的from-beginning 表示信息每次都会从头开始读取</p>
 </blockquote>
-<h2 id="3项目里使用">3.项目里使用</h2>
-<p>使用起来的话其实就和其他的<code>UI</code>框架差不多(也是支持响应式的) 不过你可以在组件里定义一些<code>element</code>特性</p>
-<p>这里的UI框架诸如我们经常用到的<code>BootStrap</code>以及<code>SemanticUI</code>之类的</p>
-<p>使用的话关注一些表单验证 组合的属性使用 布局 其余和我们结合文档还是很容易使用的</p>
-<h2 id="其他的组件ui推荐">其他的组件UI推荐</h2>
-<ul>
-<li>MuseUI-<a href="https://museui.github.io/#/index">https://museui.github.io/#/index</a></li>
-<li>IView-<a href="https://www.iviewui.com/">https://www.iviewui.com/</a></li>
-<li>Mint Ui(移动端)-<a href="http://mint-ui.github.io/#!/en">http://mint-ui.github.io/#!/en</a></li>
-</ul>
-<h5 id="相关材料链接">相关材料链接</h5>
-<ul>
-<li><a href="http://element.eleme.io/#/zh-CN/component/installation">element组件网址</a></li>
-</ul>
+<p>这里只是设置了单个服务  作为一个分布式处理平台  可以设置多个代理<br>
+<img src="https://GeekGhc.github.io/post-images/1616765400707.png" alt="" loading="lazy"></p>
+<p>这里是另外两个服务的配置信息  也就是<code>kafka</code>的配置文件的信息</p>
+<pre><code class="language-shell">server-1.properties:
+    broker.id=1
+   zookeeper.connect=localhost:2181
+    listeners=PLAINTEXT://:9093
+    log.dir=/usr/local/var/lib/kafka-logs-1
+ 
+server-2.properties:
+    broker.id=2
+    zookeeper.connect=localhost:2181
+    listeners=PLAINTEXT://:9094
+    log.dir=/usr/local/var/lib/kafka-logs-2
+</code></pre>
+<p>这样的话去启动其他两个新的节点</p>
+<pre><code class="language-shell">$ bin  kafka-server-start /usr/local/etc/kafka/server-1.properties
+$ bin  kafka-server-start /usr/local/etc/kafka/server-2.properties
+</code></pre>
+<p>现在创建副本为<strong>3</strong>的新<code>topic</code></p>
+<pre><code class="language-shell">$ kafka-topics --create --zookeeper localhost:2181 --replication-factor 3 --partitions 1 --topic my-topic
+</code></pre>
+<p>现在已经有了一个集群 查看代理情况<br>
+<img src="https://GeekGhc.github.io/post-images/1616765410487.png" alt="" loading="lazy"></p>
+<p>值得注意的是:<br>
+<code>“leader”</code>是负责给定分区所有读写操作的节点。每个节点都是随机选择的部分分区的领导者。<br>
+<code>“replicas”</code>是复制分区日志的节点列表，不管这些节点是<code>leader</code>还是仅仅活着。<br>
+<code>“isr”</code>是一组<code>“同步”replicas</code>，是<code>replicas</code>列表的子集，它活着并被指到<code>leader</code>。</p>
+<h2 id="相关链接">相关链接</h2>
+<p><a href="http://kafka.apachecn.org">Kafka 中文文档 - ApacheCN</a><br>
+<a href="http://kafka.apache.org/documentation/">Apache Kafka</a></p>
 
                 </div>
             </article>
@@ -278,14 +317,14 @@
         
             <div class="next-post">
                 <div class="next gt-c-content-color-first">下一篇</div>
-                <a href="https://GeekGhc.github.io/post/gulpjs-shi-yong-ji-qiao-jie-shao/" class="post-title gt-a-link">
-                    gulpJs使用技巧介绍
+                <a href="https://GeekGhc.github.io/post/homestead-tong-guo-docker-pei-zhi-mysql-rong-qi/" class="post-title gt-a-link">
+                    HomeStead通过docker配置mysql容器
                 </a>
             </div>
         
 
         
-            <span id="/post/elementui-ji-cheng-zu-jian-hua-kai-fa/" class="leancloud_visitors" data-flag-title="ElementUI 集成组件化开发">
+            <span id="/post/kafka-de-shi-jian-he-shi-yong/" class="leancloud_visitors" data-flag-title="Kafka的实践和使用">
                 <em class="post-meta-item-text">阅读量 </em>
                 <i class="leancloud-visitors-count">0</i>
             </span>

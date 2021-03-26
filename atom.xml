@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://GeekGhc.github.io</id>
     <title>GeekGhc&apos;s Story</title>
-    <updated>2021-03-26T13:21:14.250Z</updated>
+    <updated>2021-03-26T13:30:18.448Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://GeekGhc.github.io"/>
     <link rel="self" href="https://GeekGhc.github.io/atom.xml"/>
@@ -11,6 +11,13 @@
     <icon>https://GeekGhc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, GeekGhc&apos;s Story</rights>
     <entry>
+        <title type="html"><![CDATA[Kafka的实践和使用]]></title>
+        <id>https://GeekGhc.github.io/post/kafka-de-shi-jian-he-shi-yong/</id>
+        <link href="https://GeekGhc.github.io/post/kafka-de-shi-jian-he-shi-yong/">
+        </link>
+        <updated>2018-10-24T13:26:54.000Z</updated>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[HomeStead通过docker配置mysql容器]]></title>
         <id>https://GeekGhc.github.io/post/homestead-tong-guo-docker-pei-zhi-mysql-rong-qi/</id>
         <link href="https://GeekGhc.github.io/post/homestead-tong-guo-docker-pei-zhi-mysql-rong-qi/">
@@ -18,11 +25,25 @@
         <updated>2018-05-12T13:14:15.000Z</updated>
     </entry>
     <entry>
+        <title type="html"><![CDATA[GitLab [Webhooks] 实现自动化服务器部署]]></title>
+        <id>https://GeekGhc.github.io/post/gitlab-webhooks-shi-xian-zi-dong-hua-fu-wu-qi-bu-shu/</id>
+        <link href="https://GeekGhc.github.io/post/gitlab-webhooks-shi-xian-zi-dong-hua-fu-wu-qi-bu-shu/">
+        </link>
+        <updated>2017-08-08T13:21:53.000Z</updated>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[Linux MySQL定时备份并上传到git仓库]]></title>
         <id>https://GeekGhc.github.io/post/linux-mysql-ding-shi-bei-fen-bing-shang-chuan-dao-git-cang-ku/</id>
         <link href="https://GeekGhc.github.io/post/linux-mysql-ding-shi-bei-fen-bing-shang-chuan-dao-git-cang-ku/">
         </link>
         <updated>2017-07-18T12:11:33.000Z</updated>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[HTMLPurifier解决Laravel5的XSS跨站脚本攻击安全问题]]></title>
+        <id>https://GeekGhc.github.io/post/htmlpurifier-jie-jue-laravel5-de-xss-kua-zhan-jiao-ben-gong-ji-an-quan-wen-ti/</id>
+        <link href="https://GeekGhc.github.io/post/htmlpurifier-jie-jue-laravel5-de-xss-kua-zhan-jiao-ben-gong-ji-an-quan-wen-ti/">
+        </link>
+        <updated>2017-07-12T13:25:43.000Z</updated>
     </entry>
     <entry>
         <title type="html"><![CDATA[APP微信支付宝支付服务端接口]]></title>
