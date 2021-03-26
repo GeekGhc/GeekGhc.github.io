@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://GeekGhc.github.io</id>
     <title>GeekGhc&apos;s Story</title>
-    <updated>2021-03-22T16:37:39.315Z</updated>
+    <updated>2021-03-26T12:13:32.882Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://GeekGhc.github.io"/>
     <link rel="self" href="https://GeekGhc.github.io/atom.xml"/>
@@ -10,6 +10,20 @@
     <logo>https://GeekGhc.github.io/images/avatar.png</logo>
     <icon>https://GeekGhc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, GeekGhc&apos;s Story</rights>
+    <entry>
+        <title type="html"><![CDATA[Linux MySQL定时备份并上传到git仓库]]></title>
+        <id>https://GeekGhc.github.io/post/linux-mysql-ding-shi-bei-fen-bing-shang-chuan-dao-git-cang-ku/</id>
+        <link href="https://GeekGhc.github.io/post/linux-mysql-ding-shi-bei-fen-bing-shang-chuan-dao-git-cang-ku/">
+        </link>
+        <updated>2017-07-18T12:11:33.000Z</updated>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[APP微信支付宝支付服务端接口]]></title>
+        <id>https://GeekGhc.github.io/post/app-wei-xin-zhi-fu-bao-zhi-fu-fu-wu-duan-jie-kou/</id>
+        <link href="https://GeekGhc.github.io/post/app-wei-xin-zhi-fu-bao-zhi-fu-fu-wu-duan-jie-kou/">
+        </link>
+        <updated>2017-06-12T12:07:17.000Z</updated>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Laravel AdminLTE 后台模板]]></title>
         <id>https://GeekGhc.github.io/post/laravel-adminlte-hou-tai-mo-ban/</id>
@@ -45,21 +59,13 @@
 <figure data-type="image" tabindex="2"><img src="https://GeekGhc.github.io/post-images/1616430506971.png" alt="" loading="lazy"></figure>
 <h3 id="创建文章">创建文章</h3>
 <figure data-type="image" tabindex="3"><img src="https://GeekGhc.github.io/post-images/1616430515453.png" alt="" loading="lazy"></figure>
-<!-- more -->
-<h2 id="安装">安装</h2>
-<h3 id="1clone到本地">1.clone到本地</h3>
-<pre><code class="language-shell">$ git clone https://github.com/GeekGhc/adminLTE-for-laravel.git
-</code></pre>
-<h3 id="2根目录下创建env文件">2.根目录下创建.env文件</h3>
-<pre><code class="language-shell"> $ php artisan key:generate
-</code></pre>
-<p>后台开发过程时可借助<code>MustBeAnAdmin</code> middleware 完成逻辑判断</p>
-<p>在管理用户权限的<code>Packages</code></p>
-<ul>
-<li><a href="https://github.com/spatie/laravel-permission">Laravel Permission</a> 目前我的项目就是用的这个<code>Package</code></li>
-<li><a href="https://github.com/romanbican/roles">Laravel Roles</a></li>
-<li><a href="https://github.com/ultraware/roles">ultraware/roles</a></li>
-</ul>
 ]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[分享vue开发的一些有用的Tips]]></title>
+        <id>https://GeekGhc.github.io/post/fen-xiang-vue-kai-fa-de-yi-xie-you-yong-de-tips/</id>
+        <link href="https://GeekGhc.github.io/post/fen-xiang-vue-kai-fa-de-yi-xie-you-yong-de-tips/">
+        </link>
+        <updated>2017-03-28T12:10:15.000Z</updated>
     </entry>
 </feed>

@@ -1,10 +1,10 @@
-<html lang="zh">
+<html>
 <head>
     <meta charset="utf-8" />
 <meta name="description" content="" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<title>关于 - GeekGhc&#39;s Story</title>
+<title>分享vue开发的一些有用的Tips | GeekGhc&#39;s Story</title>
 
 <link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1616760807016">
 
@@ -33,7 +33,7 @@
 <!--<script src="media/scripts/index.js"></script>-->
 
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
 </head>
 <body>
 <div class="main gt-bg-theme-color-first">
@@ -199,48 +199,71 @@
     }
 </script>
     <div class="post-container">
-        <div class="post-detail">
+        <div class="post-detail gt-bg-theme-color-second">
             <article class="gt-post-content">
+                <h2 class="post-title">
+                    分享vue开发的一些有用的Tips
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-03-28 ·
+                    </time>
+                    
+                </div>
                 <div class="post-content">
-                    <p>{<br>
-name: 'GeekGhc|葛华春'<br>
-age: 25,<br>
-gender: '男',<br>
-profession: 'Always Believe In Yourself!',<br>
-company: ByteDance<br>
-experience: '3年',<br>
-address: 'Shanghai-China',<br>
-wechat: ghc2438462863<br>
-education: '本科',<br>
-github: 'https://github.com/GeekGhc',<br>
-site: 'https://www.geekghc.com',<br>
-blog: 'https://blog.geekghc.com',<br>
-email: 'gehuachun@outlook.com',</p>
-<pre><code>skills: [
-    ['Golang', 'PHP', 'Python', 'C++', 'C'],
-    ['Vue', 'Webpack', 'Gulp', 'ES6', 'Html/Css', 'Less', 'Sass'],
-    ['Gin', 'beego', 'Laravel', 'Thinkphp', 'CI'],
-    ['Swoole', 'Elasticsearch', 'Docker', 'Kubernetes'],
-    ['公众号', '小程序'],
-    ['Mac', 'Git', 'SVN', 'Linux'],
-    ['MySQL', 'Mongodb', 'Redis', 'memcache'],
-    ['Kafka','zookeeper','ELK','Lua']
-],
-
-devTools: [
-    ['Golang', 'VS Code', 'Sublime Text', 'PyCharm'],
-    ['Chrome DevTools', 'Charles', 'Postman'],
-    ['SourceTree', 'Bear', 'Sketch'],
-    ['SwitchHosts', 'Tunnelblick', 'Yummy'],
-    ['Sequalpro', 'Medis', 'Robo'],
-]  
-</code></pre>
-<p>}</p>
+                    <p>分享一些开发vue的一些值得学习的项目和一些干货吧</p>
+<h2 id="介绍">介绍</h2>
+<p>尽管说开发<code>vueJs</code>时间不长 不过在这段时间里 也收集了不少的干货 当然也是想分享给更多的人</p>
+<p>其实最好的还是在<code>github</code>上去关注一些<code>vue</code>的开源项目 这样自己再动手做一些小的<code>project</code>也是可以的</p>
+<p>在<code>GitHub上</code>就有列举出有关<code>vue</code>的一些精彩的things 😄</p>
+<p>先给出地址<a href="https://github.com/vuejs/awesome-vue">https://github.com/vuejs/awesome-vue</a></p>
+<h2 id="集合自己的需求和经历推荐">集合自己的需求和经历推荐</h2>
+<p>1.如果你是要部署一些静态网站和项目 出了<code>Github Pages</code>那么其实你还有其他的选择 而且你绝对会喜欢上它</p>
+<figure data-type="image" tabindex="1"><img src="https://GeekGhc.github.io/post-images/1616760677269.png" alt="" loading="lazy"></figure>
+<p>地址: <a href="https://www.netlify.com/">https://www.netlify.com/</a></p>
+<p><strong>Write frontend code. Push it. We handle the rest</strong>这就是他给出的标语 你写你的前端项目 剩下的交给他就好了</p>
+<p>你注册一个账号 关联你的<code>Github</code>你可以直接导入你的项目 同时也提供了终端 他会帮你去生成最终的部署页面</p>
+<p>特别是在我们开发<code>SPA</code>时 这无疑是一个部署项目绝佳的解决方案</p>
+<h2 id="ui框架">UI框架</h2>
+<ul>
+<li><a href="http://element.eleme.io/#/zh-CN">Element-UI</a></li>
+<li><a href="http://www.muse-ui.org/#/index">Muse-UI</a></li>
+<li><a href="https://www.iviewui.com/">iView</a></li>
+</ul>
+<p>移动端</p>
+<ul>
+<li><a href="http://mint-ui.github.io/#!/zh-cn">Mint-UI</a></li>
+</ul>
+<h2 id="资源库">资源库</h2>
+<ul>
+<li><a href="https://www.awesomes.cn/">Awesome</a> 看看大牛都在用什么 这里能满足你很多的需求</li>
+</ul>
+<h2 id="开源项目">开源项目</h2>
+<ul>
+<li><a href="https://github.com/bailicangdu/vue2-elm">vue2-elm</a> vue2+vuex开发的饿了么</li>
+<li><a href="https://github.com/hilongjw/vue-zhihu-daily">vue-zhihu-daily</a> 知乎日报</li>
+<li><a href="https://github.com/useryangtao/vue-wechat">vue-wechat</a> vue开发wechat-app</li>
+<li><a href="https://github.com/ShanaMaid/vue-163-music">vue-163-music</a> vue开发网易云音乐</li>
+<li><a href="https://github.com/shinygang/Vue-cnodejs">vue-cnodejs</a> vue开发CnodeJs社区</li>
+</ul>
+<blockquote>
+<p>以上都是一些很不错的开源项目 值得学习 自己的知加也算完工了</p>
+<p>这里是我的项目地址 <a href="https://github.com/GeekGhc/iknow">vue-zhijia</a></p>
+</blockquote>
 
                 </div>
             </article>
         </div>
-        <br>
+
+        
+
+        
+            <span id="/post/fen-xiang-vue-kai-fa-de-yi-xie-you-yong-de-tips/" class="leancloud_visitors" data-flag-title="分享vue开发的一些有用的Tips">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
         
             
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css">
@@ -287,6 +310,7 @@ devTools: [
 </script>
 
             
+
             
         
 
@@ -318,7 +342,6 @@ devTools: [
 </script>
 
         
-
 
         <div class="site-footer gt-c-content-color-first">
     <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
