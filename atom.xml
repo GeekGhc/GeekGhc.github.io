@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://GeekGhc.github.io</id>
     <title>GeekGhc&apos;s Story</title>
-    <updated>2021-03-26T13:17:24.641Z</updated>
+    <updated>2021-03-26T13:19:44.051Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://GeekGhc.github.io"/>
     <link rel="self" href="https://GeekGhc.github.io/atom.xml"/>
@@ -44,6 +44,13 @@
         <link href="https://GeekGhc.github.io/post/fen-xiang-vue-kai-fa-de-yi-xie-you-yong-de-tips/">
         </link>
         <updated>2017-03-28T12:10:15.000Z</updated>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[git-flow开发使用姿势]]></title>
+        <id>https://GeekGhc.github.io/post/git-flow-kai-fa-shi-yong-zi-shi/</id>
+        <link href="https://GeekGhc.github.io/post/git-flow-kai-fa-shi-yong-zi-shi/">
+        </link>
+        <updated>2017-02-04T13:17:40.000Z</updated>
     </entry>
     <entry>
         <title type="html"><![CDATA[ElementUI 集成组件化开发]]></title>
