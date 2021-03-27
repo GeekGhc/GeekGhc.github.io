@@ -1,0 +1,535 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Laravel Composer Package 开发简明教程 | GeekGhc&#39;s Story</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1616820339349">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Story
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1616820339349"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Laravel Composer Package 开发简明教程
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-01-02 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/b0tSda50f/" class="post-tags">
+                            # Laravel
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>在Laravel中有Package Development 扩展包是添加功能到 Laravel 的主要方式。扩展包可以包含许多好用的功能。在开发扩展包之前 我们需要了解Service Providers 这样我们只需要在composer.json里去包含这个package并进行相应的配置即可</p>
+<h2 id="介绍">介绍</h2>
+<p>在<code>Laravel</code>中就有<a href="https://laravel.com/docs/5.4/packages">Laravel Composer Package</a>开发的相关介绍 这其中需要运用 <strong>Service Providers</strong> 当然对于我们<code>Laravel</code>开发人员<br>
+来说 开发一个扩展包还是很值得学习的 现在就来开发一个消息通知的扩展包</p>
+<blockquote>
+<p>扩展包的地址:<a href="https://github.com/GeekGhc/LaraFlash">https://github.com/GeekGhc/LaraFlash</a></p>
+<p>整个packages参照	<code>Jeffrey Way</code>的<a href="https://github.com/laracasts/flash">Flash Packages</a></p>
+</blockquote>
+<h2 id="新建包">新建包</h2>
+<p>在生成好的<code>Laravel</code>项目中新建<code>packages</code>目录(和<code>app</code>同级) 接着在<code>packages</code>目录下新建包目录 <code>packages/geekghc/laraflash</code></p>
+<p>我们需要去<code>laravel</code>项目下去声明包的命名空间:</p>
+<pre><code class="language-php?start_inline=1">&quot;autoload&quot;: {
+    &quot;classmap&quot;: [
+        &quot;database&quot;
+    ],
+    &quot;psr-4&quot;: {
+        &quot;App\\&quot;: &quot;app/&quot;,
+        &quot;GeekGhc\\LaraFlash\\&quot;:&quot;packages/geekghc/laraflash/src/&quot;
+    }
+},
+</code></pre>
+<p>声明完毕之后别忘了去执行重新生成<code>autoload</code>文件</p>
+<pre><code class="language-shell">$ composer dump-autoload
+</code></pre>
+<p>我们需要新建<code>src</code>目录来存放我们的源文件</p>
+<p>接着因为我们是开发一个扩展包 之后还需要进行测试开发  所以我们去生成一个<code>composer.json</code>文件</p>
+<pre><code class="language-shell">$ composer init
+</code></pre>
+<p>填写完基本信息之后 在<code>packages/geekghc/laraflash</code>目录下就会生成一个<code>composer.json</code>文件:</p>
+<p>我先给出</p>
+<pre><code class="language-php?start_inline=1">{
+    &quot;name&quot;: &quot;geekghc/flash&quot;,
+    &quot;description&quot;: &quot;flash for laravel&quot;,
+    &quot;license&quot;: &quot;MIT&quot;,
+    &quot;authors&quot;: [
+        {
+            &quot;name&quot;: &quot;GeekGhc&quot;,
+            &quot;email&quot;: &quot;ghcgavin@sina.com&quot;
+        }
+    ],
+    &quot;minimum-stability&quot;: &quot;dev&quot;,
+    &quot;require&quot;: {
+        &quot;php&quot;: &quot;&gt;=5.5.9&quot;,
+    },
+    &quot;require-dev&quot;: {
+        &quot;phpunit/phpunit&quot;: &quot;~5.7&quot;,
+        &quot;mockery/mockery&quot;: &quot;0.9.*&quot;
+    },
+    &quot;autoload&quot;: {
+        &quot;psr-0&quot;: {
+            &quot;GeekGhc\\LaraFlash&quot;: &quot;src/&quot;
+        },
+        &quot;files&quot;: [
+            &quot;src/GeekGhc/LaraFlash/function.php&quot;
+        ]
+    }
+}
+</code></pre>
+<p>完成好<code>composer.json</code>后 我们可以去<code>src/GeekGhc/LaraFlash</code>目录下新建一个<code>Flash.php</code></p>
+<pre><code class="language-php?start_inline=1">&lt;?php
+namespace GeekGhc\LaraFlash;
+use Illuminate\Support\Facades\Facade;
+class Flash extends Facade
+{
+    public static function getFacadeAccessor()
+    {
+        return 'laraflash';
+    }
+}
+</code></pre>
+<p>我们这里继承了<code>Facade</code>类，用<code>Facades</code>可以访问<code>IoC</code>容器中注册的类 这样我们就可以去调用注册的类</p>
+<p>同时我们需要去新建一个<code>Service Provider</code></p>
+<pre><code class="language-shell">$ php artisan make:provider FlashProvider
+</code></pre>
+<p>将生成的 <code>app/Providers/FlashProvider.php</code> 文件移动到我们的 <code>packages/geekghc/laraflash/src/GeekGhc/LaraFlash/</code> 目录下面，<br>
+并注册 <code>FlashProvider</code> 到 <code>config/app.php</code></p>
+<p>在<code>FlsahProvider</code>里面我们去写一下之后我们需要绑定的类:</p>
+<pre><code class="language-php?start_inline=1">public function register()
+{
+    $this-&gt;app-&gt;bind(
+        'GeekGhc\LaraFlash\SessionStore',
+        'GeekGhc\LaraFlash\LaravelSessionStore'
+    );
+
+    $this-&gt;app-&gt;singleton('laraflash',function(){
+        return $this-&gt;app-&gt;make('GeekGhc\LaraFlash\FlashNotifier');
+    });
+}
+</code></pre>
+<p>这边我们就绑定了封装好的SessionStore 之后我们去配置一下视图的路径</p>
+<pre><code class="language-php?start_inline=1">public function boot()
+{
+    $this-&gt;loadViewsFrom(__DIR__.'/../../views','laraflash');
+    $this-&gt;publishes([
+        __DIR__.'/../../views'=&gt;base_path('resources/views/vendor/laraFlash'),
+    ]);
+}
+</code></pre>
+<p>这里我们就发布了我们的视图文件 在执行</p>
+<pre><code class="language-shell">$ php artisan vendor:publish
+</code></pre>
+<p>我们就可以在<code>laravel</code>项目的<code>resources/views/vendor/laraFlash</code>去自定义最后的样式效果</p>
+<p>在<code>config/app.php</code>去注册我们的服务</p>
+<pre><code class="language-php?start_inline=1">'providers' =&gt; [
+    GeekGhc\LaraFlash\MyFlashProvider::class,
+];
+</code></pre>
+<p>为了方便使用 可以再去添加一个<code>alias</code></p>
+<pre><code class="language-php?start_inline=1">'aliases' =&gt; [
+    'LaraFlash'=&gt;GeekGhc\LaraFlash\Flash::class,
+];
+</code></pre>
+<p>接着我们可以去实现<code>flash</code>的主要功能服务 每个包的功能都根据需求而来 这里也不多做介绍<br>
+最后的目录结构是这样的</p>
+<pre><code class="language-php?start_inline=1">|
+|—— packages 
+| |—— geekghc
+|   |—— laraflash 
+|     |—— src            源文件
+|       |—— GeekGhc      源文件
+|         |—— LaraFlash     
+|           |—— Flash.php     
+|           |—— FlashNotifier.php     
+|           |—— function.php     
+|           |—— FlashProvider.php     
+|           |—— SessionStore.php     
+|           |—— LaravelSessionStore.php     
+|       |—— views        视图文件
+|     |—— tests          测试目录
+|     |—— vendor         测试需要的包
+|     |—— .gitignore    
+|     |—— composer.json    
+|     |—— composer.lock    
+|     |—— phpunit.xml  
+|     |—— readme.md
+</code></pre>
+<p>这样的话 我们就在本地写好了扩展包  我们其实可以去创建一个控制器去测试我们这个包是否正常</p>
+<p>在视图<code>home.blade.php</code>我们就可以去包含<code>views</code>里面的视图文件</p>
+<pre><code class="language-php">@include('laraflash::notification')
+</code></pre>
+<p>或者</p>
+<pre><code class="language-php">@include('laraflash::header-notification')
+</code></pre>
+<p>接着在控制器去使用类似这样的形式:</p>
+<ul>
+<li>LaraFlash::success('Message')</li>
+<li>LaraFlash::info('Message')</li>
+<li>LaraFlash::error('Message')</li>
+<li>LaraFlash::warning('Message')</li>
+</ul>
+<blockquote>
+<p>包的具体使用还是去<a href="https://github.com/GeekGhc/LaraFlash">github</a>看一下具体使用就知道了</p>
+</blockquote>
+<p>最后的效果大概就是这样的:<br>
+<img src="https://GeekGhc.github.io/post-images/1616820075651.gif" alt="" loading="lazy"><br>
+<img src="https://GeekGhc.github.io/post-images/1616820082808.gif" alt="" loading="lazy"></p>
+<p>显示正常之后我们就可以去发布我们的<code>package</code>了</p>
+<p>在<code>github</code>先创建一个仓库 当然我这里的就是创建了<code>LaraFlash</code>这个远程仓库</p>
+<p>紧接着我们去推好我们的代码到<code>github</code></p>
+<p>接着我们需要去仓库的<code>setting</code> <strong>=&gt;</strong> <code>Intergrations&amp;services</code>添加<code>Packagist</code>服务(填写好用户名和<code>Token</code>)</p>
+<p>添加完毕之后去<a href="https://packagist.org/">Packagist</a>  <code>Submit</code>这个仓库(提供远程仓库的地址)</p>
+<p>在<code>github</code>进入<code>packagist</code>测试通过之后就ok了</p>
+<p>因为我们之前定义的<strong>dev</strong>版本 如果后期有人提出了一些<code>issues</code>你去修改了自己的<code>package</code></p>
+<p>那么我们会去增加别的<code>tag</code>  也是就是说你修改<code>package</code>之后 再去添加一个<code>tag</code>:</p>
+<pre><code class="language-shell">$ git tag 2.0 -a
+</code></pre>
+<p>填写说明信息后 推送这个<code>tag</code>:</p>
+<pre><code class="language-shell">$ git push --tags
+</code></pre>
+<p>这样一来我们就发布了<strong>v2.0</strong>这个版本  这就是我们发布扩展包大概流程</p>
+<blockquote>
+<p>博客文章地址<a href="http://jellybook.me/articles/2017/01/laravel-composer-package">Laravel Package</a></p>
+</blockquote>
+<h2 id="参考资料">参考资料</h2>
+<ul>
+<li><a href="https://laravel-china.org/articles/1714/laravel-composer-package-development-concise-tutorial">Laravel Composer Package 开发简明教程</a></li>
+<li><a href="http://d.laravel-china.org/docs/5.4/packages">Laravel 的扩展插件开发指南</a></li>
+<li><a href="http://www.tuicool.com/articles/QRFvEzZ">Laravel Composer Package实战</a></li>
+<li><a href="https://laravel.com/docs/5.4/packages">Laravel Package Development</a></li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/laravel-console-command/" class="post-title gt-a-link">
+                    Laravel console command
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/laravel-composer-package-kai-fa-jian-ming-jiao-cheng/" class="leancloud_visitors" data-flag-title="Laravel Composer Package 开发简明教程">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+            
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+<script>
+    // md5.min.js
+    !function(n){
+        "use strict";
+        function d(n,t){var r=(65535&n)+(65535&t);return(n>>16)+(t>>16)+(r>>16)<<16|65535&r}
+        function f(n,t,r,e,o,u){return d((c=d(d(t,n),d(e,u)))<<(f=o)|c>>>32-f,r);var c,f}
+        function l(n,t,r,e,o,u,c){return f(t&r|~t&e,n,t,o,u,c)}
+        function v(n,t,r,e,o,u,c){return f(t&e|r&~e,n,t,o,u,c)}
+        function g(n,t,r,e,o,u,c){return f(t^r^e,n,t,o,u,c)}
+        function m(n,t,r,e,o,u,c){return f(r^(t|~e),n,t,o,u,c)}
+        function i(n,t){var r,e,o,u,c;n[t>>5]|=128<<t%32,n[14+(t+64>>>9<<4)]=t;var f=1732584193,i=-271733879,a=-1732584194,h=271733878;for(r=0;r<n.length;r+=16)f=l(e=f,o=i,u=a,c=h,n[r],7,-680876936),h=l(h,f,i,a,n[r+1],12,-389564586),a=l(a,h,f,i,n[r+2],17,606105819),i=l(i,a,h,f,n[r+3],22,-1044525330),f=l(f,i,a,h,n[r+4],7,-176418897),h=l(h,f,i,a,n[r+5],12,1200080426),a=l(a,h,f,i,n[r+6],17,-1473231341),i=l(i,a,h,f,n[r+7],22,-45705983),f=l(f,i,a,h,n[r+8],7,1770035416),h=l(h,f,i,a,n[r+9],12,-1958414417),a=l(a,h,f,i,n[r+10],17,-42063),i=l(i,a,h,f,n[r+11],22,-1990404162),f=l(f,i,a,h,n[r+12],7,1804603682),h=l(h,f,i,a,n[r+13],12,-40341101),a=l(a,h,f,i,n[r+14],17,-1502002290),f=v(f,i=l(i,a,h,f,n[r+15],22,1236535329),a,h,n[r+1],5,-165796510),h=v(h,f,i,a,n[r+6],9,-1069501632),a=v(a,h,f,i,n[r+11],14,643717713),i=v(i,a,h,f,n[r],20,-373897302),f=v(f,i,a,h,n[r+5],5,-701558691),h=v(h,f,i,a,n[r+10],9,38016083),a=v(a,h,f,i,n[r+15],14,-660478335),i=v(i,a,h,f,n[r+4],20,-405537848),f=v(f,i,a,h,n[r+9],5,568446438),h=v(h,f,i,a,n[r+14],9,-1019803690),a=v(a,h,f,i,n[r+3],14,-187363961),i=v(i,a,h,f,n[r+8],20,1163531501),f=v(f,i,a,h,n[r+13],5,-1444681467),h=v(h,f,i,a,n[r+2],9,-51403784),a=v(a,h,f,i,n[r+7],14,1735328473),f=g(f,i=v(i,a,h,f,n[r+12],20,-1926607734),a,h,n[r+5],4,-378558),h=g(h,f,i,a,n[r+8],11,-2022574463),a=g(a,h,f,i,n[r+11],16,1839030562),i=g(i,a,h,f,n[r+14],23,-35309556),f=g(f,i,a,h,n[r+1],4,-1530992060),h=g(h,f,i,a,n[r+4],11,1272893353),a=g(a,h,f,i,n[r+7],16,-155497632),i=g(i,a,h,f,n[r+10],23,-1094730640),f=g(f,i,a,h,n[r+13],4,681279174),h=g(h,f,i,a,n[r],11,-358537222),a=g(a,h,f,i,n[r+3],16,-722521979),i=g(i,a,h,f,n[r+6],23,76029189),f=g(f,i,a,h,n[r+9],4,-640364487),h=g(h,f,i,a,n[r+12],11,-421815835),a=g(a,h,f,i,n[r+15],16,530742520),f=m(f,i=g(i,a,h,f,n[r+2],23,-995338651),a,h,n[r],6,-198630844),h=m(h,f,i,a,n[r+7],10,1126891415),a=m(a,h,f,i,n[r+14],15,-1416354905),i=m(i,a,h,f,n[r+5],21,-57434055),f=m(f,i,a,h,n[r+12],6,1700485571),h=m(h,f,i,a,n[r+3],10,-1894986606),a=m(a,h,f,i,n[r+10],15,-1051523),i=m(i,a,h,f,n[r+1],21,-2054922799),f=m(f,i,a,h,n[r+8],6,1873313359),h=m(h,f,i,a,n[r+15],10,-30611744),a=m(a,h,f,i,n[r+6],15,-1560198380),i=m(i,a,h,f,n[r+13],21,1309151649),f=m(f,i,a,h,n[r+4],6,-145523070),h=m(h,f,i,a,n[r+11],10,-1120210379),a=m(a,h,f,i,n[r+2],15,718787259),i=m(i,a,h,f,n[r+9],21,-343485551),f=d(f,e),i=d(i,o),a=d(a,u),h=d(h,c);return[f,i,a,h]}
+        function a(n){var t,r="",e=32*n.length;for(t=0;t<e;t+=8)r+=String.fromCharCode(n[t>>5]>>>t%32&255);return r}
+        function h(n){var t,r=[];for(r[(n.length>>2)-1]=void 0,t=0;t<r.length;t+=1)r[t]=0;var e=8*n.length;for(t=0;t<e;t+=8)r[t>>5]|=(255&n.charCodeAt(t/8))<<t%32;return r}
+        function e(n){var t,r,e="0123456789abcdef",o="";for(r=0;r<n.length;r+=1)t=n.charCodeAt(r),o+=e.charAt(t>>>4&15)+e.charAt(15&t);return o}
+        function r(n){return unescape(encodeURIComponent(n))}
+        function o(n){return a(i(h(t=r(n)),8*t.length));var t}
+        function u(n,t){return function(n,t){var r,e,o=h(n),u=[],c=[];for(u[15]=c[15]=void 0,16<o.length&&(o=i(o,8*n.length)),r=0;r<16;r+=1)u[r]=909522486^o[r],c[r]=1549556828^o[r];return e=i(u.concat(h(t)),512+8*t.length),a(i(c.concat(e),640))}(r(n),r(t))}
+        function t(n,t,r){return t?r?u(t,n):e(u(t,n)):r?o(n):e(o(n))}
+        "function"==typeof define&&define.amd?define(function(){return t}):"object"==typeof module&&module.exports?module.exports=t:n.md5=t;
+    }(this);
+</script>
+
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '',
+    clientSecret: '',
+    repo: '',
+    owner: '',
+    admin: [''],
+    id: md5(location.pathname),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false       // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+            
+
+            
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>
