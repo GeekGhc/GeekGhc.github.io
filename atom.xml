@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://GeekGhc.github.io</id>
     <title>GeekGhc&apos;s Story</title>
-    <updated>2021-03-26T13:32:57.485Z</updated>
+    <updated>2021-03-27T03:48:48.832Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://GeekGhc.github.io"/>
     <link rel="self" href="https://GeekGhc.github.io/atom.xml"/>
@@ -23,6 +23,13 @@
         <link href="https://GeekGhc.github.io/post/homestead-tong-guo-docker-pei-zhi-mysql-rong-qi/">
         </link>
         <updated>2018-05-12T13:14:15.000Z</updated>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[laravel5.5 之Api Resource]]></title>
+        <id>https://GeekGhc.github.io/post/laravel55-zhi-api-resource/</id>
+        <link href="https://GeekGhc.github.io/post/laravel55-zhi-api-resource/">
+        </link>
+        <updated>2017-09-10T03:45:44.000Z</updated>
     </entry>
     <entry>
         <title type="html"><![CDATA[GitLab [Webhooks] 实现自动化服务器部署]]></title>
@@ -53,6 +60,13 @@
         <updated>2017-06-12T12:07:17.000Z</updated>
     </entry>
     <entry>
+        <title type="html"><![CDATA[Redis在项目中的应用实例]]></title>
+        <id>https://GeekGhc.github.io/post/redis-zai-xiang-mu-zhong-de-ying-yong-shi-li/</id>
+        <link href="https://GeekGhc.github.io/post/redis-zai-xiang-mu-zhong-de-ying-yong-shi-li/">
+        </link>
+        <updated>2017-06-03T03:46:52.000Z</updated>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[CSS 实现IOS毛玻璃的虚化效果]]></title>
         <id>https://GeekGhc.github.io/post/css-shi-xian-ios-mao-bo-li-de-xu-hua-xiao-guo/</id>
         <link href="https://GeekGhc.github.io/post/css-shi-xian-ios-mao-bo-li-de-xu-hua-xiao-guo/">
@@ -65,19 +79,5 @@
         <link href="https://GeekGhc.github.io/post/fen-xiang-vue-kai-fa-de-yi-xie-you-yong-de-tips/">
         </link>
         <updated>2017-03-28T12:10:15.000Z</updated>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[git-flow开发使用姿势]]></title>
-        <id>https://GeekGhc.github.io/post/git-flow-kai-fa-shi-yong-zi-shi/</id>
-        <link href="https://GeekGhc.github.io/post/git-flow-kai-fa-shi-yong-zi-shi/">
-        </link>
-        <updated>2017-02-04T13:17:40.000Z</updated>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[ElementUI 集成组件化开发]]></title>
-        <id>https://GeekGhc.github.io/post/elementui-ji-cheng-zu-jian-hua-kai-fa/</id>
-        <link href="https://GeekGhc.github.io/post/elementui-ji-cheng-zu-jian-hua-kai-fa/">
-        </link>
-        <updated>2017-01-20T13:16:22.000Z</updated>
     </entry>
 </feed>

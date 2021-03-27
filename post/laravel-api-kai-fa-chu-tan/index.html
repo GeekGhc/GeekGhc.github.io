@@ -4,7 +4,7 @@
 <meta name="description" content="" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<title>HomeStead通过docker配置mysql容器 | GeekGhc&#39;s Story</title>
+<title>Laravel API开发初探 | GeekGhc&#39;s Story</title>
 
 <link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1616816925875">
 
@@ -202,101 +202,261 @@
         <div class="post-detail gt-bg-theme-color-second">
             <article class="gt-post-content">
                 <h2 class="post-title">
-                    HomeStead通过docker配置mysql容器
+                    Laravel API开发初探
                 </h2>
                 <div class="post-info">
                     <time class="post-time gt-c-content-color-first">
-                        · 2018-05-12 ·
+                        · 2017-03-18 ·
                     </time>
                     
-                        <a href="https://GeekGhc.github.io/tag/KP4JXYvj5/" class="post-tags">
-                            # Docker
+                        <a href="https://GeekGhc.github.io/tag/x4piCdT_z/" class="post-tags">
+                            # PHP
+                        </a>
+                    
+                        <a href="https://GeekGhc.github.io/tag/b0tSda50f/" class="post-tags">
+                            # Laravel
                         </a>
                     
                 </div>
                 <div class="post-content">
-                    <p>官方homestead提供的mysql默认是5.7版本  那么如果我们需要其他版本的mysql我们可以在此基础之上新建mysql容器进行开发</p>
-<h2 id="简介">简介</h2>
-<p><code>homestead</code>作为<code>PHP</code>开发的可共享的集成虚拟环境 官方默认提供的<code>mysql</code>为<strong>5.7</strong>版本  PHP的版本包含了<strong>5.6</strong> <strong>7.0</strong> <strong>7.1</strong> <strong>7.2</strong>还有一些诸如<code>redis</code> <code>memcache</code><br>
-这样的缓存数据库  其实这足以应对大部分的开发环境要求 对于<code>mysql</code>有时我们需要更新或者更低版本的数据库时  但是又不想摒弃现有的版本 那么我们完全可以借助<code>docker</code>建立对应的<code>mysql</code>容器</p>
-<h2 id="安装">安装</h2>
-<p>我们这里以安装<code>mysql5.6</code>为例</p>
-<p>对于现有的<code>homestead</code>即<code>Ubuntu</code>的环境  我们需要先下载<code>docker</code> 先更新下源</p>
-<pre><code class="language-shell">$ sudo apt-get update
+                    <p>在Web开发，Api开发是一项非常重要的技术，这里就以Laravel项目实例来开发API 熟悉下API的具体的流程</p>
+<h2 id="介绍">介绍</h2>
+<p>关于<code>API</code>的开发 这在每个开发语言里都会有对应的开发方法 在<code>Python</code>里我们会用<code>django</code>框架去开发我们的<code>API</code></p>
+<p>在<code>Laravel</code>里我们会用<code>Dingo</code>结合<code>JWT</code>认证去开发我们的<code>API</code> 而这里我们就以<code>Laravel</code>项目为例 来开发我们的<code>API</code> 熟悉一下在<br>
+项目里是怎么去开发<code>API</code></p>
+<blockquote>
+<p>本文基于laravist的Api的开发教程  作为笔记参考</p>
+</blockquote>
+<h2 id="初始化数据">初始化数据</h2>
+<p>因为我们这里是以<code>laravel</code>项目，所以我们可以先去生成一些测试数据 为了方便后面的数据操作</p>
+<p>在项目终端目录执行:</p>
+<pre><code class="language-shell">$ php artisan make:model Post -m
 </code></pre>
-<p>下载对应的<code>docker</code></p>
-<pre><code class="language-shell">$ sudo apt-get install docker.io
+<p>在生成的<code>posts table</code>里去定义数据字段</p>
+<pre><code class="language-php?start_inline=1">Schema::create('posts', function (Blueprint $table) {
+    $table-&gt;increments('id');
+    $table-&gt;string('title');
+    $table-&gt;text('body');
+    $table-&gt;boolean('free');
+    $table-&gt;timestamps();
+});
 </code></pre>
-<p>下载完成之后启动服务</p>
-<pre><code class="language-shell">$ sudo service docker start
+<p>接着去定义数据<code>ModelFactory</code></p>
+<pre><code class="language-php?start_inline=1">$factory-&gt;define(App\Post::class, function (Faker\Generator $faker) {
+    return [
+        'title' =&gt; $faker-&gt;sentence,
+        'body' =&gt; $faker-&gt;paragraph,
+        'free' =&gt; $faker-&gt;boolean()
+    ];
+});
 </code></pre>
-<p>由于种种原因 对于官方库拉取<code>image</code>我们需要镜像加速 更改<code>/etc/docker/daemon.json</code>来配置(没有则新建)</p>
-<pre><code class="language-shell">{
-  &quot;registry-mirrors&quot;: [&quot;http://hub-mirror.c.163.com&quot;]
+<p>接着为这个<code>model</code>生成相应的控制器:</p>
+<pre><code class="language-shell">$ php artisan make:controller PostController
+</code></pre>
+<p>接着迁移我们的数据表</p>
+<pre><code class="language-shell">$ php artisan migrate
+</code></pre>
+<p>因为之前已经定义好了<code>ModelFactory</code> 所以我们去生成一些测试数据</p>
+<pre><code class="language-shell">$ php artisan tinker;
+$ namespace App;
+$ factory(Post::class,40)-&gt;create()
+</code></pre>
+<p>到这里我们的测试数据就已经准备好了</p>
+<h2 id="路由定义">路由定义</h2>
+<p>为了更好的熟悉<code>api</code>的路由 首先我们可以像往常web路由的定义一样去定义我们这个<code>Post</code>的一系列路由</p>
+<pre><code class="language-php?start_inline=1">Route::group(['prefix'=&gt;'api/v1'],function (){
+    Route::resource('posts','PostController');
+});
+</code></pre>
+<p>其实这个时候去查看一下路由 所看到的路由方式和我们的实际<code>api</code>开发的路由是差不多的</p>
+<p>你也可以去看一些平台的<code>api</code>的文档 你会发现也都是遵循这样的规则 说到<code>api</code>的开发规则</p>
+<p>现在基本也都遵循了<code>Restful api</code>的开发准则 网上相关的说明教程也很多这里推荐一个阮一峰的一篇文章</p>
+<blockquote>
+<p><a href="http://www.ruanyifeng.com/blog/2014/05/restful_api.html">RESTful API 设计指南</a></p>
+</blockquote>
+<p>定义好了路由我们可以尝试着自己去实现下数据的操作 比如数据的全部显示</p>
+<p>所以在<code>PostController</code>的<code>index</code>方法中就可以直接返回所有数据(这里只做测试显示 实际开发中是不会这样暴露全部数据的)</p>
+<pre><code class="language-php?start_inline=1">public function index()
+{
+    return Post::all();
 }
 </code></pre>
-<p>接下来就是验证<code>docker</code> 以经典的<code>hello world</code>为例<br>
-<img src="https://GeekGhc.github.io/post-images/1616764525428.png" alt="" loading="lazy"></p>
-<blockquote>
-<p>如果出现这样的界面即为成功</p>
-</blockquote>
-<p>因为已经拉取这个<code>image</code> 我们可以查看一下现有的<code>image</code> 对于<code>docker</code>的基础知识可以查看阮一峰的<a href="http://www.ruanyifeng.com/blog/2018/02/docker-tutorial.html">博客</a></p>
-<figure data-type="image" tabindex="1"><img src="https://GeekGhc.github.io/post-images/1616764535261.png" alt="" loading="lazy"></figure>
-<p>接下来就是拉取<code>mysql5.6</code>的官方<code>library</code><br>
-<img src="https://GeekGhc.github.io/post-images/1616764544710.png" alt="" loading="lazy"></p>
-<p>拉取完成之后再次查看<code>image</code>列表<br>
-<img src="https://GeekGhc.github.io/post-images/1616764554248.png" alt="" loading="lazy"></p>
-<p>接下来新建<code>/docker/mysql5.6</code>目录以配置一些<code>mysql</code>下面会用到的映射目录<br>
-拉取完成之后再次查看<code>image</code>列表<br>
-<img src="https://GeekGhc.github.io/post-images/1616764562762.png" alt="" loading="lazy"></p>
-<p>接下里在<code>/docker/mysql5.6</code>目录下启动<code>mysql</code>容器</p>
-<pre><code class="language-shell">$ sudo docker run -p 33061:3306 --name mysql1 -v $PWD/conf:/etc/mysql -v $PWD/logs:/logs -v $PWD/data:/mysql_data -e MYSQL_ROOT_PASSWORD=123456 -d mysql:5.6
+<p>这样的话我们去启动服务访问<a href="http://localhost:8000/api/v1/posts">http://localhost:8000/api/v1/posts</a>这个路由的话理应是可以返回所有的数据的</p>
+<p>当然如果是去指定的数据的话 按照<code>api</code>的设计要求就可以在<code>url</code>后面加上对应的<code>id</code>即可</p>
+<p>所以这个时候我们在控制器里可以这样写</p>
+<pre><code class="language-php?start_inline=1">public function show($id)
+{
+    $post = Post::findOrFail($id);
+    return $post;
+}
 </code></pre>
-<p>这里也是在启动的时候为数据库设置了密码为<strong>123456</strong></p>
-<p><code>-p</code> 指明<code>mysql</code>容器的<strong>3306</strong>端口映射到本地的<strong>33061</strong>端口</p>
-<p><code>--name</code> 指明启动后的<code>container</code>的别名  这样我们可以很方便的操作</p>
-<p><code>-v</code> 表明本地和容器的目录映射</p>
-<figure data-type="image" tabindex="2"><img src="https://GeekGhc.github.io/post-images/1616764573609.png" alt="" loading="lazy"></figure>
-<p>启动<code>mysql</code>容器 这里我们可以通过别名启动</p>
-<pre><code class="language-shell">$ sudo docker start mysql1
+<p>同样的我们这个时候在请求这条<code>api</code>时就是<a href="http://localhost:8000/api/v1/posts/3">http://localhost:8000/api/v1/posts/3</a></p>
+<h2 id="字段映射">字段映射</h2>
+<p>通常的我们在请求一个服务的<code>api</code>时会附加一些信息 如状态码等 这些信息都是必须的 但是我们的数据库里是没有这些信息数据的</p>
+<p>再者就是数据库里的字段我们不会想要把他们全部反馈给用户 比如我们的时间戳等用户并不需要的信息</p>
+<p>所以说在这里我们就需要对字段进行映射 以满足我们对数据的请求</p>
+<p>在<code>Laravel</code>中我们可以在<code>Response</code>里去完善我们的返回信息 如:</p>
+<pre><code class="language-php?start_inline=1">public function index()
+{
+    $posts = Post::all();
+    return \Response::json([
+        'status_code'=&gt;200,
+        'data' =&gt; $posts-&gt;toArray()
+    ]);
+}
 </code></pre>
-<p>进入<code>mysql</code>的<code>bash</code>即终端</p>
-<pre><code class="language-shell">$ docker exec -it mysql1 env LANG=C.UTF-8 bash
+<p>在选取本地的数据库字段时我们完全可以自己去实现这个方法</p>
+<pre><code class="language-php?start_inline=1">public function transform($posts)
+{
+    return array_map(function($post){
+        return [
+            'title' =&gt;$post['title'],
+            'content'=&gt;$post['body'],
+            'is_free'=&gt;$post['free']
+        ];
+    },$posts-&gt;toArray());
+}
 </code></pre>
-<blockquote>
-<p>其中 env LANG=C.UTF-8 bash 让docker命令行支持中文</p>
-</blockquote>
-<p>复制配置文件</p>
-<pre><code class="language-shell">$ cp /usr/my.cnf /etc/mysql/my.cnf
+<p>这里的<code>transform function</code>就是对字段做了映射 所以在获取信息时调用这个方法即可</p>
+<pre><code class="language-php?start_inline=1">$posts = Post::all();
+return \Response::json([
+    'status_code'=&gt;200,
+    'data' =&gt; $$this-&gt;transform($posts)
+]);
 </code></pre>
-<p>由于之前我们在<code>/docker/mysql5.6</code>新建了三个目录并进行了映射 如需要修改编码 这时退出容器<code>bash</code>可在本地修改即可</p>
-<pre><code class="language-shell">$ vim conf/my.cnf
+<p>这样我们再去请求所有的数据时只会返回<code>title</code> <code>content</code>和<code>is_free</code>而这三个字段分别对应着数据表的<code>title</code> <code>body</code>和<code>free</code></p>
+<p>当然这里只是对一个<code>Collection</code>进行的映射 那么对一条数据呢 为了更好的重用 我们可以去分离这部分代码</p>
+<p>所以我们在<code>app</code>目录下去创建<code>Transformer</code>目录 在这个目录里面去创建一个<code>Transformer</code>的抽象类</p>
+<pre><code class="language-php?start_inline=1">&lt;?php
+namespace App\Transformer;
+
+abstract class Transformer
+{
+    /**
+     * @param $items
+     * @return array
+     */
+    public function transformCollection($items)
+    {
+        return array_map([$this, 'transform'], $items);
+    }
+
+    /**
+     * @param $item
+     * @return mixed
+     */
+    public abstract function transform($item);
+}
 </code></pre>
-<p>主要是在my.cnf添加了字符编码  修改完保存即可</p>
-<pre><code class="language-shell">$ [client] default-character-set=utf8 
-[mysql] default-character-set=utf8 
-[mysqld] character-set-server=utf8
+<p>这里的抽象类我们可以继承之后对相应的数据表的字段进行映射<br>
+所以这里我们对<code>posts</code>表的字段进行映射时 我们就去创建<code>PostTransformer</code>类</p>
+<pre><code class="language-php?start_inline=1">&lt;?php
+namespace App\Transformer;
+class PostTransformer extends Transformer
+{
+    /**
+     * @param $item
+     * @return array
+     */
+    public function transform($item)
+    {
+        return [
+            'title' =&gt; $item['title'],
+            'content' =&gt; $item['body'],
+            'is_free' =&gt; $item['free']
+        ];
+    }
+
+}
 </code></pre>
-<p>再次进入<code>mysql</code>的<code>bash</code> 这次先登录<code>mysql</code></p>
-<pre><code class="language-shell">$ mysql -u root -p
+<p>这样定义完毕之后再去控制器里依赖注入这个<code>PostTransformer</code>即可</p>
+<h2 id="请求错误返回">请求错误返回</h2>
+<p>有些时候并不是所有请求都会得到正确的信息返回的 比方说错误的参数和不存在的数据 用户想要请求<code>id</code>为<strong>99</strong>的这条数据</p>
+<p>但实际上并不存在这条数据 所以这时候我们会返回这种错误处理信息</p>
+<p>对于这样的场景 我们目前能想象得到的就是判断对应的请求信息 如果正确即返回 否则返回错误信息 比如说常见的404错误</p>
+<p>这时在定义<code>show</code>方法时 我们就可以加一个判断处理</p>
+<pre><code class="language-php?start_inline=1">public function show($id)
+{
+    $post = Post::find($id);
+    if(! $post){
+        return \Response::json([
+            'status_code'=&gt;404,
+            'message'=&gt;&quot;post not found!&quot;
+        ]);
+    }
+    return \Response::json([
+        'status_code'=&gt;200,
+        'data' =&gt; $this-&gt;postTransformer-&gt;transform($post)
+    ]);
+}
 </code></pre>
-<p>密码就是启动容易时设定的<strong>123456</strong> 进入成功之后修改下时远程客户端可以连接这个<code>mysql</code></p>
-<pre><code class="language-shell">$ grant all privileges on rise.* to root@'%' identified by '123456';
+<p>为了更好的管理返回信息的处理 我们可以把这部分代码抽离出来</p>
+<pre><code class="language-shell">$ php artisan make:controller ApiStatusCoontroller
 </code></pre>
-<pre><code class="language-shell">$ flush privileges;
+<p>在这个控制器里主要就是去实现各种状态信息的返回 这样我们在业务代码里只需要调用相应的状态函数即可</p>
+<pre><code class="language-php?start_inline=1">&lt;?php
+namespace App\Http\Controllers;
+use Illuminate\Http\Request;
+use App\Http\Requests;
+
+class ApiStatusController extends Controller
+{
+    protected $statusCode = 200;//默认状态码
+
+    /**
+     * @return int
+     */
+    public function getStatusCode()
+    {
+        return $this-&gt;statusCode;
+    }
+
+    /**
+     * @param int $statusCode
+     */
+    public function setStatusCode($statusCode)
+    {
+        $this-&gt;statusCode = $statusCode;
+
+        return $this;
+    }
+
+    public function responseNotFound($message = 'Not found')
+    {
+        return $this-&gt;setStatusCode(404)-&gt;responseError($message);
+    }
+
+    public function responseError($message)
+    {
+        return $this-&gt;response([
+            'error'=&gt;[
+                'status_code' =&gt; $this-&gt;getStatusCode(),
+                'message' =&gt; $message
+            ],
+        ]);
+    }
+    
+    public function response($data)
+    {
+        return \Response::json($data,$this-&gt;getStatusCode());
+    }
+}
 </code></pre>
-<p>即远程客户端可以使用<code>root</code>作为用户名 密码使用<strong>123456</strong>进行登录  至此我们的<code>mysql</code>容器安装完毕</p>
-<p>我们知道本地连接<code>homestead</code>的<code>mysql</code>是通过<strong>33060</strong>端口进行连接  那么如果想连接<code>homestead</code>中的<code>mysql</code>容器那么可以再次进行端口映射</p>
-<p>具体操作就是修改<code>Homestead.yaml</code> 增加端口从本地到<code>homestead</code>即可</p>
-<pre><code class="language-shell">ports:
-    - send: 33062
-      to: 33061
+<p>这样一来如果我们需要返回错误处理的话 我们在目前的控制器 比如说<code>PostController</code>继承<code>ApiStatusController</code></p>
+<p>然后在返回错误信息时就可以直接调用</p>
+<p>这样和之前其实是一样的 如果是正确的返回则直接调用<code>response</code>方法</p>
+<pre><code class="language-php?start_inline=1">public function show($id)
+{
+    $post = Post::find($id);
+    if(! $post){
+        return $this-&gt;responseNotFound();
+    }
+    return $this-&gt;response([
+        'status' =&gt; 'success',
+        'data' =&gt; $this-&gt;postTransformer-&gt;transform($lesson)
+    ]);
+}
 </code></pre>
-<p>这样本地 可以使用用户名为<code>root</code> 密码为<strong>123456</strong> 端口这时改为<strong>33062</strong>即可连接<code>homestead</code>的<code>mysql</code>容器</p>
-<h2 id="相关链接">相关链接</h2>
-<ul>
-<li><a href="http://www.ruanyifeng.com/blog/2018/02/docker-tutorial.html">Docker 入门教程</a></li>
-</ul>
 
                 </div>
             </article>
@@ -305,14 +465,14 @@
         
             <div class="next-post">
                 <div class="next gt-c-content-color-first">下一篇</div>
-                <a href="https://GeekGhc.github.io/post/laravel55-zhi-api-resource/" class="post-title gt-a-link">
-                    laravel5.5 之Api Resource
+                <a href="https://GeekGhc.github.io/post/git-flow-kai-fa-shi-yong-zi-shi/" class="post-title gt-a-link">
+                    git-flow开发使用姿势
                 </a>
             </div>
         
 
         
-            <span id="/post/homestead-tong-guo-docker-pei-zhi-mysql-rong-qi/" class="leancloud_visitors" data-flag-title="HomeStead通过docker配置mysql容器">
+            <span id="/post/laravel-api-kai-fa-chu-tan/" class="leancloud_visitors" data-flag-title="Laravel API开发初探">
                 <em class="post-meta-item-text">阅读量 </em>
                 <i class="leancloud-visitors-count">0</i>
             </span>

@@ -4,7 +4,7 @@
 <meta name="description" content="" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<title>HomeStead通过docker配置mysql容器 | GeekGhc&#39;s Story</title>
+<title>Redis在项目中的应用实例 | GeekGhc&#39;s Story</title>
 
 <link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1616816925875">
 
@@ -202,100 +202,269 @@
         <div class="post-detail gt-bg-theme-color-second">
             <article class="gt-post-content">
                 <h2 class="post-title">
-                    HomeStead通过docker配置mysql容器
+                    Redis在项目中的应用实例
                 </h2>
                 <div class="post-info">
                     <time class="post-time gt-c-content-color-first">
-                        · 2018-05-12 ·
+                        · 2017-06-03 ·
                     </time>
                     
-                        <a href="https://GeekGhc.github.io/tag/KP4JXYvj5/" class="post-tags">
-                            # Docker
+                        <a href="https://GeekGhc.github.io/tag/Fsi8n7uJf/" class="post-tags">
+                            # Redis
                         </a>
                     
                 </div>
                 <div class="post-content">
-                    <p>官方homestead提供的mysql默认是5.7版本  那么如果我们需要其他版本的mysql我们可以在此基础之上新建mysql容器进行开发</p>
-<h2 id="简介">简介</h2>
-<p><code>homestead</code>作为<code>PHP</code>开发的可共享的集成虚拟环境 官方默认提供的<code>mysql</code>为<strong>5.7</strong>版本  PHP的版本包含了<strong>5.6</strong> <strong>7.0</strong> <strong>7.1</strong> <strong>7.2</strong>还有一些诸如<code>redis</code> <code>memcache</code><br>
-这样的缓存数据库  其实这足以应对大部分的开发环境要求 对于<code>mysql</code>有时我们需要更新或者更低版本的数据库时  但是又不想摒弃现有的版本 那么我们完全可以借助<code>docker</code>建立对应的<code>mysql</code>容器</p>
-<h2 id="安装">安装</h2>
-<p>我们这里以安装<code>mysql5.6</code>为例</p>
-<p>对于现有的<code>homestead</code>即<code>Ubuntu</code>的环境  我们需要先下载<code>docker</code> 先更新下源</p>
-<pre><code class="language-shell">$ sudo apt-get update
+                    <p>如今网站基本都集成了非常不错的缓存驱动 之前认识了Redis的基本使用  那么这里就结合一个帖子的浏览的应用实例去深入了解这些缓存机制的应用</p>
+<p>既然初步了解<code>Redis</code>在<code>Laravel</code>中的应用 那么我们试想这样的一个应用场景  一个文章或者帖子的浏览次数的统计 如果只是每次增加一个浏览量</p>
+<p>就到数据库新增一个数据 如果请求来那个太大这对数据库的消耗也就不言而喻了吧  那我们是不是可以有其他的解决方案</p>
+<p>这里的解决方案就是 即使你的网站的请求量很大 那么每次增加一个访问量就在缓存中去进行更改  至于刷新<code>Mysql</code>数据库可以自定义为</p>
+<p>多少分钟进行刷新一次或者访问量达到一定数量再去刷新数据库 这样数据也是准确的 效率也比直接每次刷新数据库要高出许多了</p>
+<p>既然给出了相应的解决方案  我们就开始实施</p>
+<p>我们以一篇帖子的浏览为例  我们先去创建对应的控制器</p>
+<pre><code class="language-shell">$ php artisan make:controller PostController
 </code></pre>
-<p>下载对应的<code>docker</code></p>
-<pre><code class="language-shell">$ sudo apt-get install docker.io
+<p>再去生成需要用到的 <code>Model</code></p>
+<pre><code class="language-shell">$ php artisan make:model Post -m
 </code></pre>
-<p>下载完成之后启动服务</p>
-<pre><code class="language-shell">$ sudo service docker start
+<p>填写<code>posts</code>的迁移表的字段内容</p>
+<pre><code class="language-php?start_inline=1">Schema::create('posts', function (Blueprint $table) {
+    $table-&gt;increments('id');
+    $table-&gt;string(&quot;title&quot;);
+    $table-&gt;string(&quot;content&quot;);
+    $table-&gt;integer('view_count')-&gt;unsigned();
+    $table-&gt;timestamps();
+});
 </code></pre>
-<p>由于种种原因 对于官方库拉取<code>image</code>我们需要镜像加速 更改<code>/etc/docker/daemon.json</code>来配置(没有则新建)</p>
-<pre><code class="language-shell">{
-  &quot;registry-mirrors&quot;: [&quot;http://hub-mirror.c.163.com&quot;]
+<p>还有就是我们测试的数据的<code>Seeder</code>填充数据</p>
+<pre><code class="language-php?start_inline=1">$factory-&gt;define(App\Post::class, function (Faker\Generator $faker) {
+    return [
+        'title' =&gt; $faker-&gt;sentence,
+        'content' =&gt; $faker-&gt;paragraph,
+        'view_count' =&gt; 0
+    ];
+});
+</code></pre>
+<p>定义帖子的访问路由</p>
+<pre><code class="language-php?start_inline=1">Route::get('/post/{id}', 'PostController@showPost');
+</code></pre>
+<p>当然我们还是需要去写我们访问也就是浏览事件的(在<code>app/providers/EventServiceProvider</code>中定义)</p>
+<pre><code class="language-php?start_inline=1">protected $listen = [
+        'App\Events\PostViewEvent' =&gt; [
+//            'App\Listeners\EventListener',
+            'App\Listeners\PostEventListener',
+        ],
+    ];
+</code></pre>
+<p>执行事件生成监听</p>
+<pre><code class="language-shell">$ php artisan event:generate
+</code></pre>
+<p>之前定义了相关的路由方法  现在去实现一下:</p>
+<pre><code class="language-php?start_inline=1">public function showPost(Request $request,$id)
+{
+    //Redis缓存中没有该post,则从数据库中取值,并存入Redis中,该键值key='post:cache'.$id生命时间6分钟
+    $post = Cache::remember('post:cache:'.$id, $this-&gt;cacheExpires, function () use ($id) {
+        return Post::whereId($id)-&gt;first();
+    });
+
+    //获取客户端IP
+    $ip = $request-&gt;ip();
+    //触发浏览量计数器事件
+    event(new PostViewEvent($post, $ip));
+
+    return view('posts.show', compact('post'));
 }
 </code></pre>
-<p>接下来就是验证<code>docker</code> 以经典的<code>hello world</code>为例<br>
-<img src="https://GeekGhc.github.io/post-images/1616764525428.png" alt="" loading="lazy"></p>
+<p>这里看的出来就是以<code>Redis</code>作为缓存驱动 同样的  会获取获取的<code>ip</code>目的是防止同一个<code>ip</code>多次刷新来增加浏览量</p>
+<p>同样的每次浏览会触发我们之前定义的事件  传入我们的<code>post</code>和<code>id</code>参数</p>
 <blockquote>
-<p>如果出现这样的界面即为成功</p>
+<p>Redis的key的命名以:分割  这样可以理解为一个层级目录 在可视化工具里就可以看的很明显了</p>
 </blockquote>
-<p>因为已经拉取这个<code>image</code> 我们可以查看一下现有的<code>image</code> 对于<code>docker</code>的基础知识可以查看阮一峰的<a href="http://www.ruanyifeng.com/blog/2018/02/docker-tutorial.html">博客</a></p>
-<figure data-type="image" tabindex="1"><img src="https://GeekGhc.github.io/post-images/1616764535261.png" alt="" loading="lazy"></figure>
-<p>接下来就是拉取<code>mysql5.6</code>的官方<code>library</code><br>
-<img src="https://GeekGhc.github.io/post-images/1616764544710.png" alt="" loading="lazy"></p>
-<p>拉取完成之后再次查看<code>image</code>列表<br>
-<img src="https://GeekGhc.github.io/post-images/1616764554248.png" alt="" loading="lazy"></p>
-<p>接下来新建<code>/docker/mysql5.6</code>目录以配置一些<code>mysql</code>下面会用到的映射目录<br>
-拉取完成之后再次查看<code>image</code>列表<br>
-<img src="https://GeekGhc.github.io/post-images/1616764562762.png" alt="" loading="lazy"></p>
-<p>接下里在<code>/docker/mysql5.6</code>目录下启动<code>mysql</code>容器</p>
-<pre><code class="language-shell">$ sudo docker run -p 33061:3306 --name mysql1 -v $PWD/conf:/etc/mysql -v $PWD/logs:/logs -v $PWD/data:/mysql_data -e MYSQL_ROOT_PASSWORD=123456 -d mysql:5.6
+<p>接下来就是给出我们的<code>posts.show</code>的视图文件</p>
+<pre><code class="language-html">&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot;&gt;
+    &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+    &lt;title&gt;Bootstrap Template&lt;/title&gt;
+    &lt;!-- 新 Bootstrap 核心 CSS 文件 --&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css&quot;&gt;
+    &lt;style&gt;
+        html,body{
+            width: 100%;
+            height: 100%;
+        }
+        *{
+            margin: 0;
+            border: 0;
+        }
+        .jumbotron{
+            margin-top: 10%;
+        }
+        .jumbotron&gt;span{
+            margin: 10px;
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class=&quot;container&quot;&gt;
+    &lt;div class=&quot;row&quot;&gt;
+        &lt;div class=&quot;col-xs-12 col-md-12&quot;&gt;
+            &lt;div class=&quot;jumbotron&quot;&gt;
+                &lt;h1&gt;Title:{{$post-&gt;title}}&lt;/h1&gt;
+                &lt;span class=&quot;glyphicon glyphicon-eye-open&quot; aria-hidden=&quot;true&quot;&gt; {{$post-&gt;view_count}} views&lt;/span&gt;
+                &lt;p&gt;Content:{{$post-&gt;content}}&lt;/p&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- jQuery文件--&gt;
+&lt;script src=&quot;//cdn.bootcss.com/jquery/1.11.3/jquery.min.js&quot;&gt;&lt;/script&gt;
+&lt;!-- 最新的 Bootstrap 核心 JavaScript 文件 --&gt;
+&lt;script src=&quot;//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
 </code></pre>
-<p>这里也是在启动的时候为数据库设置了密码为<strong>123456</strong></p>
-<p><code>-p</code> 指明<code>mysql</code>容器的<strong>3306</strong>端口映射到本地的<strong>33061</strong>端口</p>
-<p><code>--name</code> 指明启动后的<code>container</code>的别名  这样我们可以很方便的操作</p>
-<p><code>-v</code> 表明本地和容器的目录映射</p>
-<figure data-type="image" tabindex="2"><img src="https://GeekGhc.github.io/post-images/1616764573609.png" alt="" loading="lazy"></figure>
-<p>启动<code>mysql</code>容器 这里我们可以通过别名启动</p>
-<pre><code class="language-shell">$ sudo docker start mysql1
+<p>初始化我们的事件就是接收一下这些参数即可</p>
+<pre><code class="language-php?start_inline=1">class PostViewEvent
+{
+    use Dispatchable, InteractsWithSockets, SerializesModels;
+
+    protected $ip;
+    protected $post;
+
+
+    /**
+     * PostViewEvent constructor.
+     * @param Post $post
+     * @param $ip
+     */
+    public function __construct(Post $post, $ip)
+    {
+        $this-&gt;post = $post;
+        $this-&gt;ip = $ip;
+    }
+
+    /**
+     * Get the channels the event should broadcast on.
+     *
+     * @return Channel|array
+     */
+    public function broadcastOn()
+    {
+        return new PrivateChannel('channel-name');
+    }
+}
 </code></pre>
-<p>进入<code>mysql</code>的<code>bash</code>即终端</p>
-<pre><code class="language-shell">$ docker exec -it mysql1 env LANG=C.UTF-8 bash
+<p>最主要的还是编写我们的监听事件:</p>
+<pre><code class="language-php?start_inline=1">class PostEventListener
+{
+    /**
+     * 同一post最大访问次数,再刷新数据库
+     */
+    const postViewLimit = 30;
+
+    /**
+     * 同一用户浏览同一post过期时间
+     */
+    const ipExpireSec = 300;
+
+    /**
+     * Create the event listener.
+     *
+     */
+    public function __construct()
+    {
+
+    }
+
+
+    /**
+     * @param PostViewEvent $event
+     */
+    public function handle(PostViewEvent $event)
+    {
+        $post = $event-&gt;post;
+        $ip   = $event-&gt;ip;
+        $id   = $post-&gt;id;
+        //首先判断下ipExpireSec = 300秒时间内,同一IP访问多次,仅仅作为1次访问量
+        if($this-&gt;ipViewLimit($id, $ip)){
+            //一个IP在300秒时间内访问第一次时,刷新下该篇post的浏览量
+            $this-&gt;updateCacheViewCount($id, $ip);
+        }
+    }
+
+    /**
+     * 限制同一IP一段时间内得访问,防止增加无效浏览次数
+     * @param $id
+     * @param $ip
+     * @return bool
+     */
+    public function ipViewLimit($id, $ip)
+    {
+        $ipPostViewKey    = 'post:ip:limit:'.$id;
+        //Redis命令SISMEMBER检查集合类型Set中有没有该键,Set集合类型中值都是唯一
+        $existsInRedisSet = Redis::command('SISMEMBER', [$ipPostViewKey, $ip]);
+        //如果集合中不存在这个建 那么新建一个并设置过期时间
+        if(!$existsInRedisSet){
+            //SADD,集合类型指令,向ipPostViewKey键中加一个值ip
+            Redis::command('SADD', [$ipPostViewKey, $ip]);
+            //并给该键设置生命时间,这里设置300秒,300秒后同一IP访问就当做是新的浏览量了
+            Redis::command('EXPIRE', [$ipPostViewKey, self::ipExpireSec]);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 达到要求更新数据库的浏览量
+     * @param $id
+     * @param $count
+     */
+    public function updateModelViewCount($id, $count)
+    {
+        //访问量达到300,再进行一次SQL更新
+        $post = Post::find($id);
+        $post-&gt;view_count += $count;
+        $post-&gt;save();
+    }
+
+    /**
+     * 不同用户访问,更新缓存中浏览次数
+     * @param $id
+     * @param $ip
+     */
+    public function updateCacheViewCount($id, $ip)
+    {
+        $cacheKey = 'post:view:'.$id;
+        //这里以Redis哈希类型存储键,就和数组类似,$cacheKey就类似数组名  如果这个key存在
+        if(Redis::command('HEXISTS', [$cacheKey, $ip])){
+            //哈希类型指令HINCRBY,就是给$cacheKey[$ip]加上一个值,这里一次访问就是1
+            $save_count = Redis::command('HINCRBY', [$cacheKey, $ip, 1]);
+            //redis中这个存储浏览量的值达到30后,就去刷新一次数据库
+            if($save_count == self::postViewLimit){
+                $this-&gt;updateModelViewCount($id, $save_count);
+                //本篇post,redis中浏览量刷进MySQL后,就把该篇post的浏览量清空,重新开始计数
+                Redis::command('HDEL', [$cacheKey, $ip]);
+                Redis::command('DEL', ['laravel:post:cache:'.$id]);
+            }
+        }else{
+            //哈希类型指令HSET,和数组类似,就像$cacheKey[$ip] = 1;
+            Redis::command('HSET', [$cacheKey, $ip, '1']);
+        }
+    }
+}
+
 </code></pre>
-<blockquote>
-<p>其中 env LANG=C.UTF-8 bash 让docker命令行支持中文</p>
-</blockquote>
-<p>复制配置文件</p>
-<pre><code class="language-shell">$ cp /usr/my.cnf /etc/mysql/my.cnf
-</code></pre>
-<p>由于之前我们在<code>/docker/mysql5.6</code>新建了三个目录并进行了映射 如需要修改编码 这时退出容器<code>bash</code>可在本地修改即可</p>
-<pre><code class="language-shell">$ vim conf/my.cnf
-</code></pre>
-<p>主要是在my.cnf添加了字符编码  修改完保存即可</p>
-<pre><code class="language-shell">$ [client] default-character-set=utf8 
-[mysql] default-character-set=utf8 
-[mysqld] character-set-server=utf8
-</code></pre>
-<p>再次进入<code>mysql</code>的<code>bash</code> 这次先登录<code>mysql</code></p>
-<pre><code class="language-shell">$ mysql -u root -p
-</code></pre>
-<p>密码就是启动容易时设定的<strong>123456</strong> 进入成功之后修改下时远程客户端可以连接这个<code>mysql</code></p>
-<pre><code class="language-shell">$ grant all privileges on rise.* to root@'%' identified by '123456';
-</code></pre>
-<pre><code class="language-shell">$ flush privileges;
-</code></pre>
-<p>即远程客户端可以使用<code>root</code>作为用户名 密码使用<strong>123456</strong>进行登录  至此我们的<code>mysql</code>容器安装完毕</p>
-<p>我们知道本地连接<code>homestead</code>的<code>mysql</code>是通过<strong>33060</strong>端口进行连接  那么如果想连接<code>homestead</code>中的<code>mysql</code>容器那么可以再次进行端口映射</p>
-<p>具体操作就是修改<code>Homestead.yaml</code> 增加端口从本地到<code>homestead</code>即可</p>
-<pre><code class="language-shell">ports:
-    - send: 33062
-      to: 33061
-</code></pre>
-<p>这样本地 可以使用用户名为<code>root</code> 密码为<strong>123456</strong> 端口这时改为<strong>33062</strong>即可连接<code>homestead</code>的<code>mysql</code>容器</p>
+<p>最后可以通过我们的工具查看具体效果</p>
+<figure data-type="image" tabindex="1"><img src="https://GeekGhc.github.io/post-images/1616816921442.png" alt="" loading="lazy"></figure>
 <h2 id="相关链接">相关链接</h2>
 <ul>
-<li><a href="http://www.ruanyifeng.com/blog/2018/02/docker-tutorial.html">Docker 入门教程</a></li>
+<li><a href="https://redis.io/commands">Redis 命令</a></li>
 </ul>
 
                 </div>
@@ -305,14 +474,14 @@
         
             <div class="next-post">
                 <div class="next gt-c-content-color-first">下一篇</div>
-                <a href="https://GeekGhc.github.io/post/laravel55-zhi-api-resource/" class="post-title gt-a-link">
-                    laravel5.5 之Api Resource
+                <a href="https://GeekGhc.github.io/post/css-shi-xian-ios-mao-bo-li-de-xu-hua-xiao-guo/" class="post-title gt-a-link">
+                    CSS 实现IOS毛玻璃的虚化效果
                 </a>
             </div>
         
 
         
-            <span id="/post/homestead-tong-guo-docker-pei-zhi-mysql-rong-qi/" class="leancloud_visitors" data-flag-title="HomeStead通过docker配置mysql容器">
+            <span id="/post/redis-zai-xiang-mu-zhong-de-ying-yong-shi-li/" class="leancloud_visitors" data-flag-title="Redis在项目中的应用实例">
                 <em class="post-meta-item-text">阅读量 </em>
                 <i class="leancloud-visitors-count">0</i>
             </span>
