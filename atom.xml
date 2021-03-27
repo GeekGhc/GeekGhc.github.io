@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://GeekGhc.github.io</id>
     <title>GeekGhc&apos;s Story</title>
-    <updated>2021-03-27T04:57:22.390Z</updated>
+    <updated>2021-03-27T05:04:02.549Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://GeekGhc.github.io"/>
     <link rel="self" href="https://GeekGhc.github.io/atom.xml"/>
@@ -46,6 +46,13 @@
         <updated>2017-08-08T13:21:53.000Z</updated>
     </entry>
     <entry>
+        <title type="html"><![CDATA[Laravel Passport 之API授权]]></title>
+        <id>https://GeekGhc.github.io/post/laravel-passport-zhi-api-shou-quan/</id>
+        <link href="https://GeekGhc.github.io/post/laravel-passport-zhi-api-shou-quan/">
+        </link>
+        <updated>2017-08-01T05:01:33.000Z</updated>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[Linux MySQL定时备份并上传到git仓库]]></title>
         <id>https://GeekGhc.github.io/post/linux-mysql-ding-shi-bei-fen-bing-shang-chuan-dao-git-cang-ku/</id>
         <link href="https://GeekGhc.github.io/post/linux-mysql-ding-shi-bei-fen-bing-shang-chuan-dao-git-cang-ku/">
@@ -72,12 +79,5 @@
         <link href="https://GeekGhc.github.io/post/redis-zai-xiang-mu-zhong-de-ying-yong-shi-li/">
         </link>
         <updated>2017-06-03T03:46:52.000Z</updated>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[CSS 实现IOS毛玻璃的虚化效果]]></title>
-        <id>https://GeekGhc.github.io/post/css-shi-xian-ios-mao-bo-li-de-xu-hua-xiao-guo/</id>
-        <link href="https://GeekGhc.github.io/post/css-shi-xian-ios-mao-bo-li-de-xu-hua-xiao-guo/">
-        </link>
-        <updated>2017-04-19T12:28:57.000Z</updated>
     </entry>
 </feed>
