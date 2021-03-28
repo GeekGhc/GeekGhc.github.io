@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://GeekGhc.github.io</id>
     <title>GeekGhc&apos;s Story</title>
-    <updated>2021-03-27T05:23:46.565Z</updated>
+    <updated>2021-03-28T12:49:51.220Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://GeekGhc.github.io"/>
     <link rel="self" href="https://GeekGhc.github.io/atom.xml"/>
@@ -10,6 +10,13 @@
     <logo>https://GeekGhc.github.io/images/avatar.png</logo>
     <icon>https://GeekGhc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, GeekGhc&apos;s Story</rights>
+    <entry>
+        <title type="html"><![CDATA[Laravel5.5新特性之自定义验证规则]]></title>
+        <id>https://GeekGhc.github.io/post/laravel55-xin-te-xing-zhi-zi-ding-yi-yan-zheng-gui-ze/</id>
+        <link href="https://GeekGhc.github.io/post/laravel55-xin-te-xing-zhi-zi-ding-yi-yan-zheng-gui-ze/">
+        </link>
+        <updated>2021-03-28T12:42:39.000Z</updated>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Kafka的实践和使用]]></title>
         <id>https://GeekGhc.github.io/post/kafka-de-shi-jian-he-shi-yong/</id>
@@ -53,31 +60,24 @@
         <updated>2017-08-01T05:01:33.000Z</updated>
     </entry>
     <entry>
+        <title type="html"><![CDATA[Laravel5.5新特性之Blade::if 自定义指令]]></title>
+        <id>https://GeekGhc.github.io/post/laravel55-xin-te-xing-zhi-bladeif-zi-ding-yi-zhi-ling/</id>
+        <link href="https://GeekGhc.github.io/post/laravel55-xin-te-xing-zhi-bladeif-zi-ding-yi-zhi-ling/">
+        </link>
+        <updated>2017-07-27T12:46:41.000Z</updated>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Laravel5.5新特性之邮件模板浏览器查看]]></title>
+        <id>https://GeekGhc.github.io/post/laravel55-xin-te-xing-zhi-you-jian-mo-ban-liu-lan-qi-cha-kan/</id>
+        <link href="https://GeekGhc.github.io/post/laravel55-xin-te-xing-zhi-you-jian-mo-ban-liu-lan-qi-cha-kan/">
+        </link>
+        <updated>2017-07-27T12:44:07.000Z</updated>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[Linux MySQL定时备份并上传到git仓库]]></title>
         <id>https://GeekGhc.github.io/post/linux-mysql-ding-shi-bei-fen-bing-shang-chuan-dao-git-cang-ku/</id>
         <link href="https://GeekGhc.github.io/post/linux-mysql-ding-shi-bei-fen-bing-shang-chuan-dao-git-cang-ku/">
         </link>
         <updated>2017-07-18T12:11:33.000Z</updated>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[HTMLPurifier解决Laravel5的XSS跨站脚本攻击安全问题]]></title>
-        <id>https://GeekGhc.github.io/post/htmlpurifier-jie-jue-laravel5-de-xss-kua-zhan-jiao-ben-gong-ji-an-quan-wen-ti/</id>
-        <link href="https://GeekGhc.github.io/post/htmlpurifier-jie-jue-laravel5-de-xss-kua-zhan-jiao-ben-gong-ji-an-quan-wen-ti/">
-        </link>
-        <updated>2017-07-12T13:25:43.000Z</updated>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[APP微信支付宝支付服务端接口]]></title>
-        <id>https://GeekGhc.github.io/post/app-wei-xin-zhi-fu-bao-zhi-fu-fu-wu-duan-jie-kou/</id>
-        <link href="https://GeekGhc.github.io/post/app-wei-xin-zhi-fu-bao-zhi-fu-fu-wu-duan-jie-kou/">
-        </link>
-        <updated>2017-06-12T12:07:17.000Z</updated>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Redis在项目中的应用实例]]></title>
-        <id>https://GeekGhc.github.io/post/redis-zai-xiang-mu-zhong-de-ying-yong-shi-li/</id>
-        <link href="https://GeekGhc.github.io/post/redis-zai-xiang-mu-zhong-de-ying-yong-shi-li/">
-        </link>
-        <updated>2017-06-03T03:46:52.000Z</updated>
     </entry>
 </feed>
