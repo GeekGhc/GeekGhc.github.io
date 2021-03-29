@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://GeekGhc.github.io</id>
     <title>GeekGhc&apos;s Story</title>
-    <updated>2021-03-28T12:56:39.434Z</updated>
+    <updated>2021-03-29T16:24:30.653Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://GeekGhc.github.io"/>
     <link rel="self" href="https://GeekGhc.github.io/atom.xml"/>
@@ -18,11 +18,25 @@
         <updated>2021-03-28T12:42:39.000Z</updated>
     </entry>
     <entry>
+        <title type="html"><![CDATA[MySQL · 最佳实践 · 分区表基本类型(转载)]]></title>
+        <id>https://GeekGhc.github.io/post/mysql-zui-jia-shi-jian-fen-qu-biao-ji-ben-lei-xing-zhuan-zai/</id>
+        <link href="https://GeekGhc.github.io/post/mysql-zui-jia-shi-jian-fen-qu-biao-ji-ben-lei-xing-zhuan-zai/">
+        </link>
+        <updated>2018-11-01T16:18:31.000Z</updated>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[Kafka的实践和使用]]></title>
         <id>https://GeekGhc.github.io/post/kafka-de-shi-jian-he-shi-yong/</id>
         <link href="https://GeekGhc.github.io/post/kafka-de-shi-jian-he-shi-yong/">
         </link>
         <updated>2018-10-24T13:26:54.000Z</updated>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Mysql数据库的主从复制和读写分离]]></title>
+        <id>https://GeekGhc.github.io/post/mysql-shu-ju-ku-de-zhu-cong-fu-zhi-he-du-xie-fen-chi/</id>
+        <link href="https://GeekGhc.github.io/post/mysql-shu-ju-ku-de-zhu-cong-fu-zhi-he-du-xie-fen-chi/">
+        </link>
+        <updated>2018-10-01T16:20:45.000Z</updated>
     </entry>
     <entry>
         <title type="html"><![CDATA[HomeStead通过docker配置mysql容器]]></title>
@@ -65,19 +79,5 @@
         <link href="https://GeekGhc.github.io/post/laravel-passport-zhi-api-shou-quan/">
         </link>
         <updated>2017-08-01T05:01:33.000Z</updated>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Laravel5.5新特性之Blade::if 自定义指令]]></title>
-        <id>https://GeekGhc.github.io/post/laravel55-xin-te-xing-zhi-bladeif-zi-ding-yi-zhi-ling/</id>
-        <link href="https://GeekGhc.github.io/post/laravel55-xin-te-xing-zhi-bladeif-zi-ding-yi-zhi-ling/">
-        </link>
-        <updated>2017-07-27T12:46:41.000Z</updated>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Laravel5.5新特性之邮件模板浏览器查看]]></title>
-        <id>https://GeekGhc.github.io/post/laravel55-xin-te-xing-zhi-you-jian-mo-ban-liu-lan-qi-cha-kan/</id>
-        <link href="https://GeekGhc.github.io/post/laravel55-xin-te-xing-zhi-you-jian-mo-ban-liu-lan-qi-cha-kan/">
-        </link>
-        <updated>2017-07-27T12:44:07.000Z</updated>
     </entry>
 </feed>
