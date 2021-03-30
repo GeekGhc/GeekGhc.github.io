@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://GeekGhc.github.io</id>
     <title>GeekGhc&apos;s Story</title>
-    <updated>2021-03-29T16:24:30.653Z</updated>
+    <updated>2021-03-30T16:44:33.447Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://GeekGhc.github.io"/>
     <link rel="self" href="https://GeekGhc.github.io/atom.xml"/>
@@ -18,11 +18,32 @@
         <updated>2021-03-28T12:42:39.000Z</updated>
     </entry>
     <entry>
+        <title type="html"><![CDATA[Redis分布式集群]]></title>
+        <id>https://GeekGhc.github.io/post/redis-fen-bu-shi-ji-qun/</id>
+        <link href="https://GeekGhc.github.io/post/redis-fen-bu-shi-ji-qun/">
+        </link>
+        <updated>2019-03-02T15:29:36.000Z</updated>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Redis基本高级特性以及性能调优(转载)]]></title>
+        <id>https://GeekGhc.github.io/post/redis-ji-ben-gao-ji-te-xing-yi-ji-xing-neng-diao-you-zhuan-zai/</id>
+        <link href="https://GeekGhc.github.io/post/redis-ji-ben-gao-ji-te-xing-yi-ji-xing-neng-diao-you-zhuan-zai/">
+        </link>
+        <updated>2019-02-12T15:28:29.000Z</updated>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[MySQL · 最佳实践 · 分区表基本类型(转载)]]></title>
         <id>https://GeekGhc.github.io/post/mysql-zui-jia-shi-jian-fen-qu-biao-ji-ben-lei-xing-zhuan-zai/</id>
         <link href="https://GeekGhc.github.io/post/mysql-zui-jia-shi-jian-fen-qu-biao-ji-ben-lei-xing-zhuan-zai/">
         </link>
         <updated>2018-11-01T16:18:31.000Z</updated>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[聊聊PHP中实现的依赖注入(Di)实现]]></title>
+        <id>https://GeekGhc.github.io/post/liao-liao-php-zhong-shi-xian-de-yi-lai-zhu-ru-dishi-xian/</id>
+        <link href="https://GeekGhc.github.io/post/liao-liao-php-zhong-shi-xian-de-yi-lai-zhu-ru-dishi-xian/">
+        </link>
+        <updated>2018-10-28T15:25:06.000Z</updated>
     </entry>
     <entry>
         <title type="html"><![CDATA[Kafka的实践和使用]]></title>
@@ -53,31 +74,10 @@
         <updated>2018-03-12T12:50:44.000Z</updated>
     </entry>
     <entry>
-        <title type="html"><![CDATA[laravel5.5 之Api Resource]]></title>
-        <id>https://GeekGhc.github.io/post/laravel55-zhi-api-resource/</id>
-        <link href="https://GeekGhc.github.io/post/laravel55-zhi-api-resource/">
+        <title type="html"><![CDATA[QueryList-PHP的采集利器]]></title>
+        <id>https://GeekGhc.github.io/post/querylist-php-de-cai-ji-li-qi/</id>
+        <link href="https://GeekGhc.github.io/post/querylist-php-de-cai-ji-li-qi/">
         </link>
-        <updated>2017-09-10T03:45:44.000Z</updated>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[LaraDocker 在Docker中轻松运行你的laravel项目]]></title>
-        <id>https://GeekGhc.github.io/post/laradocker-zai-docker-zhong-qing-song-yun-xing-ni-de-laravel-xiang-mu/</id>
-        <link href="https://GeekGhc.github.io/post/laradocker-zai-docker-zhong-qing-song-yun-xing-ni-de-laravel-xiang-mu/">
-        </link>
-        <updated>2017-08-24T04:42:43.000Z</updated>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[GitLab [Webhooks] 实现自动化服务器部署]]></title>
-        <id>https://GeekGhc.github.io/post/gitlab-webhooks-shi-xian-zi-dong-hua-fu-wu-qi-bu-shu/</id>
-        <link href="https://GeekGhc.github.io/post/gitlab-webhooks-shi-xian-zi-dong-hua-fu-wu-qi-bu-shu/">
-        </link>
-        <updated>2017-08-08T13:21:53.000Z</updated>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Laravel Passport 之API授权]]></title>
-        <id>https://GeekGhc.github.io/post/laravel-passport-zhi-api-shou-quan/</id>
-        <link href="https://GeekGhc.github.io/post/laravel-passport-zhi-api-shou-quan/">
-        </link>
-        <updated>2017-08-01T05:01:33.000Z</updated>
+        <updated>2017-10-12T15:27:32.000Z</updated>
     </entry>
 </feed>
