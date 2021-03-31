@@ -1,0 +1,386 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>使用VueJs开发SPA应用 | GeekGhc&#39;s Story</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1617192603933">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Story
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1617192603933"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    使用VueJs开发SPA应用
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-02-10 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/Ynq0DwGia/" class="post-tags">
+                            # Vue
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>对于近年来火热的SPA 我们可以有多种解决方案 现在我们可以尝试着用vueJs去开发我们的SPA应用</p>
+<blockquote>
+<p>因为最近自己正在开发类似知加这样的一款应用 利用好自己已学的<code>vueJs</code>和<code>SPA</code>相关的知识 😝</p>
+</blockquote>
+<h2 id="介绍">介绍</h2>
+<p>因为最近也在学习和开发自己的SPA应用 项目开始也有一段时间了 整个过程实现起来还是会有点问题的 当然写代码这也是一个过程啦</p>
+<h2 id="1集成ueditor">1.集成<code>UEditor</code></h2>
+<p>1.其实有很多这样的文本编辑器 例如我找到的两款:</p>
+<ul>
+<li><a href="http://ueditor.baidu.com/website/index.html">UEditor</a> 也就是我准备引入的富文本编辑器</li>
+<li><a href="https://quilljs.com/">Quill</a>  个人感觉还是比较好看的 😝</li>
+</ul>
+<p>但我发现好像还是百度的<code>UEditor</code>用的比较多点 其实自己也想到就是文档资料找起来比较方便 这样处理问题也很快</p>
+<p>当然后面的话我还是想再去集成其他的文本编辑器 尽管这款编辑器功能还是很强大的 但是我发现我并没有这么多的需求 顺便也多一种体验嘛<br>
+(功能和样式选项都是可以配置的 在下面我也会给出我的一些配置项)</p>
+<p><a href="http://fex.baidu.com/ueditor/#start-config">官方配置文档</a></p>
+<p>2.开始集成<code>UEditor</code></p>
+<p>来到我们的官网的下载<a href="http://ueditor.baidu.com/website/download.html">http://ueditor.baidu.com/website/download.html</a> 我下载的是<br>
+<code>PHP</code>最新版本的 因为后端处理还是会交给<code>PHP</code>去处理</p>
+<p>下载完成后我将文件放在了根目录的<code>static</code>文件夹下</p>
+<p>然后去<code>components</code>文件夹下我在公共目录<code>common</code>(这是我自己创建的)创建了<code>Ueditor.vue</code>组件<br>
+内容期初是这样:</p>
+<pre><code class="language-php?start_inline=1">&lt;template&gt;
+    &lt;div id=&quot;ueditor&quot;&gt;
+        &lt;div ref=&quot;editor&quot; id=&quot;editor&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/template&gt;
+&lt;script&gt;
+    import '../../../static/ueditor/ueditor.config.js'
+    import '../../../static/ueditor/ueditor.all.js'
+    import '../../../static/ueditor/lang/zh-cn/zh-cn.js'
+    export default{
+        data(){
+            return{
+              edtior: null
+            }
+        },
+        mounted() {
+            this.editor = UE.getEditor(this.$refs.editor.id);
+        },
+        beforeDestroy() {
+            if(this.editor) {
+            this.editor.destroy();
+           }
+        },
+        components:{
+        }
+    }
+&lt;/script&gt;
+</code></pre>
+<p>当然这个时候是引用不到的 还得去配置一下<code>UEDITOR_HOME_URL</code>(文件路径)<br>
+这个实在集成进来的<code>UEditor</code>下面的<code>ueditor.config.js</code>里面:</p>
+<pre><code class="language-php?start_inline=1"> // var URL = window.UEDITOR_HOME_URL || getUEBasePath();
+    var URL = window.UEDITOR_HOME_URL || &quot;/static/ueditor/&quot;;
+</code></pre>
+<p>最后可以在页面看到成功显示:</p>
+<figure data-type="image" tabindex="1"><img src="https://GeekGhc.github.io/post-images/1617192372385.png" alt="" loading="lazy"></figure>
+<blockquote>
+<p>如果显示加载文件路径问题 基本上是<code>UEDITOR_HOME_URL</code>路径的配置出错了</p>
+</blockquote>
+<p>3.配置富文本编辑器<br>
+先去配置下前端的内容(后端的话主要涉及到图片的上传等)</p>
+<p>这里我集成了<code>JellyBool</code>在<code>github</code>上的一个<code>Package</code> <a href="https://github.com/JellyBool/simple-ueditor">https://github.com/JellyBool/simple-ueditor</a></p>
+<blockquote>
+<p>对样式图标进行了一定的优化(你可以直接拿过来替换你的<code>ueditor</code>文件目录就行 当然还是要去配置一下前面提到的文件路径)</p>
+</blockquote>
+<p>最后的效果大概是这样的(这里以集成到我的项目里为例)</p>
+<figure data-type="image" tabindex="2"><img src="https://GeekGhc.github.io/post-images/1617192384007.png" alt="" loading="lazy"></figure>
+<blockquote>
+<p>我个人在学习<code>Laravel</code>时就是在<code>JellyBool</code>这位大神的站点<a href="https://www.laravist.com/">Laravist</a>学习的 给了我很大的触动也学习到了不少的知识和想法<br>
+真的觉得对于技术和学习是一件你只要愿意花时间花精力 你就会体会到你想要的充实感和快乐  <strong>Fighting!!!</strong> 😆</p>
+</blockquote>
+<p>接下来即使最基本的登录注册过程 这个在之后我会给出了解决方案</p>
+<blockquote>
+<p>项目总是一步一步来进行 期间肯定会遇到各种的坑 但肯定也会学习到很多 这篇也算是开个好头吧</p>
+</blockquote>
+<ul>
+<li><a href="http://jellybook.me/articles/2017/02/light-weight-vue-validation">登录注册</a></li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/git-flow-kai-fa-shi-yong-zi-shi/" class="post-title gt-a-link">
+                    git-flow开发使用姿势
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/shi-yong-vuejs-kai-fa-spa-ying-yong/" class="leancloud_visitors" data-flag-title="使用VueJs开发SPA应用">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>
