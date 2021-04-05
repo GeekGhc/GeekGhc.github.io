@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://GeekGhc.github.io</id>
     <title>GeekGhc&apos;s Story</title>
-    <updated>2021-04-05T03:33:44.149Z</updated>
+    <updated>2021-04-05T03:35:31.162Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://GeekGhc.github.io"/>
     <link rel="self" href="https://GeekGhc.github.io/atom.xml"/>
@@ -10,13 +10,6 @@
     <logo>https://GeekGhc.github.io/images/avatar.png</logo>
     <icon>https://GeekGhc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, GeekGhc&apos;s Story</rights>
-    <entry>
-        <title type="html"><![CDATA[Laravel5.5新特性之自定义验证规则]]></title>
-        <id>https://GeekGhc.github.io/post/laravel55-xin-te-xing-zhi-zi-ding-yi-yan-zheng-gui-ze/</id>
-        <link href="https://GeekGhc.github.io/post/laravel55-xin-te-xing-zhi-zi-ding-yi-yan-zheng-gui-ze/">
-        </link>
-        <updated>2021-03-28T12:42:39.000Z</updated>
-    </entry>
     <entry>
         <title type="html"><![CDATA[Redis分布式集群]]></title>
         <id>https://GeekGhc.github.io/post/redis-fen-bu-shi-ji-qun/</id>
@@ -79,5 +72,12 @@
         <link href="https://GeekGhc.github.io/post/homestead-tong-guo-docker-pei-zhi-mysql-rong-qi/">
         </link>
         <updated>2018-05-12T13:14:15.000Z</updated>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Laravel5.5新特性之自定义验证规则]]></title>
+        <id>https://GeekGhc.github.io/post/laravel55-xin-te-xing-zhi-zi-ding-yi-yan-zheng-gui-ze/</id>
+        <link href="https://GeekGhc.github.io/post/laravel55-xin-te-xing-zhi-zi-ding-yi-yan-zheng-gui-ze/">
+        </link>
+        <updated>2018-03-28T12:42:39.000Z</updated>
     </entry>
 </feed>
