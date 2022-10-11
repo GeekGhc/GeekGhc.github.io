@@ -1,0 +1,443 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>VueJs处理后端Laravel Api | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1665492377748">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1665492377748"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    VueJs处理后端Laravel Api
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2016-12-07 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/Ynq0DwGia/" class="post-tags">
+                            # Vue
+                        </a>
+                    
+                        <a href="https://GeekGhc.github.io/tag/9-TzKRzh4/" class="post-tags">
+                            # Api
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>用vueJs实现组件化时，我们可以在项目中引入后端API的概念，在这里我们就是去处理利用Laravel提供的后端API去实现我们通常说的前后端分离</p>
+<h2 id="1后端提供api">1.后端提供<strong>API</strong></h2>
+<p>在用<code>vue-cli</code>构建好我们的项目 并且实现<code>vueJs</code>组件化.下面我们可以去尝试从后端的提供的<code>API</code>来获取我们前端需要的数据<br>
+因为我们的数据不可能都是预先写好在我们的组件里的</p>
+<blockquote>
+<p>而后端的话就用我熟悉的Laravel项目作为Api的提供者</p>
+</blockquote>
+<p>这样一来也就实现了我们通常所说的前后端分离</p>
+<p>假设这样的一个应用场景就是任务管理系统(想来想去感觉还是这个应用场景比较容易理解):</p>
+<p>我们需要：</p>
+<ul>
+<li>Todo component(每一个任务 当然也可以执行删除和已完成的状态)</li>
+<li>Todos component(所有任务)</li>
+<li>TodoForm component(添加任务)</li>
+</ul>
+<p>在后端我们可以执行</p>
+<pre><code>$ php artisan make:model Todo -m
+</code></pre>
+<p>去生成我们的任务表 然后在数据库里生成一定的测试数据<br>
+其中todos表的结构是这样的:</p>
+<pre><code class="language-php?start_inline=1">Schema::create('todos', function (Blueprint $table) {
+            $table-&gt;increments('id');
+            $table-&gt;string('title');
+            $table-&gt;boolean('completed')-&gt;default(false);
+            $table-&gt;timestamps();
+});
+</code></pre>
+<p>定义好表的内容结构之后 我们去完成一些我们的<code>Factory</code>:</p>
+<pre><code class="language-php?start_inline=1">$factory-&gt;define(App\Todo::class, function (Faker\Generator $faker) {
+    return [
+        'title' =&gt; $faker-&gt;paragraph,
+    ];
+});
+</code></pre>
+<p>当然不要忘了在<code>Todo model</code>里去声明我们的<code>fillable</code>:</p>
+<pre><code class="language-php?start_inline=1"> class Todo extends Model
+ {
+     protected $fillable = ['title'];
+ }
+
+</code></pre>
+<p>完成之后去用我们的<code>tinker</code>去生成大概<strong>10</strong>条数据(这里就不作介绍)</p>
+<p>生成完毕我们的数据之后我们需要在<code>routes</code>的<code>api.php</code>里给出我们的数据:</p>
+<pre><code class="language-php?start_inline=1">Route::get('/todos',function(){
+    $todos = Todo::all();
+    return $todos;
+})-&gt;middleware('api');
+</code></pre>
+<p>有了数据之后我们在前端<code>VueJs</code>项目的组件里就要去获取我们提供的<code>api</code>里的数据<br>
+这里就是我们的App.vue里需要我们后端提供的数据:</p>
+<pre><code class="language-php?start_inline=1">export default{
+        computed: {
+            //todos就需要我们后端传过来的数据
+            todos () {
+               ...
+            }
+        },  
+    }
+</code></pre>
+<p>这样才算完成我们前后端的一个流程 😆</p>
+<h2 id="2前端去处理后端数据">2.前端去处理后端数据</h2>
+<p>1.后端的数据已经准备好 这时我们的<code>vueJs</code>项目就需要发起<code>http</code>请求去得到我们的数据</p>
+<p><code>vueJs</code>之前官方推荐的是使用<a href="https://github.com/pagekit/vue-resource">vue-resource</a> 但是后来作者有给我们推荐了<a href="https://github.com/mzabriskie/axios">vue-axios</a><br>
+使用这个package的话我们去执行:</p>
+<blockquote>
+<p>如果你只需要在<code>vueJs</code>项目区使用<code>axios</code>的话就使用这个<code>package</code> 这个在之前的<code>package</code>做了一定的<strong>vue兼容</strong><br>
+<a href="https://github.com/imcvampire/vue-axios">https://github.com/imcvampire/vue-axios</a></p>
+</blockquote>
+<pre><code>$ npm install --save axios vue-axios
+</code></pre>
+<p>安装完成之后我们就可以在我们的<code>main.js</code>去添加配置:</p>
+<pre><code class="language-php?start_inline=1">import axios from 'axios'
+import VueAxios from 'vue-axios'
+
+//去声明下这个package
+Vue.use(VueAxios, axios)
+</code></pre>
+<p>现在我们就可以去<code>App.vue</code>里的<code>mounted</code>使用我们刚刚引入的<code>package</code>：</p>
+<pre><code class="language-php?start_inline=1">export default {
+  name: 'app',
+  mounted(){
+    this.axios.get('http://localhost:8000/api/todos').then(response =&gt; {
+        //获取我们后端api的数据(response.data)  
+        ...
+    })
+   },
+  components: {
+    Hello
+  }
+}
+</code></pre>
+<p>至于<code>this.axios.get()</code>这个用法其实和我们<code>vue-resource</code>的<code>tihs.$http.get()</code>的用法是差不多的<br>
+而这个<code>package</code>在<code>github</code>上也给出了用法</p>
+<blockquote>
+<p>这个时候我们发现并不能成功获取到我们的数据 是因为涉及到<strong>跨域</strong>这个问题 当然在<code>laravel</code>也有<code>package</code>给出了解决方案<br>
+<a href="https://github.com/barryvdh/laravel-cors">https://github.com/barryvdh/laravel-cors</a></p>
+</blockquote>
+<p>这个<code>package</code>就是去解决<code>laravel</code>作为后端api跨域的问题</p>
+<p>安装的话参照<code>github</code>上的步骤就行了</p>
+<p>安装完毕之后我们在<strong>路由</strong>上需要去添加我们的<code>cors</code>这个<code>middleware</code>:</p>
+<pre><code class="language-php?start_inline=1">Route::get('/todos',function(){
+    $todos = Todo::all();
+    return $todos;
+})-&gt;middleware('api','cors');
+</code></pre>
+<p>添加完毕之后再去刷新我们的浏览器 我们发现数据已经成功获取到了</p>
+<p>他会返回相应的我们之前生成的<strong>10</strong>条测试数据的<code>object</code></p>
+<p>2.拿到我们的数据后我们就去在vueJs项目中去展示<br>
+我们去初始化我们的<code>todos</code>为一个空的数组 在拿到后端数据后再赋予给我们的<code>todos</code>:</p>
+<pre><code class="language-php?start_inline=1">export default {
+  name: 'app',
+  data(){
+  todos:[]
+  },
+  mounted(){
+  this.axios.get('http://localhost:8000/api/todos').then(response =&gt; {
+    this.todos = response.data
+    })
+   },
+  components: {
+    Hello
+  }
+}
+</code></pre>
+<p>已经拿到我们后端的API数据 并且已经存放在<code>todos</code>里 接下来怎么去展示就是看业务的要求了</p>
+<p>到这我们其实就实现了以<code>vueJs</code>作为前端项目 <code>laravel</code>作为后端<code>API</code> 的前后端分离这种开发模式了</p>
+<p>这样的话我们只需要后端去提供<code>API</code> 前端去请求我们的<code>API去</code>获取所需要的数据并在前端进行渲染展示</p>
+<p>我们后端只需要去关心前端需要什么的数据并去提供这个<code>API</code> 而我们的前端则是要去关心怎么渲染这些数据</p>
+<blockquote>
+<p>当然这只是获取到我们所有的数据 我们的业务要求肯定远不止这些 比如我们对数据的<code>CURD</code>这些其实我们都可以通过类似的<br>
+形式去实现 但总的来说我们前后端的业务就是这样的一个处理流程</p>
+</blockquote>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/vue-shi-yong-jiao-shou-jia-jin-xing-zu-jian-hua-kai-fa/" class="post-title gt-a-link">
+                    Vue使用脚手架进行组件化开发
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/vuejs-chu-li-hou-duan-laravel-api/" class="leancloud_visitors" data-flag-title="VueJs处理后端Laravel Api">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

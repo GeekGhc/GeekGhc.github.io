@@ -1,0 +1,685 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>轻松部署你的PHP7运行环境 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1665492377748">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1665492377748"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    轻松部署你的PHP7运行环境
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-04-28 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/VS6MQaBI8/" class="post-tags">
+                            # Linux
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>在部署一个服务器时 我们可以有多种选择 比如apache和nginx 在这些选择之中 每个人都有最终的一个目的就是部署好环境 发布自己的项目网站  这里就对Nginx+PHP7+Mysql+phpmyadmin的安装做一个总结</p>
+<h2 id="简介">简介</h2>
+<p>对于有时候服务器的安装部署 每次有的过程忘记总得再把之前的笔记再找出来 现在将整个流程做一个整理</p>
+<p>结合自己以前遇到的各种坑和实践经验吧  这样也方便以后少浪费点时间在查找各种笔记 😄</p>
+<h2 id="集成环境">集成环境</h2>
+<p>如果你嫌这样麻烦这里推荐一个非常实用的集成环境安装(也算是一个彩蛋喽)</p>
+<p><a href="https://oneinstack.com/">https://oneinstack.com/</a></p>
+<p>当然如果你想自己手动安装的话就继续看看下面的文章吧</p>
+<h2 id="服务目录">服务目录</h2>
+<ul>
+<li>Nginx      /etc/nginx</li>
+<li>Mysql      /var/lib/mysql</li>
+<li>php7.1     /usr/local/php</li>
+<li>php-fpm    /usr/local/bin/php-fpm</li>
+<li>phpmyadmin /data/www/phpmyadmin</li>
+<li>站点根目录  /data/www/</li>
+</ul>
+<h2 id="安装nginx">安装nginx</h2>
+<pre><code class="language-shell">$ sudo yum install nginx
+</code></pre>
+<blockquote>
+<p>这里你可以选择编译安装或者这种仓库的形式安装 编译安装的可选择性更好 你可以安装到指定的目录</p>
+<p>比如我们一般或放在<code>/usr/local/nginx</code></p>
+</blockquote>
+<p>这里采用的是包的安装  此时<code>nginx</code>安装在<code>/etc/nginx</code> 安装完毕之后</p>
+<pre><code class="language-shell">$ nginx -v
+</code></pre>
+<p><code>Nginx</code>服务的一些命令形式</p>
+<pre><code class="language-shell">$ systemctl restart nginx
+$ systemctl stop nginx
+$ systemctl start nginx
+</code></pre>
+<p>设置开机启动</p>
+<pre><code class="language-shell">$ systemctl enable nginx
+</code></pre>
+<h2 id="安装mysql57">安装Mysql57</h2>
+<p>1.下载 <code>mysql57-community-release-el7-8.noarch.rpm</code> 的 <code>YUM</code> 源：</p>
+<pre><code class="language-shell">$ yum install mysql57-community-release-el7-8.noarch.rpm
+</code></pre>
+<pre><code class="language-shell">$ wget http://repo.mysql.com/mysql57-community-release-el7-8.noarch.rpm
+</code></pre>
+<p>2.查看<code>mysql</code>源是否安装成功</p>
+<pre><code class="language-shell">$ yum repolist enabled | grep &quot;mysql.*-community.*&quot;
+</code></pre>
+<figure data-type="image" tabindex="1"><img src="https://GeekGhc.github.io/post-images/1617035047753.png" alt="" loading="lazy"></figure>
+<ol>
+<li>安装 <code>MySQL</code>(一路Y就可以)：</li>
+</ol>
+<pre><code class="language-shell">$ yum install mysql-community-server
+</code></pre>
+<p>4.启动Mysql</p>
+<pre><code class="language-shell">$ systemctl start mysqld
+</code></pre>
+<p>5.设置开机启动</p>
+<pre><code class="language-shell">$ systemctl enable mysqld
+$ systemctl daemon-reload
+</code></pre>
+<p>6.接下来就是去修改数据库的密码</p>
+<p><code>mysql</code>安装完成之后，在<code>/var/log/mysqld.log</code>文件中给<code>root</code>生成了一个默认密码。通过下面的方式找到<code>root</code>默认密码，然后登录<code>mysql</code>进行修改：</p>
+<blockquote>
+<p>必须为启动<code>mysql</code>之后</p>
+</blockquote>
+<pre><code class="language-shell">$ grep 'temporary password' /var/log/mysqld.log
+</code></pre>
+<figure data-type="image" tabindex="2"><img src="https://GeekGhc.github.io/post-images/1617035056249.png" alt="" loading="lazy"></figure>
+<p>有了这个密码去登录<code>mysql</code></p>
+<pre><code class="language-shell">$ mysql -u root -p
+</code></pre>
+<blockquote>
+<p><code>mysql5.7</code>默认安装了密码安全检查插件（validate_password），默认密码检查策略要求密码必须包含：<br>
+大小写字母、数字和特殊符号，并且长度不能少于<strong>8</strong>位。否则会提示ERROR 1819 (HY000):<br>
+Your password does not satisfy the current policy requirements错误，</p>
+</blockquote>
+<p>所以这里的解决办法就是要么修改的密码满足他的验证规则 如果你想密码不用那么复杂 那么你就可以去关闭这些验证规则</p>
+<p>7.在<code>/etc/my.cnf</code>文件添加<code>validate_password_policy</code>配置，指定密码策略</p>
+<p>当然你也可以直接关闭验证</p>
+<pre><code class="language-shell">$ vim /etc/my.cnf
+</code></pre>
+<p>接着在末尾添加:</p>
+<pre><code class="language-shell">$ validate_password = off
+</code></pre>
+<p>填写完密码之后就可以登录了  接着设置密码:</p>
+<pre><code class="language-shell">$ set password = password(&quot;xxxx&quot;);
+</code></pre>
+<p>8.重启我们的mysql</p>
+<pre><code class="language-shell">$ systemctl restart mysqld
+</code></pre>
+<p>接下来我们就可以直接使用刚设置的密码去登录服务器的<code>mysql</code>了</p>
+<p>9.一些命令</p>
+<ul>
+<li>启动 MySQL 服务：service mysqld start</li>
+<li>关闭 MySQL 服务：service mysqld stop</li>
+<li>重启 MySQL 服务：service mysqld restart</li>
+<li>查看 MySQL 的状态：service mysqld status  &amp; systemctl status mysqld</li>
+</ul>
+<p>10、添加远程登录用户<br>
+默认只允许<code>root</code>帐户在本地登录，如果要在其它机器上连接<code>mysql</code>，必须修改<code>root</code>允许远程连接，<br>
+或者添加一个允许远程连接的帐户(这种最为理想) 这里我们先给所有用户以权限</p>
+<pre><code class="language-shell">$ grant all privileges on *.* to 'root'@'%' identified by '123456' with grant option;
+# root是用户名，%代表任意主机，'123456'指定的登录密码（这个和本地的root密码可以设置不同的，互不影响）
+$ flush privileges; # 重载系统权限
+$ exit;
+</code></pre>
+<p>12.<code>Centos 7</code> 防火开启<strong>3306</strong>端口</p>
+<p>然后编辑系统的开放端口列表，增加<strong>3306</strong>端口，重启防火墙即可。</p>
+<pre><code class="language-shell">vi /etc/sysconfig/iptables # 加上下面这行规则也是可以的
+-A INPUT -p tcp -m state --state NEW -m tcp --dport 3306 -j ACCEPT
+</code></pre>
+<pre><code class="language-shell">$ iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport 3306 -j ACCEPT
+</code></pre>
+<p>13.配置默认编码为<code>utf8</code><br>
+修改<code>/etc/my.cnf</code>配置文件，在[mysqld]下添加编码配置，如下所示：</p>
+<pre><code class="language-shell">[mysqld]
+character_set_server=utf8
+init_connect='SET NAMES utf8'
+</code></pre>
+<p>14 文件目录:</p>
+<blockquote>
+<p>存放数据库文件的目录  /var/lib/mysql</p>
+<p>默认配置文件路径：   /etc/my.cnf</p>
+<p>日志文件：/var/log//var/log/mysqld.log</p>
+<p>服务启动脚本：/usr/lib/systemd/system/mysqld.service</p>
+<p>socket文件：/var/run/mysqld/mysqld.pid</p>
+</blockquote>
+<h2 id="安装phpmyadmin">安装phpmyadmin</h2>
+<p>1.官网下载</p>
+<p><a href="https://www.phpmyadmin.net/">phpmyadmin</a></p>
+<p>下载完毕之后可以上传到服务器的目录  例如可以放在<code>/root/phpmyadmin/</code></p>
+<p>2.进入目录 解压文件</p>
+<pre><code class="language-shell">$ cd /root/phpmyadmin
+</code></pre>
+<pre><code class="language-shell">$ unzip phpMyAdmin-4.7.0-all-languages.zip
+</code></pre>
+<p>3.移动解压后的文件到站点根目录(<code>nginx</code> 配置的root路径为<code>/data/www</code> ) 比如</p>
+<pre><code class="language-shell">$  mv phpMyAdmin-4.7.0-all-languages /data/www/phpmyadmin
+</code></pre>
+<p>4.修改文件的拥护者</p>
+<pre><code class="language-shell">$ chown root:root /data/www/phpmyadmin
+</code></pre>
+<p>5.这里可能遇到的问题</p>
+<h4 id="提示没有发现指定文件">提示没有发现指定文件</h4>
+<p>如果不存在/var/mysql则创建</p>
+<pre><code class="language-shell">$ sudo mkdir /var/mysql
+</code></pre>
+<p>接着创建一个软连接</p>
+<pre><code class="language-shell">$ sudo ln -s /var/lib/mysql/mysql.sock /var/mysql/mysql.sock
+</code></pre>
+<p>如果你找不到你服务器下的文件 可以查找(以上只是我的目录):</p>
+<pre><code class="language-shell">$ sudo find / -name mysql.sock
+</code></pre>
+<h4 id="需要一个密文">需要一个密文</h4>
+<p>那么在配置文件填入大于32为的字符串就可以了：</p>
+<pre><code class="language-shell">$cfg['blowfish_secret']='';
+</code></pre>
+<p>接着可以在<code>/etc/nginx</code>下去创建<code>phpmyadmin.conf</code> 内容是:</p>
+<pre><code class="language-php?start_inline=1">location /phpMyAdmin {
+    alias /data/www/phpMyAdmin;
+    index index.php;
+    location ~ ^/phpMyAdmin/.+\.php$ {
+        alias /data/www/phpMyAdmin;
+        fastcgi_pass   127.0.0.1:9000;
+        fastcgi_index  index.php;
+        fastcgi_param  SCRIPT_FILENAME /data/www$fastcgi_script_name;
+        include        fastcgi_params;
+    }
+}
+</code></pre>
+<p>接着你可以在<code>nginx.conf</code>里去包含这个配置文件</p>
+<pre><code class="language-php?start_inline=1"> location ~* \.php$ {
+            fastcgi_index   index.php;
+            fastcgi_pass    127.0.0.1:9000;
+            include         fastcgi_params;
+            fastcgi_param   SCRIPT_FILENAME    $document_root$fastcgi_script_name;
+            fastcgi_param   SCRIPT_NAME        $fastcgi_script_name;
+ }
+ include /etc/nginx/phpmyadmin.conf;
+</code></pre>
+<p>接着你可以访问<code>http://example.com/phpmyadmin</code>就可进入<code>phpmyadmin</code>操作数据库了</p>
+<h2 id="编译安装php7">编译安装PHP7</h2>
+<p>1.下载</p>
+<pre><code class="language-php">wget -O php7.tar.gz http://cn2.php.net/get/php-7.1.1.tar.gz/from/this/mirror
+</code></pre>
+<p>2.解压<code>php7</code></p>
+<pre><code class="language-shell">$ tar -xvf php7.tar.gz
+</code></pre>
+<p>3.进入<code>php7</code>目录</p>
+<pre><code class="language-shell">$ cd PHP-7.1.1
+</code></pre>
+<p>4.下载相关依赖</p>
+<pre><code class="language-shell">$ yum install -y libxml2 libxml2-devel openssl openssl-devel bzip2 bzip2-devel libcurl libcurl-devel libjpeg libjpeg-devel libpng libpng-devel freetype freetype-devel gmp gmp-devel libmcrypt libmcrypt-devel readline readline-devel libxslt libxslt-devel
+</code></pre>
+<p>5.当然在编译安装之前 需要下载<code>gcc</code>编译</p>
+<pre><code class="language-shell">$ yum install -y gcc
+</code></pre>
+<p>6.编译配置</p>
+<pre><code class="language-shell">./configure \ 
+--prefix=/usr/local/php \
+--with-config-file-path=/usr/local/php/etc \
+--exec-prefix=/usr/local/php \
+--bindir=/usr/local/php/bin \
+--sbindir=/usr/local/php/sbin \
+--includedir=/usr/local/php/include \
+--libdir=/usr/local/php/lib/php \
+--mandir=/usr/local/php/php/man \
+--enable-fpm \
+--with-fpm-user=nginx \
+--with-fpm-group=nginx \
+--enable-inline-optimization \
+--disable-debug \
+--disable-rpath \
+--enable-shared \
+--enable-soap \
+--with-libxml-dir \
+--with-xmlrpc \
+--with-openssl \
+--with-mcrypt \
+--with-mhash \
+--with-pcre-regex \
+--with-sqlite3 \
+--with-zlib \
+--enable-bcmath \
+--with-iconv \
+--with-bz2 \
+--enable-calendar \
+--with-curl \
+--with-cdb \
+--enable-dom \
+--enable-exif \
+--enable-fileinfo \
+--enable-filter \
+--with-pcre-dir \
+--enable-ftp \
+--with-gd \
+--with-openssl-dir \
+--with-jpeg-dir \
+--with-png-dir \
+--with-zlib-dir \
+--with-freetype-dir \
+--enable-gd-native-ttf \
+--enable-gd-jis-conv \
+--with-gettext \
+--with-gmp \
+--with-mhash \
+--enable-json \
+--enable-mbstring \
+--enable-mbregex \
+--enable-mbregex-backtrack \
+--with-libmbfl \
+--with-onig \
+--enable-pdo \
+--with-mysql=mysqlnd \ 
+--with-mysqli=mysqlnd \
+--with-pdo-mysql=mysqlnd \                    
+--with-zlib-dir \
+--with-pdo-sqlite \
+--with-readline \
+--enable-session \
+--enable-shmop \
+--enable-simplexml \
+--enable-sockets \
+--enable-sysvmsg \
+--enable-sysvsem \
+--enable-sysvshm \
+--enable-wddx \
+--with-libxml-dir \
+--with-xsl \
+--enable-zip \
+--enable-mysqlnd-compression-support \
+--with-pear \
+--enable-opcache
+</code></pre>
+<p>整理之后可以在服务器里面执行</p>
+<pre><code class="language-shell">./configure  --prefix=/usr/local/php --exec-prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --bindir=/usr/local/php/bin --sbindir=/usr/local/php/sbin
+ --includedir=/usr/local/php/include --libdir=/usr/local/php/lib/php --mandir=/usr/local/php/php/man --enable-fpm --with-fpm-user=nginx --with-fpm-group=nginx 
+ --enable-inline-optimization --disable-debug --disable-rpath --enable-shared --enable-soap --with-libxml-dir --with-xmlrpc --with-openssl --with-mcrypt --with-mhash 
+ --with-pcre-regex --with-sqlite3 --with-zlib --enable-bcmath --with-iconv --with-bz2 --enable-calendar 
+--with-curl --with-cdb --enable-dom --enable-exif --enable-fileinfo --enable-filter --with-pcre-dir --enable-ftp --with-gd --with-openssl-dir --with-jpeg-dir 
+--with-png-dir --with-zlib-dir --with-freetype-dir --enable-gd-native-ttf --enable-gd-jis-conv --with-gettext --with-gmp --with-mhash --enable-json --enable-mbstring 
+--enable-mbregex --enable-mbregex-backtrack --with-libmbfl --with-onig --enable-pdo --with-mysql=mysqlnd  --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd  --with-zlib-dir
+--with-pdo-sqlite --with-readline --enable-session --enable-shmop --enable-simplexml --enable-sockets
+--enable-sysvmsg --enable-sysvsem --enable-sysvshm --enable-wddx --with-libxml-dir --with-xsl --enable-zip --enable-mysqlnd-compression-support --with-pear --enable-opcach
+</code></pre>
+<p>从配置中看到</p>
+<pre><code class="language-shell">--prefix=/usr/local/php \
+</code></pre>
+<p>所以最终的<code>php</code>安装目录为 <code>/usr/local/php</code></p>
+<p>配置文件设置</p>
+<pre><code class="language-shell">$ --with-config-file-path=/usr/local/php/etc \
+</code></pre>
+<p>配置文件放在<code>usr/local/php/etc</code></p>
+<p>7.正式安装</p>
+<pre><code class="language-shell">$ make &amp;&amp; make install
+</code></pre>
+<p>8.配置环境变量</p>
+<pre><code class="language-shell">$ vi /etc/profile
+</code></pre>
+<p>在最后加上(也就是我们安装php存放的路径):</p>
+<pre><code class="language-shell">PATH=$PATH:/usr/local/php/bin
+export PATH
+</code></pre>
+<p>执行命令使得改动立即生效</p>
+<pre><code class="language-shell">$ source /etc/profile
+</code></pre>
+<p>10.配置<code>php-fpm</code></p>
+<pre><code class="language-shell">$  cp php.ini-production /usr/local/php/php.ini
+
+$ cp /usr/local/php/etc/php-fpm.conf.default /usr/local/php/etc/php-fpm.conf
+
+cp /usr/local/php/etc/php-fpm.d/www.conf.default /usr/local/php/etc/php-fpm.d/www.conf
+
+cp sapi/fpm/init.d.php-fpm /usr/local/bin/php-fpm
+
+</code></pre>
+<p>所以我们<code>php-fpm</code>的位置为<code>usr/local/bin/php-fom</code></p>
+<p>11.配置<code>php.ini</code></p>
+<p>需要着重提醒的是，如果文件不存在，则阻止<code> Nginx</code> 将请求发送到后端的 <code>PHP-FPM</code> 模块， 以避免遭受恶意脚本注入的攻击。<br>
+将 <code>php.ini</code> 文件中的配置项 <code>cgi.fix_pathinfo</code> 设置为 <strong>0</strong></p>
+<pre><code class="language-shell">vim /usr/local/php/php.ini
+</code></pre>
+<p>定位到 <code>cgi.fix_pathinfo=</code> 并将其修改为如下所示</p>
+<pre><code class="language-shell">cgi.fix_pathinfo=0
+</code></pre>
+<p>编辑<code>nginx.conf</code></p>
+<pre><code class="language-shell"> vim /etc/nginx/nginx.conf
+</code></pre>
+<p>12.<code>php-fpm</code>的一些命令形式</p>
+<pre><code class="language-shell">/usr/local/bin/php-fpm [start | stop | reload]
+</code></pre>
+<h2 id="部署ssl证书">部署ssl证书</h2>
+<pre><code class="language-php?start_inline=1">    server {
+        listen       443 ssl http2 default_server;
+        server_name  www.example.com;
+        root         /data/www;  #站点的根目录
+
+        ssl on;
+        ssl_certificate &quot;/usr/ssl/1_www.example.com_bundle.crt&quot;;
+        ssl_certificate_key &quot;/usr/ssl/2_www.example.com.key&quot;;
+        ssl_session_cache shared:SSL:1m;
+        ssl_session_timeout  5m;
+        ssl_ciphers HIGH:!aNULL:!MD5;
+        ssl_prefer_server_ciphers on;
+
+        # Load configuration files for the default server block.
+        include /etc/nginx/default.d/*.conf;
+
+        location / {
+            index  index.php  index.html index.htm;
+        }
+
+        error_page 404 /404.html;
+            location = /40x.html {
+        }
+
+        error_page 500 502 503 504 /50x.html;
+            location = /50x.html {
+        }
+    }
+</code></pre>
+<blockquote>
+<p>这里的证书和解密后的私钥文件放在<code>/usr/ssl/</code>目录下<br>
+每个证书的提供商可能提供的形式不一样 不过最终我们需要的就是颁发的证书和解密后的私钥文件</p>
+</blockquote>
+<h3 id="相关链接文档">相关链接文档</h3>
+<p>Mysql</p>
+<ul>
+<li><a href="http://www.centoscn.com/mysql/2016/0626/7537.html">http://www.centoscn.com/mysql/2016/0626/7537.html</a></li>
+<li><a href="http://www.linuxidc.com/Linux/2016-09/135288.htm">http://www.linuxidc.com/Linux/2016-09/135288.htm</a></li>
+<li><a href="http://www.linuxidc.com/Linux/2016-06/132676.htm">http://www.linuxidc.com/Linux/2016-06/132676.htm</a></li>
+</ul>
+<p>PHP</p>
+<ul>
+<li><a href="http://php.net/manual/zh/install.unix.nginx.php">http://php.net/manual/zh/install.unix.nginx.php</a></li>
+<li><a href="http://www.jb51.net/article/109228.htm">http://www.jb51.net/article/109228.htm</a></li>
+<li><a href="http://blog.csdn.net/dglxsong/article/details/52075918">http://blog.csdn.net/dglxsong/article/details/52075918</a></li>
+<li><a href="http://blog.csdn.net/u014595668/article/details/50188127">http://blog.csdn.net/u014595668/article/details/50188127</a></li>
+</ul>
+<p>SSL证书<br>
+<a href="https://www.qcloud.com/document/product/400/4143">腾讯云的证书配置</a></p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/qing-song-bu-shu-ni-de-xiang-mu-deployer/" class="post-title gt-a-link">
+                    轻松部署你的项目-Deployer
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/qing-song-bu-shu-ni-de-php7-yun-xing-huan-jing/" class="leancloud_visitors" data-flag-title="轻松部署你的PHP7运行环境">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>
