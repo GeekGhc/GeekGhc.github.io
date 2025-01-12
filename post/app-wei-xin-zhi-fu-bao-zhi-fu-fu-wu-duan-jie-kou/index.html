@@ -1,0 +1,583 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>APP微信支付宝支付服务端接口 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    APP微信支付宝支付服务端接口
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-06-12 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/asFM02U4E/" class="post-tags">
+                            # Tools
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>作为App涉及到的支付业务 必然的也会需要服务端去操作相应的接口逻辑 当然服务端可以使用我们的laravel去完成这些接口的功能</p>
+<h2 id="简介">简介</h2>
+<p>对于移动端开发来说 <code>app</code>集成支付服务对很多软件来说是必不可少的  其实整个过程描述起来就是在服务端用户在<code>app</code>上发起支付请求</p>
+<p>在这个过程中看起来只是一个支付密码的确认的过程 但是这其中包括微信服务商 客户端 服务端的后台服务这些都经历了几个很重要的过程</p>
+<p>而在服务端我们需要对请求进行操作 返回和处理相应的数据  当然这些数据可能是用户发起来的也有可能是微信或者支付宝回馈给我们的</p>
+<h2 id="选择">选择</h2>
+<p>对于服务端<code>api</code>的请求 我们完全可以使用<code>laravel</code>是处理这些接口  其实很多公司的接口大都<code>php</code>编写 不仅是因为<code>php</code>操作数据的简单方便</p>
+<p>还有就是如今<code>php</code>对于处理<code>api</code>有完整的开源库 就比如对于<code>restful api</code>我们可以在<code>laravel</code>项目里集成<code>dingo Api</code></p>
+<blockquote>
+<p>这里的内容在我的另一篇博客 <a href="http://jellybook.me/articles/2017/03/laravel-jwt-api">Laravel API结合Dingo API和JWT</a></p>
+</blockquote>
+<h2 id="微信支付">微信支付</h2>
+<h4 id="准备工作">准备工作</h4>
+<p>一开始当然是去微信的开发文档 了解下一些接口的具体参数信息  <a href="https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=8_1">App开发者文档</a></p>
+<p>对于整个流程交互 先来一张微信提供的交互时序图</p>
+<figure data-type="image" tabindex="1"><img src="https://GeekGhc.github.io/post-images/1616760518135.png" alt="" loading="lazy"></figure>
+<h4 id="交互流程">交互流程</h4>
+<p>理解这个交互流程还是很重要的  之前也提到过 无论是微信支付还是支付宝支付 有几个流程是不可少的</p>
+<p>1.用户在客户端<code>APP</code>选择商品 生成订单信息 选择微信支付方式</p>
+<p>2.商户后台收到用户支付单，调用微信支付统一下单接口 参见<a href="https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_1">统一下单API</a></p>
+<p>3.统一下单接口返回正常的<code>prepay_id</code>，再按签名规范重新生成签名后，将数据传输给客户端<code>APP</code>。<br>
+参与签名的字段名为<code>appId</code>，<code>partnerId</code>，<code>prepayId</code>，<code>nonceStr</code>，<code>timeStamp</code>，<code>package</code>。<br>
+注意：<code>package</code>的值格式为<code>Sign=WXPay</code></p>
+<p>4.商户<code>APP</code>调起微信支付。<code>api</code> 参见<a href="https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=8_5">app端开发步骤说明</a></p>
+<p>5.商户后台接收支付通知。<code>api</code>参见 <a href="https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_7">支付结果通知API</a></p>
+<p>6.商户后台查询支付结果。参见<a href="https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_2">查询订单API</a></p>
+<p>7.商户后台回调支付结果等数据 参见<a href="https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_7&amp;index=3">支付结果通知</a></p>
+<h4 id="统一下单">统一下单</h4>
+<p>这里包括应用<code>ID</code>、商户号、设备号等等，我们只需向其传输必填项即可，选填数据可以根据自己的实际需求来决定</p>
+<p>其中<code>appid</code> 和 <code>mch_id</code> 分别去到微信开放平台和微信商户平台中获取，<code>nonce_str</code> (随机字符串) 很随意了，不长于<strong>32</strong>位就好</p>
+<p>这里给出一个随机字符串的返回方法</p>
+<pre><code class="language-php?start_inline=1">private function getNonceStr() {
+    $code = &quot;&quot;;
+    for ($i=0; $i &gt; 10; $i++) { 
+        $code .= mt_rand(1000);        //获取随机数
+    }
+    $nonceStrTemp = md5($code);
+    $nonce_str = mb_substr($nonceStrTemp, 5,37);      //MD5加密后截取32位字符
+    return $nonce_str;
+}
+</code></pre>
+<p>当然这样的方法在无论在客户端和服务端都是可以的 但是就是一个随机字符串的方法在客户端生成更为方便</p>
+<p>这里还有一个重要的参数 <code>notify_url</code>（通知地址）是接收微信支付异步通知回调地址，</p>
+<p>通知<code>url</code>必须为直接可访问的<code>url</code>，不能携带参数。例如：<code>'https://pay.weixin.qq.com/wxpay/pay.action'</code></p>
+<p>这里我们在后面处理微信的回调接口就是访问的这个接口</p>
+<p>接下来就是最为核心的步骤 签名 看完文档你会发现整个过程涉及到了<strong>3</strong>次签名 这里给出想应的文档和工具</p>
+<ul>
+<li><a href="https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=4_3">签名算法</a></li>
+<li><a href="https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=20_1">微信支付接口签名校验工具</a></li>
+</ul>
+<p>一定要仔细根据签名算法的步骤 注意签名的小写 和一些排序要求  根据这个算法 这里给出具体的签名算法</p>
+<pre><code class="language-php?start_inline=1">/**
+ * 获取参数签名；
+ * @param  Array  要传递的参数数组
+ * @return String 通过计算得到的签名
+ */
+private function getSign($params) {
+    ksort($params);        //将参数数组按照参数名ASCII码从小到大排序
+    foreach ($params as $key =&gt; $item) {
+        if (!empty($item)) {         //剔除参数值为空的参数
+            $newArr[] = $key.'='.$item;     // 整合新的参数数组
+        }
+    }
+    $stringA = implode(&quot;&amp;&quot;, $newArr);         //使用 &amp; 符号连接参数
+    $stringSignTemp = $stringA.&quot;&amp;key=&quot;.$this-&gt;key;        //拼接key
+                                         // key是在商户平台API安全里自己设置的
+    $stringSignTemp = MD5($stringSignTemp);       //将字符串进行MD5加密
+    $sign = strtoupper($stringSignTemp);      //将所有字符转换为大写
+    return $sign;
+}
+</code></pre>
+<p>统一下单的所需要的数据都准备好了 接下来就是发起我们的请求了</p>
+<p>当然因为与微信的数据请求包括返回都是<code>xml</code>格式的  所以我们需要去包装成<code>xml</code>格式</p>
+<pre><code class="language-php?start_inline=1">private function setSendData($data) {
+    $this-&gt;sTpl = &quot;&lt;xml&gt;
+                        &lt;appid&gt;&lt;![CDATA[%s]]&gt;&lt;/appid&gt;
+                        &lt;body&gt;&lt;![CDATA[%s]]&gt;&lt;/body&gt;
+                        &lt;mch_id&gt;&lt;![CDATA[%s]]&gt;&lt;/mch_id&gt;
+                        &lt;nonce_str&gt;&lt;![CDATA[%s]]&gt;&lt;/nonce_str&gt;
+                        &lt;notify_url&gt;&lt;![CDATA[%s]]&gt;&lt;/notify_url&gt;
+                        &lt;out_trade_no&gt;&lt;![CDATA[%s]]&gt;&lt;/out_trade_no&gt;
+                        &lt;spbill_create_ip&gt;&lt;![CDATA[%s]]&gt;&lt;/spbill_create_ip&gt;
+                        &lt;total_fee&gt;&lt;![CDATA[%d]]&gt;&lt;/total_fee&gt;
+                        &lt;trade_type&gt;&lt;![CDATA[%s]]&gt;&lt;/trade_type&gt;
+                        &lt;sign&gt;&lt;![CDATA[%s]]&gt;&lt;/sign&gt;
+                    &lt;/xml&gt;&quot;;                          //xml数据模板
+
+    $nonce_str = $this-&gt;getNonceStr();        //调用随机字符串生成方法获取随机字符串
+
+    $data['appid'] = $this-&gt;appid;
+    $data['mch_id'] = $this-&gt;mch_id;
+    $data['nonce_str'] = $nonce_str;
+    $data['notify_url'] = $this-&gt;notify_url;
+    $data['trade_type'] = $this-&gt;trade_type;      //将参与签名的数据保存到数组
+    // 注意：以上几个参数是追加到$data中的，$data中应该同时包含开发文档中要求必填的剔除sign以外的所有数据
+    $sign = $this-&gt;getSign($data);        //获取签名
+
+    $data = sprintf($this-&gt;sTpl, $this-&gt;appid, $data['body'], $this-&gt;mch_id, $nonce_str, $this-&gt;notify_url, $data['out_trade_no'], $data['spbill_create_ip'], $data['total_fee'], $this-&gt;trade_type, $sign);
+    //生成xml数据格式
+    return $data;
+}
+</code></pre>
+<blockquote>
+<p><code>xml</code>数据要使用<code>&lt;![CDATA[]]&gt;</code>注释包裹</p>
+</blockquote>
+<p>对于包装好的数据我们可以生成相应的接口去发送请求 如果请求成功 微信会返回我们对应的信息</p>
+<figure data-type="image" tabindex="2"><img src="https://GeekGhc.github.io/post-images/1616760541178.png" alt="" loading="lazy"></figure>
+<p>其中我们需要关注一个 <code>prepay_id</code> 该参数是微信生成的预支付回话标识，用于后续接口调用中使用，该值有效期为<strong>2</strong>小时</p>
+<p>因为接下来我们要做的就是利用这个 <code>prepay_id</code> 再次进行签名然后返回给<code>APP</code>客户端</p>
+<p>其中参与签名的字段有<code>appId</code> <code>partnerId</code> <code>prepayId</code> <code>nonceStr</code> <code>timeStamp</code>  <code>package</code></p>
+<h4 id="调用支付接口">调用支付接口</h4>
+<p>因为在上一步中返回给我们这个 <code>prepay_id</code> 还有其他的返回数据 我们需要对数据进行解析 这样我们在确认返回成功之后再去对数据进行包装</p>
+<pre><code class="language-php?start_inline=1">$postObj = $encpt-&gt;xmlToObject($xml_data);            //解析返回数据
+if ($postObj === false) {
+    echo 'failed';
+    exit;             // 如果解析的结果为false，终止程序
+}
+if ($postObj-&gt;return_code == 'FAIL') {
+    echo $postObj-&gt;return_msg;            // 如果微信返回错误码为FAIL，则代表请求失败，返回失败信息
+} else {
+    //如果上一次请求成功，那么我们将返回的数据重新拼装，进行第二次签名
+    $resignData = array(
+        'appid'    =&gt;    $postObj-&gt;appid,
+        'partnerId'    =&gt;    $postObj-&gt;mch_id,
+        'prepayId'    =&gt;    $postObj-&gt;prepay_id,
+        'nonceStr'    =&gt;    $postObj-&gt;nonce_str,
+        'timeStamp'    =&gt;    time(),
+        'package'    =&gt;    'Sign=WXPay'
+        );
+    //二次签名；
+    $sign = $encpt-&gt;getClientPay($resignData);
+    echo $sign;
+}
+</code></pre>
+<p>这里的<code>xmlToObject</code>是用来解析返回的<code>xml</code>对象的  具体代码如下</p>
+<pre><code class="language-php?start_inline=1">public function xmlToObject($xmlStr) {
+    if (!is_string($xmlStr) || empty($xmlStr)) {
+        return false;
+    }
+    $postObj = simplexml_load_string($xmlStr, 'SimpleXMLElement', LIBXML_NOCDATA);
+    $postObj = json_decode(json_encode($postObj));
+    //将xml数据转换成对象返回
+    return $postObj;
+}
+</code></pre>
+<p>这里的我们只需要注意</p>
+<ul>
+<li><code>mch_id</code> 即为 <code>partnerId</code></li>
+<li>时间戳使用<code>time()</code>获取就好</li>
+<li><code>package</code>字段 暂填写固定值<code>Sign=WXPay</code></li>
+</ul>
+<p>在生成签名之后 我们就可以将<code>sign</code>，<code>appId</code>，<code>partnerId</code>，<code>prepayId</code>，<code>nonceStr</code>，<code>timeStamp</code>，<code>package</code> 这些参数一起返回给<code>APP</code>客户端</p>
+<h4 id="支付结果返回">支付结果返回</h4>
+<p>支付请求发起后  微信端会触发我们在第一次填写的 <code>notify_url</code> 在这里我们就可以去完成对数据的相应逻辑 如更新订单和用户信息</p>
+<p>当然值得注意的是我们还需要执行的就是<strong>验签</strong></p>
+<figure data-type="image" tabindex="3"><img src="https://GeekGhc.github.io/post-images/1616760580612.png" alt="" loading="lazy"></figure>
+<p>因为在这个结果返回的时候即想客户端<code>APP</code>返回支付结果 也会向商户后台服务器返回支付结果  我们需要做的就是获取并解析返回的结果</p>
+<p>接着对我们的项目执行处理更新  最后再去同步返回给微信</p>
+<p>首先我们先获取一下数据并解析成对象</p>
+<pre><code class="language-php?start_inline=1">     /**
+     * 接收支付结果通知参数
+     * @return Object 返回结果对象；
+     */
+    public function getNotifyData()
+    {
+        $postXml = file_get_contents('php://input', 'r');      //接受通知参数；
+        if (empty($postXml)) {
+            return false;
+        }
+        $postObj = $this-&gt;xmlToObject($postXml);
+        if ($postObj === false) {
+            return false;
+        }
+        if (!empty($postObj-&gt;return_code)) {
+            if ($postObj-&gt;return_code == 'FAIL') {
+                return false;
+            }
+        }
+        return $postObj;
+    }
+</code></pre>
+<p>我们在微信回调接口里大致是这样:</p>
+<pre><code class="language-php?start_inline=1">public function wxpayCallback(Request $request)
+    {
+        $obj = $this-&gt;wxPay-&gt;getNotifyData();
+        if ($obj-&gt;return_code != &quot;SUCCESS&quot;) {
+            return response('failure');
+        } else {
+            $request = $this-&gt;rsaCheckV2($obj);
+            if ($request) {
+                //处理完后台逻辑成功
+                if ($res) {
+                    $reply = &quot;&lt;xml&gt;
+                    &lt;return_code&gt;&lt;![CDATA[SUCCESS]]&gt;&lt;/return_code&gt;
+                    &lt;return_msg&gt;&lt;![CDATA[OK]]&gt;&lt;/return_msg&gt;
+                &lt;/xml&gt;&quot;;
+                    echo $reply;      // 向微信后台返回结果
+                } else {
+                    return response('failure');
+                }
+            } else {
+                return response('failure');
+            }
+        }
+    }
+</code></pre>
+<p>这里的<code>rsaCheckV2</code>就是我们验签的方法:</p>
+<pre><code class="language-php?start_inline=1">public function rsaCheckV2($obj)
+    {
+        if($obj){
+            $data = array(
+            'appid'                =&gt;    $obj-&gt;appid,
+            'mch_id'            =&gt;    $obj-&gt;mch_id,
+            'nonce_str'            =&gt;    $obj-&gt;nonce_str,
+            'result_code'        =&gt;    $obj-&gt;result_code,
+            'openid'            =&gt;    $obj-&gt;openid,
+            'return_code'       =&gt;   $obj-&gt;return_code,
+            'fee_type'          =&gt;    $obj-&gt;fee_type,
+            'is_subscribe'      =&gt;      $obj-&gt;is_subscribe,
+            'trade_type'        =&gt;    $obj-&gt;trade_type,
+            'bank_type'            =&gt;    $obj-&gt;bank_type,
+            'total_fee'            =&gt;    $obj-&gt;total_fee,
+            'cash_fee'            =&gt;    $obj-&gt;cash_fee,
+            'transaction_id'    =&gt;    $obj-&gt;transaction_id,
+            'out_trade_no'        =&gt;    $obj-&gt;out_trade_no,
+            'time_end'            =&gt;    $obj-&gt;time_end
+            );
+
+            $sign = $this-&gt;getSign($data);        // 获取签名 进行验证
+            if ($sign == $obj-&gt;sign) {
+                return true;
+            }else{
+                 return false;
+            }
+        }
+    }
+</code></pre>
+<p>这样一来我们就可以完成支付完成结果通知后的业务逻辑</p>
+<h4 id="查询订单">查询订单</h4>
+<p>对于我们的<code>APP</code>客户端依然要向我们发起一个请求，查询订单状态，此时我们需要客户端将订单号传递给我们，然后我们使用订单号，继续向微信发起请求：</p>
+<pre><code class="language-php?start_inline=1">public function queryOrder(Curl $curl, $out_trade_no) {
+    $nonce_str = $this-&gt;getNonceStr();
+    $data = array(
+        'appid'        =&gt;    $this-&gt;appid,
+        'mch_id'    =&gt;    $this-&gt;mch_id,
+        'out_trade_no'    =&gt;    $out_trade_no,
+        'nonce_str'            =&gt;    $nonce_str
+        );
+    $sign = $this-&gt;getSign($data);
+    $xml_data = '&lt;xml&gt;
+                   &lt;appid&gt;%s&lt;/appid&gt;
+                   &lt;mch_id&gt;%s&lt;/mch_id&gt;
+                   &lt;nonce_str&gt;%s&lt;/nonce_str&gt;
+                   &lt;out_trade_no&gt;%s&lt;/out_trade_no&gt;
+                   &lt;sign&gt;%s&lt;/sign&gt;
+                &lt;/xml&gt;';
+    $xml_data = sprintf($xml_data, $this-&gt;appid, $this-&gt;mch_id, $nonce_str, $out_trade_no, $sign);
+    $url = &quot;https://api.mch.weixin.qq.com/pay/orderquery&quot;;
+    $curl-&gt;setUrl($url);
+    $content = $curl-&gt;execute(true, 'POST', $xml_data);
+    return $content;
+}
+</code></pre>
+<blockquote>
+<p>支付宝接口的处理会在以后的博客中继续更新 :bowtie:</p>
+</blockquote>
+<h2 id="注意事项">注意事项</h2>
+<p>1.签名的字段参数小写</p>
+<p>2.验签时去除<code>sign</code>字段 返回剩余字段进行签名</p>
+<p>3.填写正确的商户<code>key</code></p>
+<h2 id="相关文档">相关文档</h2>
+<ul>
+<li>GitHub地址  <a href="https://github.com/GeekGhc/PayApi">PayApi</a></li>
+<li>微信开发文档 <a href="https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=8_1">开发者文档</a></li>
+<li>简书 <a href="http://www.jianshu.com/p/a5ddd19e01a3?utm_campaign=hugo">开发微信接口</a></li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/redis-zai-xiang-mu-zhong-de-ying-yong-shi-li/" class="post-title gt-a-link">
+                    Redis在项目中的应用实例
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/app-wei-xin-zhi-fu-bao-zhi-fu-fu-wu-duan-jie-kou/" class="leancloud_visitors" data-flag-title="APP微信支付宝支付服务端接口">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

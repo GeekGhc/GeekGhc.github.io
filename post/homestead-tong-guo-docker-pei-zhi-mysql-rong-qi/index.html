@@ -1,0 +1,389 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>HomeStead通过docker配置mysql容器 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    HomeStead通过docker配置mysql容器
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2018-05-12 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/KP4JXYvj5/" class="post-tags">
+                            # Docker
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>官方homestead提供的mysql默认是5.7版本  那么如果我们需要其他版本的mysql我们可以在此基础之上新建mysql容器进行开发</p>
+<h2 id="简介">简介</h2>
+<p><code>homestead</code>作为<code>PHP</code>开发的可共享的集成虚拟环境 官方默认提供的<code>mysql</code>为<strong>5.7</strong>版本  PHP的版本包含了<strong>5.6</strong> <strong>7.0</strong> <strong>7.1</strong> <strong>7.2</strong>还有一些诸如<code>redis</code> <code>memcache</code><br>
+这样的缓存数据库  其实这足以应对大部分的开发环境要求 对于<code>mysql</code>有时我们需要更新或者更低版本的数据库时  但是又不想摒弃现有的版本 那么我们完全可以借助<code>docker</code>建立对应的<code>mysql</code>容器</p>
+<h2 id="安装">安装</h2>
+<p>我们这里以安装<code>mysql5.6</code>为例</p>
+<p>对于现有的<code>homestead</code>即<code>Ubuntu</code>的环境  我们需要先下载<code>docker</code> 先更新下源</p>
+<pre><code class="language-shell">$ sudo apt-get update
+</code></pre>
+<p>下载对应的<code>docker</code></p>
+<pre><code class="language-shell">$ sudo apt-get install docker.io
+</code></pre>
+<p>下载完成之后启动服务</p>
+<pre><code class="language-shell">$ sudo service docker start
+</code></pre>
+<p>由于种种原因 对于官方库拉取<code>image</code>我们需要镜像加速 更改<code>/etc/docker/daemon.json</code>来配置(没有则新建)</p>
+<pre><code class="language-shell">{
+  &quot;registry-mirrors&quot;: [&quot;http://hub-mirror.c.163.com&quot;]
+}
+</code></pre>
+<p>接下来就是验证<code>docker</code> 以经典的<code>hello world</code>为例<br>
+<img src="https://GeekGhc.github.io/post-images/1616764525428.png" alt="" loading="lazy"></p>
+<blockquote>
+<p>如果出现这样的界面即为成功</p>
+</blockquote>
+<p>因为已经拉取这个<code>image</code> 我们可以查看一下现有的<code>image</code> 对于<code>docker</code>的基础知识可以查看阮一峰的<a href="http://www.ruanyifeng.com/blog/2018/02/docker-tutorial.html">博客</a></p>
+<figure data-type="image" tabindex="1"><img src="https://GeekGhc.github.io/post-images/1616764535261.png" alt="" loading="lazy"></figure>
+<p>接下来就是拉取<code>mysql5.6</code>的官方<code>library</code><br>
+<img src="https://GeekGhc.github.io/post-images/1616764544710.png" alt="" loading="lazy"></p>
+<p>拉取完成之后再次查看<code>image</code>列表<br>
+<img src="https://GeekGhc.github.io/post-images/1616764554248.png" alt="" loading="lazy"></p>
+<p>接下来新建<code>/docker/mysql5.6</code>目录以配置一些<code>mysql</code>下面会用到的映射目录<br>
+拉取完成之后再次查看<code>image</code>列表<br>
+<img src="https://GeekGhc.github.io/post-images/1616764562762.png" alt="" loading="lazy"></p>
+<p>接下里在<code>/docker/mysql5.6</code>目录下启动<code>mysql</code>容器</p>
+<pre><code class="language-shell">$ sudo docker run -p 33061:3306 --name mysql1 -v $PWD/conf:/etc/mysql -v $PWD/logs:/logs -v $PWD/data:/mysql_data -e MYSQL_ROOT_PASSWORD=123456 -d mysql:5.6
+</code></pre>
+<p>这里也是在启动的时候为数据库设置了密码为<strong>123456</strong></p>
+<p><code>-p</code> 指明<code>mysql</code>容器的<strong>3306</strong>端口映射到本地的<strong>33061</strong>端口</p>
+<p><code>--name</code> 指明启动后的<code>container</code>的别名  这样我们可以很方便的操作</p>
+<p><code>-v</code> 表明本地和容器的目录映射</p>
+<figure data-type="image" tabindex="2"><img src="https://GeekGhc.github.io/post-images/1616764573609.png" alt="" loading="lazy"></figure>
+<p>启动<code>mysql</code>容器 这里我们可以通过别名启动</p>
+<pre><code class="language-shell">$ sudo docker start mysql1
+</code></pre>
+<p>进入<code>mysql</code>的<code>bash</code>即终端</p>
+<pre><code class="language-shell">$ docker exec -it mysql1 env LANG=C.UTF-8 bash
+</code></pre>
+<blockquote>
+<p>其中 env LANG=C.UTF-8 bash 让docker命令行支持中文</p>
+</blockquote>
+<p>复制配置文件</p>
+<pre><code class="language-shell">$ cp /usr/my.cnf /etc/mysql/my.cnf
+</code></pre>
+<p>由于之前我们在<code>/docker/mysql5.6</code>新建了三个目录并进行了映射 如需要修改编码 这时退出容器<code>bash</code>可在本地修改即可</p>
+<pre><code class="language-shell">$ vim conf/my.cnf
+</code></pre>
+<p>主要是在my.cnf添加了字符编码  修改完保存即可</p>
+<pre><code class="language-shell">$ [client] default-character-set=utf8 
+[mysql] default-character-set=utf8 
+[mysqld] character-set-server=utf8
+</code></pre>
+<p>再次进入<code>mysql</code>的<code>bash</code> 这次先登录<code>mysql</code></p>
+<pre><code class="language-shell">$ mysql -u root -p
+</code></pre>
+<p>密码就是启动容易时设定的<strong>123456</strong> 进入成功之后修改下时远程客户端可以连接这个<code>mysql</code></p>
+<pre><code class="language-shell">$ grant all privileges on rise.* to root@'%' identified by '123456';
+</code></pre>
+<pre><code class="language-shell">$ flush privileges;
+</code></pre>
+<p>即远程客户端可以使用<code>root</code>作为用户名 密码使用<strong>123456</strong>进行登录  至此我们的<code>mysql</code>容器安装完毕</p>
+<p>我们知道本地连接<code>homestead</code>的<code>mysql</code>是通过<strong>33060</strong>端口进行连接  那么如果想连接<code>homestead</code>中的<code>mysql</code>容器那么可以再次进行端口映射</p>
+<p>具体操作就是修改<code>Homestead.yaml</code> 增加端口从本地到<code>homestead</code>即可</p>
+<pre><code class="language-shell">ports:
+    - send: 33062
+      to: 33061
+</code></pre>
+<p>这样本地 可以使用用户名为<code>root</code> 密码为<strong>123456</strong> 端口这时改为<strong>33062</strong>即可连接<code>homestead</code>的<code>mysql</code>容器</p>
+<h2 id="相关链接">相关链接</h2>
+<ul>
+<li><a href="http://www.ruanyifeng.com/blog/2018/02/docker-tutorial.html">Docker 入门教程</a></li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/laravel55-xin-te-xing-zhi-zi-ding-yi-yan-zheng-gui-ze/" class="post-title gt-a-link">
+                    Laravel5.5新特性之自定义验证规则
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/homestead-tong-guo-docker-pei-zhi-mysql-rong-qi/" class="leancloud_visitors" data-flag-title="HomeStead通过docker配置mysql容器">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

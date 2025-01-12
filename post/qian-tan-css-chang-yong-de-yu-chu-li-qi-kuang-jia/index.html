@@ -1,0 +1,632 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>浅谈CSS常用的预处理器(框架) | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    浅谈CSS常用的预处理器(框架)
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-05-03 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/LnXDqVStU/" class="post-tags">
+                            # Css
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>CSS预处理器技术已经非常的成熟，而且也涌现出了很多种不同的CSS预处理器语言，而我们接触最多的就是Scss,Stylus,Less。如此之多的CSS预处理器 其终究目的是使得CSS开发更灵活和更强大</p>
+<h2 id="简介">简介</h2>
+<p><code>CSS</code> 预处理器技术已经非常的成熟，而且也涌现出了越来越多的 <code>CSS</code> 的预处理器框架。</p>
+<p>不过这里就来谈谈最为普遍的三款 <code>CSS</code> 预处理器框架 不过最主要还是谈谈<code>Sass</code>和<code>Less</code></p>
+<h2 id="定义说明">定义说明</h2>
+<h3 id="css预处理器">CSS预处理器</h3>
+<p><code>CSS</code> 预处理器是一种语言用来为 <code>CSS</code> 增加一些编程的的特性，无需考虑浏览器的兼容性问题，<br>
+例如你可以在 <code>CSS</code> 中使用变量、简单的程序逻辑、</p>
+<p>函数等等在编程语言中的一些基本技巧，可以让你的 <code>CSS</code> 更为简洁，适应性更强，代码更直观等诸多好处</p>
+<p>通俗的将就是讲原本的<code>CSS</code>语言抽象出来使他具有一定的程序逻辑 也省去了中间的很多步骤</p>
+<p>而这些预处理器无非就是集合了语法、变量、嵌套、混入(Mixin)、继承、导入、函数和操作符等方面的操作处理</p>
+<h3 id="sass">Sass</h3>
+<p><strong>Sass</strong>是一种动态样式语言，<code>Sass</code>语法属于缩排语法，</p>
+<p>比<code>css</code>比多出好些功能(如变量、嵌套、运算,混入(Mixin)、继承、颜色处理，函数等)，这样也使开发者更加的容易阅读</p>
+<p>说白了<code>sass</code>就是<code>scss</code>的严格模式 所以说他更像一门编程语言 因为他有一些诸如语言的特性</p>
+<ul>
+<li><code>sass</code>有变量和作用域 变量有全局和局部之分，并且有优先级</li>
+<li><code>sass</code>有函数的概念</li>
+<li>进程控制(也就是我们所说的@if @else等)</li>
+<li>数据结构 <code>$list</code>类型-数组 <code>$map</code>类型-object 其余的也有<code>string</code>、<code>number</code>、<code>function</code>等类型</li>
+</ul>
+<h3 id="scss">Scss</h3>
+<p><code>SCSS</code> 是 <code>Sass 3</code> 引入新的语法，其语法完全兼容 <code>CSS3</code>，并且继承了 <code>Sass</code> 的强大功能。也就是说，任何标准的 <code>CSS3</code></p>
+<p>样式表都是具有相同语义的有效的 <code>SCSS</code> 文件。另外，<code>SCSS</code> 还能识别大部分 <code>CSS hacks</code>（一些 CSS 小技巧）和特定于浏览器的语法</p>
+<h3 id="scss-和-sass-的区别">Scss 和 Sass 的区别</h3>
+<p><code>Sass</code> 和 <code>SCSS</code> 也可以说是同一种的，我们平时都称之为 <code>Sass</code>，两者之间不同之处有以下两点：</p>
+<p>首先文件扩展名不同，<code>Sass</code> 是以<code>&quot;.sass&quot;</code>后缀为扩展名，而 <code>SCSS</code> 是以<code>&quot;.scss&quot;</code>后缀为扩展名</p>
+<p>语法书写方式不同，<code>Sass</code> 是以严格的缩进式语法规则来书写(这也是之前我们所提到的)</p>
+<p>不带大括号<code>({})</code>和分号<code>(;)</code>，而 <code>SCSS</code> 的语法书写和我们的 <code>CSS</code> 语法书写方式非常类似。</p>
+<p>我们平常所说的<code>Sass</code>文件基本都是以<code>.scss</code>文件 这样也是避免 <code>sass</code> 后缀名的严格格式要求报错。</p>
+<p>举个例子来说的话:</p>
+<h5 id="sass语法">Sass语法</h5>
+<pre><code class="language-sass?">$primary-color: #eee //定义变量
+
+body
+  color: $primary-color
+</code></pre>
+<h5 id="scss语法">Scss语法</h5>
+<pre><code class="language-scss?">$primary-color: #eee;
+
+body {
+  color: $primary-color;
+}
+</code></pre>
+<p>最后编译的结果是:</p>
+<pre><code class="language-css?">body {
+  color: #eee;
+}
+</code></pre>
+<h3 id="less">Less</h3>
+<p>受<code>SASS</code>的影响较大，但又使用<code>CSS</code>的语法，让大部分开发者和设计师更容易上手，在<code>ruby</code>社区之外支持者远超过<code>SASS</code></p>
+<p>其缺点是比起<code>SASS</code>来，可编程功能不够，不过优点是简单和兼容<code>CSS</code>，个人实际开发的话会更容易上手</p>
+<p>反过来也影响了<code>SASS</code>演变到了<code>SCSS</code>的时代 这也就是为什么现在<code>Scss</code>完全兼容<code>Css3</code>的原因了</p>
+<h3 id="stylus">Stylus</h3>
+<p><strong>2010</strong>年产生，来自<code>Node.js</code>社区，主要用来给<code>Node</code>项目进行<code>CSS</code>预处理支持</p>
+<p>在此社区之内有一定支持者，在广泛的意义上人气还完全不如<code>SASS</code>和<code>LESS</code></p>
+<h2 id="简单语法使用">简单语法使用</h2>
+<h4 id="1变量">1.变量</h4>
+<p>你可以在 <code>CSS</code> 预处理器中声明变量，并在整个样式单中使用，支持任何类型的变量<br>
+例如颜色、数值(不管是否包括单位)、文本。然后你可以任意引用该变量</p>
+<p>不同的是<code>Sass</code>允许使用变量，所有变量以<code>$</code>开头</p>
+<pre><code class="language-sass?">$mainColor: #0982c1;
+$siteWidth: 1024px;
+$borderStyle: dotted;
+ 
+body 
+  color: $mainColor;
+  border: 1px $borderStyle $mainColor;
+  max-width: $siteWidth;
+
+</code></pre>
+<p>而<code>Less</code>则以<code>@</code>开始</p>
+<pre><code class="language-scss?">@mainColor: #0982c1;
+@siteWidth: 1024px;
+@borderStyle: dotted;
+ 
+body {
+  color: @mainColor;
+  border: 1px @borderStyle @mainColor;
+  max-width: @siteWidth;
+}
+</code></pre>
+<p>所以最后的编译结果就是:</p>
+<pre><code class="language-css?">body {
+  color: #0982c1;
+  border: 1px dotted #0982c1;
+  max-width: 1024px;
+}
+</code></pre>
+<p>可以体会得到的是变量的使用 就和一个全局变量的作用差不多  我们在需要修改颜色等样式的值时只需要去修改定义的值就好了</p>
+<blockquote>
+<p>当然变量也是有作用域的 就如上面的是声明在规则块定义外的 如果定义在css规则块内，那么该变量只能在此规则块内使用</p>
+</blockquote>
+<pre><code class="language-scss?">$nav-color: #F90;
+nav {
+  $width: 100px;
+  width: $width;
+  color: $nav-color;
+}
+
+//编译后
+
+nav {
+  width: 100px;
+  color: #F90;
+}
+</code></pre>
+<p>这里的<code>$width</code>就只能在<code>nav</code>这个规则快里使用</p>
+<h4 id="2嵌套">2.嵌套</h4>
+<p>这个也是我认为非常方便的一个地方 很多时候样式的定义需要一堆的父级类名的限制 最后的结果呢一个样式却堆成很长 又很难后期维护</p>
+<p>特别的在我们需要在<code>CSS</code>中相同的 <code>parent</code> 引用多个元素，这将是非常乏味的，你需要一遍又一遍地写 <code>parent</code>。例如</p>
+<pre><code class="language-css?">section {
+  margin: 10px;
+}
+section nav {
+  height: 25px;
+}
+section nav a {
+  color: #0982C1;
+}
+section nav a:hover {
+  text-decoration: underline;
+}
+</code></pre>
+<p>这时我们在<code>Css</code>预处理器里可以这样定义</p>
+<pre><code class="language-scss?">section {
+  margin: 10px;
+ 
+  nav {
+    height: 25px;
+ 
+    a {
+      color: #0982C1;
+ 
+      &amp;:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+</code></pre>
+<p>这里最后的编译结果和上面的是一样的 最后的结果也一目了然了 下面的定义我们很清楚的看到父级与子级的关系 修改起来也十分方便</p>
+<blockquote>
+<p>这里使用了一个父选择器的标识符&amp;</p>
+</blockquote>
+<p>当然还有就是群组选择器的嵌套 举例来说的话就是:</p>
+<pre><code class="language-scss?">.container {
+  h1, h2, h3 {margin-bottom: .8em}
+}
+</code></pre>
+<p>当然这样是等价于:</p>
+<pre><code class="language-css?">.container h1, .container h2, .container h3 { margin-bottom: .8em }
+</code></pre>
+<p>这样其实也很容易明白</p>
+<blockquote>
+<p>对于选择器的使用其实还有诸如  子组合选择器和同层组合选择器：&gt;、+和~ 这些在文档上都有写到 看一下就能明白了</p>
+<p>理解起来和父选择器差不多</p>
+</blockquote>
+<p>还有一个值得看一下的就是属性的嵌套  比如在对于<code>border</code>的定义</p>
+<p>如果要反复写<code>border-style</code> <code>border-width</code> <code>border-color</code>以及<code>border-*</code>等也是非常烦人的。在预处理器中，你只需敲写一遍<code>border</code></p>
+<pre><code class="language-scss?">nav {
+  border: {
+  style: solid;
+  width: 1px;
+  color: #ccc;
+  }
+}
+</code></pre>
+<p>最后的编译结果看看也能知道就是:</p>
+<pre><code class="language-css?">nav {
+  border-style: solid;
+  border-width: 1px;
+  border-color: #ccc;
+}
+</code></pre>
+<h4 id="3-mixins-混合器">3. Mixins (混合器)</h4>
+<p><code>Mixins</code> 有点像是函数或者是<code>C</code>语言的宏，我个人更觉得更像是函数的定义  当你某段 <code>CSS</code> 经常需要在多个元素中使用时</p>
+<p>你可以为这些共用的 <code>CSS</code> 定义在一个 <code>Mixin</code>，然后你只需要在需要引用这些 <code>CSS</code> 地方调用该 <code>Mixin</code> 即可</p>
+<p>同时你可以传入你的<code>参数</code> 那么那块就会载入你定义在<code>Mixins</code>的样式代码了</p>
+<h5 id="使用混合器">使用混合器</h5>
+<p>在<strong>Sass</strong>里</p>
+<pre><code class="language-scss?">@mixin rounded-corners {
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+</code></pre>
+<p>这样你就可以在需要这块代码的地方去引入</p>
+<pre><code class="language-css?">notice {
+  background-color: green;
+  border: 2px solid #00aa00;
+  @include rounded-corners;
+}
+</code></pre>
+<p>所以最终编译的结果就是</p>
+<pre><code class="language-css?">.notice {
+  background-color: green;
+  border: 2px solid #00aa00;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+</code></pre>
+<p>在<strong>Less</strong>语法里</p>
+<pre><code class="language-sass?">.error(@borderWidth: 2px) {
+  border: @borderWidth solid #F00;
+  color: #F00;
+}
+ 
+.generic-error {
+  padding: 20px;
+  margin: 4px;
+  .error(); 
+}
+.login-error {
+  left: 12px;
+  position: absolute;
+  top: 20px;
+  .error(5px); 
+}
+</code></pre>
+<blockquote>
+<p>当然混合器中不仅可以包含属性，也可以包含css规则，包含选择器和选择器中的属性</p>
+</blockquote>
+<p>举例来说就是</p>
+<pre><code class="language-scss?">@mixin no-bullets {
+  list-style: none;
+  li {
+    list-style-image: none;
+    list-style-type: none;
+    margin-left: 0px;
+  }
+}
+</code></pre>
+<p>其实最后编译的道理是相同的这里就不过多展开说了</p>
+<h5 id="混合器传递参数">混合器传递参数</h5>
+<p>这时就更像一个<code>function</code>了</p>
+<pre><code class="language-scss?">@mixin link-colors($normal, $hover, $visited) {
+  color: $normal;
+  &amp;:hover { color: $hover; }
+  &amp;:visited { color: $visited; }
+}
+</code></pre>
+<p>所以接下来你在引入时需要给这个<code>CSS</code>函数传递必要的参数 就像这样</p>
+<pre><code class="language-scss?">a {
+  @include link-colors(blue, red, green);
+}
+</code></pre>
+<p>而在<code>Less</code>里就可以这样定义</p>
+<pre><code class="language-scss?">.link-colors($normal, $hover, $visited) {
+  color: $normal;
+  &amp;:hover { color: $hover; }
+  &amp;:visited { color: $visited; }
+}
+</code></pre>
+<p>那么调用的时候就是</p>
+<pre><code class="language-scss?">a {
+  .link-colors(blue, red, green);
+}
+</code></pre>
+<p>两者其实都差不多 只不过表示方式不太一样而已</p>
+<h4 id="4-继承">4. 继承</h4>
+<p>任何<code>css</code>规则都可以继承其他规则，几乎任何<code>css</code>规则也都可以被继承.</p>
+<p>通常使用继承会让你的<code>css</code>美观、整洁。因为继承只会在生成<code>css</code>时复制选择器</p>
+<pre><code class="language-scss?">.menu {
+  border: 1px solid #ddd;
+}
+.footer {
+  @extend .menu;
+}
+</code></pre>
+<p>这样编译后的效果和下面的是一样的:</p>
+<pre><code class="language-css?">.menu, .footer {
+  border: 1px solid #ddd;
+}
+</code></pre>
+<p>这样一来<code>.footer</code>继承了<code>.menu</code>的样式定义 那么我们就可以不用使用逗号将两者分开来写了</p>
+<p>在<code>Less</code>里我们同样可以这样写:</p>
+<pre><code class="language-scss?">.menu {
+  border: 1px solid #ddd;
+}
+.footer {
+  &amp;:extend .menu;
+}
+</code></pre>
+<p>最后编译出来的结果和之前是一样的</p>
+<h4 id="5-导入">5. 导入</h4>
+<p>在<code>Sass</code>的<code>import</code>的规则在生成<code>css</code>文件时就把所相关的文件导入进来了 这也就省去了额外的下载请求</p>
+<h5 id="使用sass部分文件">使用SASS部分文件</h5>
+<p>但你在写一些不需要独立生成<code>css</code>文件 而只是为了引入到其他的<code>sass</code>文件 那么这里的<code>sass</code>文件也叫局部文件 因为他不要单独生成<br>
+对应的<code>css</code>文件  而是想结合其他的<code>sass</code>文件最终生成<code>css</code>文件</p>
+<p>对于这样的文件有个约定就是命名以下划线开头 而当引入这个文件时就只需要提供下划线后面的文件名即可</p>
+<p>如你想引入 <code>themes/_night-sky.scss</code> 这个局部文件里的变量 只需在样式表中写<code>@import &quot;themes/night-sky&quot;</code></p>
+<p>这里介绍一个最为常用的场景就是嵌套的引入</p>
+<p>举例说明，有一个名为<code>_blue-theme.scss</code>的局部文件:</p>
+<pre><code class="language-scss?">aside {
+  background: blue;
+  color: white;
+}
+</code></pre>
+<p>如果你需要导入到<code>css</code>文件里 :</p>
+<pre><code class="language-css?">.blue-theme {@import &quot;blue-theme&quot;}
+
+//结果跟你直接在.blue-theme选择器内写_blue-theme.scss文件的内容完全一样。
+.blue-theme {
+  aside {
+    background: blue;
+    color: #fff;
+  }
+</code></pre>
+<p>和<code>Sass</code>差不多 在<code>Less</code>中 如果你导入的是<code>less</code>文件 完全可以省略后缀名:</p>
+<pre><code class="language-scss?">@import &quot;theme&quot;; // theme.less
+@import &quot;style.css&quot;;
+</code></pre>
+<h2 id="总结">总结</h2>
+<p>不管是<code>Sass</code>，还是<code>Less</code>，<code>Stylus</code> 都可以视为一种基于<code>CSS</code>之上的高级语言，其目的是使得<code>CSS</code>开发更加灵活和强大</p>
+<p><code>Sass</code>的功能比<code>Less</code>强大,因为他更像一门编程语言了，而<code>Less</code>则相对清晰明了,易于上手,对编译环境要求比较宽松。因为<code>Sass</code>需要<code>Ruby</code>环境的支持</p>
+<p>编译比不上<code>less.js</code>那么直接  但我想这个并不是什么大问题</p>
+<p>相对而言，国内前端团队使用<code>Less</code>的同学会略多于<code>Sass</code>  尽管现在很多的公司都开始转向于用<code>Sass</code> 而个人开发的话<code>Less</code>更为容易上手和方便 其实无论哪种选择 都是可以的</p>
+<p>始终记住存在即合理  所以也没必要太纠结选择那种工具 实现自己最为满意的开发方式就<code>ok</code></p>
+<h3 id="相关链接">相关链接</h3>
+<ul>
+<li><a href="http://www.sasschina.com/">SASS中文网</a></li>
+<li><a href="http://less.bootcss.com/">Less手册</a></li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/qing-song-bu-shu-ni-de-php7-yun-xing-huan-jing/" class="post-title gt-a-link">
+                    轻松部署你的PHP7运行环境
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/qian-tan-css-chang-yong-de-yu-chu-li-qi-kuang-jia/" class="leancloud_visitors" data-flag-title="浅谈CSS常用的预处理器(框架)">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

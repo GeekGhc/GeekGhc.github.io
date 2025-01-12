@@ -1,0 +1,359 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>ssh 免密码登录服务器 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    ssh 免密码登录服务器
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-01-22 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/VS6MQaBI8/" class="post-tags">
+                            # Linux
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>对于我们程序员来说 GitHub再熟悉不过了 在平常的工作项目中 对于项目的提交我们不可能每次都需要填写一次密码 当然也包括登录自己的服务器 所以我们可以使用ssh生成密钥 这样就可以省去这样的步骤</p>
+<h2 id="介绍">介绍</h2>
+<p>对于我们程序员来说 <code>GitHub</code>再熟悉不过了 在平常的工作项目中 对于项目的提交我们不可能每次都需要填写一次密码</p>
+<p>这当然也包括登录自己的服务器 所以我们可以使用<code>ssh</code>生成本地的密钥  只需要向服务器或者<code>Github</code>给出我们的密钥</p>
+<p>这样就可以不用每次都去填写密码</p>
+<h2 id="服务器的登录">服务器的登录</h2>
+<p>在本地的目录终端执行</p>
+<pre><code class="language-shell">$ ssh-keygen -t rsa  
+</code></pre>
+<p>由于我之前已经生成过 你如果是第一次的话一直<code>enter</code>下去  这里指定的加密算法是<strong>rsa</strong></p>
+<p>之后还会有一些保存私钥的路径和密码(可以为空) 最后就是生成了公钥</p>
+<p>如果你是<code>Mac</code>环境的话执行</p>
+<pre><code class="language-shell">$ cd ~/.ssh
+</code></pre>
+<p>就可以看到你刚刚生成的私钥</p>
+<p>当然如果你是<code>Windows</code>环境下的话还是进入(也就是管理员的目录下)</p>
+<pre><code class="language-shell">$ cd ~/.ssh
+</code></pre>
+<p>而我们需要拿到的是<code>id_rsa.pub</code>这个公钥里面的内容</p>
+<p>如果是服务器的话 我们需要将这个文件也放到服务器下的<code>.ssh</code>目录里:</p>
+<pre><code class="language-shell">$ scp id-rsa.pub root@domain.com:~/.ssh/id_rsa.pub
+</code></pre>
+<blockquote>
+<p>如果服务器没有<code>.ssh</code>这个目录 创建一个即可</p>
+</blockquote>
+<p>之前已经将<code>id_rsa.pub</code>文件放到服务器的目录下了 填写服务器的密码即可  我们再次登录服务器</p>
+<p>我们进入到<code>.ssh</code>这个目录</p>
+<pre><code class="language-shell">$ cd ~/.ssh
+</code></pre>
+<p>接下来我们将这个文件保存到<code>authorized_keys</code></p>
+<pre><code class="language-shell">$ cat id_rsa.pub &gt;&gt; authorized_keys
+</code></pre>
+<p>这个时候退出服务器再次登录 OK 完美的登录了</p>
+<h2 id="github-密钥部署">Github 密钥部署</h2>
+<p>在本地的目录终端执行</p>
+<pre><code class="language-shell">$ ssh-keygen -t rsa -C &quot;youremail@example.com&quot;
+</code></pre>
+<p>填写好你<code>Github</code>邮箱 如果你比较熟悉git的话之前肯定配置过<code>git</code>直接下一步</p>
+<p>这样的话我们就可以在<code>~/.ssh</code>下有两个文件</p>
+<p><code>id_rsa</code>和<code>id_rsa.pub</code>两个文件，这两个就是<code>SSH Key</code>的秘钥对，<code>id_rsa</code>是私钥，不能泄露出去，<code>id_rsa.pub</code>是公钥，可以放心地告诉任何人。</p>
+<p>这个和之前服务器是差不多的 我们需要的就是<code>id_rsa.pub</code>这个公钥</p>
+<p>我们登录<code>Github</code> 打开<code>Account settings</code> &gt;&gt; <code>SSH Keys</code>页面</p>
+<p>然后，点<code>Add SSH Key</code>，填上任意<code>Title</code>，在<code>Key</code>文本框里粘贴<code>id_rsa.pub</code>文件的内容</p>
+<p>为什么<code>GitHub</code>需要<code>SSH Key</code>呢？因为<code>GitHub</code>需要识别出你推送的提交确实是你推送的，而不是别人的，而<code>Git</code>又支持<code>SSH</code>协议</p>
+<p>所以，<code>GitHub</code>只要知道了你的公钥，就可以确认只有你自己才能推送</p>
+<p>下面的话我们在<code>Github</code>新建仓库之后 只需要根据提示添加相关的仓库 接着执行</p>
+<pre><code class="language-shell">$ git push -u origin master
+</code></pre>
+<p>以后我们再去推送代码时只需要执行</p>
+<pre><code class="language-php">$ git push 
+</code></pre>
+<p>这样是不是很方便 😄</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/elementui-ji-cheng-zu-jian-hua-kai-fa/" class="post-title gt-a-link">
+                    ElementUI 集成组件化开发
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/ssh-mian-mi-ma-deng-lu-fu-wu-qi/" class="leancloud_visitors" data-flag-title="ssh 免密码登录服务器">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

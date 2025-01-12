@@ -1,0 +1,572 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Go 1.18 Feature应用分享 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Go 1.18 Feature应用分享
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2022-04-23 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/FeJ26LonW/" class="post-tags">
+                            # Go
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h2 id="开篇">开篇</h2>
+<p>终于在上个月Go官方发布了Go1.18，除了大家心心念念的泛型新的参数支持，还带来很多新的特性，在这一个月的体验感受下来，新版本对语言还是可以说做了有史以来最大的改变，无论是性能发挥还是特性支持都得到了较高的满意度</p>
+<h2 id="特性介绍">特性介绍</h2>
+<h3 id="泛型">泛型</h3>
+<h4 id="基本现状">基本现状</h4>
+<p>在此之前版本很多时候如果想做一些通用数据类型的方法和操作时，基本都需要借助interface实现，有的内部甚至引入各种类型断言或者通过反射reflect机制实现<br>
+比如想实现基本快速排序</p>
+<pre><code>func quickSort(sequence []int64) {
+    // sort logic
+}
+</code></pre>
+<p>这个方法的参数只能是int64的切片类型，如果需要实现通用化参数的方法，常见思路就是借助interface</p>
+<pre><code>// 通用参数类型排序
+func quickSort(sequence []interface{}) {
+    switch sequence[0].(type) {
+    case int64:
+       // int64类型 logic
+    case float64:
+       // float类型 logic
+    // other type
+    default:
+        panic(&quot;type not support!&quot;)
+   }
+</code></pre>
+<p>另一种常见解决思路就是借助reflect反射来编写泛型函数，但是问题是这样不仅执行速度慢而且需要显示的类型断言，并且没有静态类型检查</p>
+<h4 id="泛型玩法">泛型玩法</h4>
+<p>早在去年年底发布了1.18的beta版本里就开始启用泛型支持，很多人已经提前体验了一番。现在已经支持社区大多数用户的泛型需求，算是正式支持generic编程<br>
+泛型教程：https://go.dev/doc/tutorial/generics<br>
+首先Go支持泛型函数和泛型类型，还是基于上面的case</p>
+<h5 id="泛型函数">泛型函数</h5>
+<pre><code>// 定义标准的泛型函数模板
+// 其中[T any]即为参数列表，T为类型参数，any则为参数约束
+func quickSort[T any](args T) {
+      // sort logic
+}
+// 实际调用
+quickSort[int]([]int{1,2,5,6})
+
+// any 实际定义 V1.18.1
+// https://github.com/golang/go/blob/go1.18.1/src/builtin/builtin.go#L95
+type any = interface{}
+</code></pre>
+<p>再来实现一个经典的多类型相加</p>
+<pre><code>func add[T any](a, b T) T {
+   return a + b
+}
+</code></pre>
+<p>但是会发现报错提示：<code>Invalid operation: a + b (the operator + is not defined on []T)</code><br>
+这是因为问题出现在any这个参数约束，和C++乃至Java中类似，T受限于数值的运算符操作，以此对一些不支持的类型进行规避</p>
+<pre><code>// 修改为想要的数值比较类型
+func add[T int64 | float64](a, b T) T {
+   return a + b
+}
+</code></pre>
+<p><strong>类型别名</strong></p>
+<pre><code>type SelfInt int64
+func add[T ~int64 | float64](a, b T) T { // ~限制参数底层实现的某种具体类型的别名
+   return a + b
+}
+add[SelfInt](2, 4)
+</code></pre>
+<p><strong>泛型类型</strong><br>
+除了对方法的泛型抽象，也可以定义符合数据类型的结构，以常见链表节点为例</p>
+<pre><code>type DataType interface { // 接口实现类型约束
+   int64 | float32 | string
+}
+type Element[V DataType] struct {
+   key   string
+   value V  // 节点类型只能为DataType指定的int64&amp;float32&amp;string
+}
+</code></pre>
+<blockquote>
+<p>Go 1.18将移除用于泛型的类型约束constraints包，主要原因是很多约束类型使用场景太少，基本围绕any和comparable这2个类型约束足够</p>
+</blockquote>
+<h5 id="悲伤故事">悲伤故事</h5>
+<p>尽管已经支持了泛型函数和泛型类型，但是在Go的泛型提案中：no-parameterized-methods也表示并不会支持泛型方法<br>
+主要原因Go泛型的处理是在编译的时候实现的，泛型方法在编译的时候，如果没有上下文的分析推断，很难判断泛型方案该如何实例化，甚至判断不了<br>
+最终导致目前Go 1.18实现中不支持泛型方案，不过是可以期待下在之后的版本会支持上<br>
+详细说明可以看下 https://colobu.com/2021/12/22/no-parameterized-methods/</p>
+<h5 id="泛型库应用">泛型库应用</h5>
+<ul>
+<li>Lodash 泛型工具库 &gt;&gt; https://github.com/samber/lo</li>
+</ul>
+<h3 id="模糊测试">模糊测试</h3>
+<figure data-type="image" tabindex="1"><img src="https://GeekGhc.github.io/post-images/1654612121540.PNG" alt="" loading="lazy"></figure>
+<h4 id="基本介绍">基本介绍</h4>
+<p>模糊测试是一种自动化测试，通过不断创建输入以检查输出结果是否符合预期。作为常见单测的补充。单测往往是对静态输入的最终预期结果验证，而模糊测试通常也更擅长发现程序安全漏洞问题<br>
+发展历程<br>
+关于模糊测试的issue问题还在持续迭代  &gt;&gt;</p>
+<ul>
+<li>2015年在GopherCon上Google工程师Dmitry Vyukov介绍了相关第三方解决方案： go-fuzz (4.4kstar)已实现了相关功能</li>
+<li>2016年Dmitry Vyukov在Go官方issue列表中创建“cmd/compile: coverage instrumentation for fuzzing”的issue来说明三方工具无法实现的问题，并开始推动Fuzzing进入Go原生工具链
+<ul>
+<li>而在新版本中基本也是借鉴了实现思路，从而集成到标准工具链的testing pkg</li>
+</ul>
+</li>
+<li>2021年在官方正式进行Fuzzing提案，提议为 Go 添加模糊测试支持， issue &gt;&gt;</li>
+<li>2022年3月发布Go1.18将fuzz testing纳入了go test工具链，与单元测试、性能基准测试等一起成为了Go原生测试工具链中的重要成员</li>
+</ul>
+<h4 id="基本规则">基本规则</h4>
+<p><strong>方法介绍</strong></p>
+<ul>
+<li>f.Add函数把指定输入作为模糊测试的种子语料库(seed corpus)，fuzzing基于种子语料库生成随机输入</li>
+<li>f.Fuzz函数接收一个fuzz target函数作为入参。fuzz target函数有多个参数，第一个参数是*testing.T，其它参数是被模糊的类型(注意：被模糊的类型目前只支持部分内置类型, 列在 Go Fuzzing docs，未来会支持更多的内置类型)</li>
+</ul>
+<p>官方给出的模糊测试基本规则</p>
+<ul>
+<li>模糊测试必须是一个名称类似FuzzXxx的函数，仅仅接收一个*testing.F类型的参数,没有返回值</li>
+<li>模糊测试必须在*_test.go文件中才能运行</li>
+<li>Fuzz target(模糊目标)必须是对(<em>testing.F).Fuzz的方法调用，参数是一个函数，并且此函数的第一个参数是</em>testing.T,然后是模糊参数(fuzzing argument)，没有返回值</li>
+<li>一个模糊测试中必须只有一个模糊目标</li>
+<li>所有的种子语料库(seed corpus)必须具有与模糊参数相同的类型,顺序相同。对(*testing.F).Add的调用也是如此, 同样也适用模糊测试中的testdata/fuzz中的语料文件</li>
+<li>模糊参数只能是下面的类型
+<ul>
+<li>string, []byte</li>
+<li>int, int8, int16, int32/rune, int64</li>
+<li>uint, uint8/byte, uint16, uint32, uint64</li>
+<li>float32, float64</li>
+<li>bool</li>
+</ul>
+</li>
+</ul>
+<h4 id="场景玩法">场景玩法</h4>
+<p>编写一个简易的字符串反转函数</p>
+<pre><code>// 字符串反转
+func Reverse(s string) string {
+   b := []byte(s)
+   for i, j := 0, len(b)-1; i &lt; len(b)/2; i, j = i+1, j-1 {
+      b[i], b[j] = b[j], b[i]
+   }
+   return string(b)
+}
+</code></pre>
+<p><strong>单元测试</strong></p>
+<pre><code>func TestReverse(t *testing.T) {
+   testCases := map[string]string{
+      &quot;Hello&quot;:     &quot;olleH&quot;,
+      &quot;ByteDance&quot;: &quot;ecnaDetyB&quot;,
+   }
+   for in, out := range testCases {
+      rev := Reverse(in)
+      if rev != out {
+         t.Errorf(&quot;rev:%s, expecte:%s&quot;, rev, out)
+      }
+   }
+}
+</code></pre>
+<p><strong>模糊测试</strong></p>
+<pre><code>func FuzzReverse(f *testing.F) {
+   testCases := []string{&quot;Hello&quot;, &quot;World&quot;, &quot;ByteDance&quot;}
+   for _, tc := range testCases {
+      f.Add(tc) // 指定输入作为种子语料库
+   }
+   f.Fuzz(func(t *testing.T, orig string) {
+      rev := Reverse(orig)
+      doubleRev := Reverse(rev)
+      if orig != doubleRev { // check
+         t.Errorf(&quot;Before: %q, after: %q&quot;, orig, doubleRev)
+      }
+   })
+}
+</code></pre>
+<p><strong>使用种子语料库</strong></p>
+<pre><code>// 可以理解为mock后的单测
+$ go test -run=FuzzReverse
+PASS ok
+</code></pre>
+<p><strong>基于种子语料库生成随机测试数据</strong></p>
+<pre><code>// 新增-fuzz参数
+$ go test -fuzz=FuzzReverse
+</code></pre>
+<p><img src="https://GeekGhc.github.io/post-images/1654612139549.png" alt="" loading="lazy"><br>
+这次测试失败了，而失败的输入case则入了testdata以方便问题排查<br>
+打开后是这样的</p>
+<pre><code>go test fuzz v1  // 语料库的编码版本，目前是v1
+string(&quot;Ғ&quot;)      // 引入测试错误的输入数据
+</code></pre>
+<p><strong>代码用例修复</strong><br>
+错误的原因则是因为待测试的Reverse函数是基于字节(byte)进行的反转，因此对于本身就占用多字节的字符就会出现无效字符，常见的就比如中文字符<br>
+因此思路也很简单按照rune进行字符反转以得到有效的UTF-8编码的字符串<br>
+修改后指定错误用例继续测试 ok<br>
+<img src="https://GeekGhc.github.io/post-images/1654612173458.png" alt="" loading="lazy"><br>
+但是继续用新的随机测试数据会发现新的问题<br>
+<img src="https://GeekGhc.github.io/post-images/1654612190454.png" alt="" loading="lazy"><br>
+原因也是因为非法的unicode数据输入导致编码字节切片后无法还原，限定输入合法最终即可通过</p>
+<pre><code>// 修改后测试函数
+func Reverse(s string) (string, error) {
+   if !utf8.ValidString(s) {
+      return s, errors.New(&quot;input is not valid UTF-8&quot;)
+   }
+   r := []rune(s)
+   for i, j := 0, len(r)-1; i &lt; len(r)/2; i, j = i+1, j-1 {
+      r[i], r[j] = r[j], r[i]
+   }
+   return string(r), nil
+}
+</code></pre>
+<p><strong>定制化参数</strong><br>
+上面的默认测试已经可以满足大部分模糊测试场景，不过官方还是提供了其他定制参数</p>
+<ul>
+<li>fuzztime: 执行的模糊目标在退出的时候要执行的总时间或者迭代次数，默认是用不结束</li>
+<li>fuzzminimizetime: 模糊目标在每次最少尝试时要执行的时间或者迭代次数，默认是60秒。你可以禁用最小化尝试，只需把这个参数设置为0</li>
+<li>parallel: 同时执行的模糊化数量，默认是$GOMAXPROCS即调用器Processor数量。当前进行模糊化测试时设置-cpu无效果</li>
+</ul>
+<h4 id="架构原理">架构原理</h4>
+<p><img src="https://GeekGhc.github.io/post-images/1654612270872.png" alt="" loading="lazy"><br>
+gofuzz 是一个多进程的fuzzer，其组件可分为协调进程<strong>Coordinator</strong>、工作进程<strong>Worker</strong>和<strong>RPC</strong></p>
+<h5 id="coordinator">Coordinator</h5>
+<p>Coordinator的职责是运行和唤醒工作进程、命令工作进行去fuzz下一个输入、如果发生crash则将interesting data 写入语料库等，实现代码 <a href="https://github.com/golang/go/blob/go1.18.1/src/internal/fuzz/fuzz.go#L30">&gt;&gt;</a><br>
+CoordinateFuzzingOpts  <a href="https://github.com/golang/go/blob/go1.18.1/src/internal/fuzz/fuzz.go#L30">&gt;&gt;</a></p>
+<pre><code>// 定义了 CoordinateFuzzing 的一系列参数
+type CoordinateFuzzingOpts struct {
+        Log io.Writer
+        Timeout time.Duration // 语料库加载后的挂钟时间
+        Limit int64           // 生成的随机值数量
+        MinimizeTimeout time.Duration
+        MinimizeLimit int64
+        Parallel int          // 并行运行的工作进程数，对应执行参数parallel
+        Seed []CorpusEntry    // 测试种子列表，对应f.Add()
+        Types []reflect.Type  // 语料库条目类型列表
+        CorpusDir string      // 写入包含使正在测试的代码崩溃的值的文件
+        CacheDir string       // interesting data的目录
+}
+</code></pre>
+<p><strong>CoordinateFuzzing</strong> <a href="https://github.com/golang/go/blob/go1.18.1/src/internal/fuzz/fuzz.go#L86">&gt;&gt;</a><br>
+CoordinateFuzzing函数基于传入的CoordinateFuzzingOpts一系列参数管理多个worker进程的生命周期，如果遇到测试崩溃则返回崩溃信息以及确保crash后写入语料库<br>
+<strong>Coordinator</strong> <a href="https://github.com/golang/go/blob/go1.18.1/src/internal/fuzz/fuzz.go#L569">&gt;&gt;</a><br>
+定义Coordinator与worker进程的channel,比如如coordinator传递fuzz数据到worker的channel inputC以及worker传递fuzzing结果到coordinator的channel resultC等</p>
+<h5 id="worker">Worker</h5>
+<p>worker的功能主要包括种子变异、最小化、运行fuzz函数、收集覆盖率、返回crash等<br>
+工作流程</p>
+<ol>
+<li>执行go -test -fuzz=xx 启动模糊测试</li>
+<li>Coordinator唤醒工作进程并分配worker对象</li>
+<li>Coordinator从种子语料库和缓存语料库选择输入来进行模糊测试</li>
+<li>workerClient作为RPC客户端调用worker进程的方法</li>
+<li>RPC基于workerComm提供进程间通信的管道和共享内存</li>
+<li>workerServer作为RPC服务端处理请求任务</li>
+<li>fuzzIn()读取序列化后的RPC消息</li>
+<li>fuzz()则在共享内存中根据随机输入在有限的持续时间或迭代次数内来运行测试函数</li>
+<li>遇到crash则返回</li>
+</ol>
+<h4 id="覆盖率最小化">覆盖率&amp;最小化</h4>
+<p>gofuzz采用覆盖率反馈的方式引导fuzzing，Go 编译器已经对<a href="https://llvm.org/docs/LibFuzzer.html">libFuzzer</a>(覆盖引导的模糊测试库)提供了检测支持 ，所以在gofuzz中重用了该部分。 编译器为每个基本块添加一个 8 位计数器用来统计覆盖率<br>
+实现思路<br>
+当coordinator接收到产生新覆盖范围的输入时，它会将该worker进程的覆盖范围与当前组合的覆盖范围数组进行比较：</p>
+<ul>
+<li>如果另一个worker进程已经发现了提供相同覆盖范围的输入，则把该输入丢弃。</li>
+<li>如果新的输入确实提供了新的覆盖，则coordinator将其发送回worker进程(可能是不同的worker）以进行最小化处理</li>
+<li>coordinator收到导致错误的输入时，它会再次将输入发送回worker进程以进行最小化。在这种情况下会尝试找到仍然会导致错误的较小输入。输入最小化后，将其保存到 testdata/corpus/$FuzzTarget最终退出<br>
+最小化实现代码 <a href="https://github.com/golang/go/blob/go1.18.1/src/internal/fuzz/minimize.go">&gt;&gt;</a></li>
+</ul>
+<h4 id="变异">变异</h4>
+<p>为了达到模糊测试的效果，对于其支持的基本类型会进行变异操作，如int类型，通过加上或减去一个随机数，并判断其变异后的返回值不能超高int支持的最大范围以此来不断产生新的输入用例提升覆盖<br>
+变异实现代码 <a href="https://github.com/golang/go/blob/go1.18.1/src/internal/fuzz/mutator.go">&gt;&gt;</a></p>
+<h2 id="references">References</h2>
+<p>https://go.dev/blog/go1.18<br>
+https://go.dev/blog/intro-generics<br>
+官方教程：如何开始使用泛型<br>
+Go语言单元测试最佳实践手册<br>
+https://colobu.com/2021/08/30/how-is-go-generic-implemented/<br>
+https://colobu.com/2022/01/03/go-fuzzing/<br>
+https://colobu.com/2021/12/22/no-parameterized-methods/<br>
+https://rakyll.org/generics-facilititators/<br>
+https://tip.golang.org/doc/fuzz/</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/ubuntu-da-jian-k8s-ji-qun/" class="post-title gt-a-link">
+                    Ubuntu 搭建k8s集群
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/go-118-feature-ying-yong-fen-xiang/" class="leancloud_visitors" data-flag-title="Go 1.18 Feature应用分享">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

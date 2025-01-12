@@ -1,0 +1,489 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>vuelidate结合Laravel后端数据注册验证 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    vuelidate结合Laravel后端数据注册验证
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-02-28 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/b0tSda50f/" class="post-tags">
+                            # Laravel
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>在前端vue项目使用基于vuelidarte验证 结合后端数据库和api数据 这样才是一个完整的注册登录以及验证流程</p>
+<h2 id="介绍">介绍</h2>
+<p>在实现<code>vuelidate</code>基本的验证之后 我们需要去真正实现项目中的注册登录以及我们的验证流程</p>
+<blockquote>
+<p>有的具体的代码我也会放到我的<code>gist</code>上面</p>
+</blockquote>
+<h2 id="后端api以及数据准备">后端api以及数据准备</h2>
+<p>对于前端的请求 以<code>laravel</code>作为后端项目需要对数据进行处理和相应的反馈</p>
+<p>我们可以先去创建<code>User Model</code>在项目终端:</p>
+<pre><code>$ php artisan make:model User -m
+</code></pre>
+<p>生成Model后就去定义好字段信息:</p>
+<pre><code class="language-php?start_inline=1"> public function up()
+    {
+        Schema::create('users', function (Blueprint $table) {
+            $table-&gt;increments('id');
+            $table-&gt;string('name');
+            $table-&gt;string('email')-&gt;unique();
+            $table-&gt;string('password');
+            $table-&gt;string('avatar');//保存用户头像
+            $table-&gt;string('confirm_code',64);//邮箱确认激活code
+            $table-&gt;smallInteger('is_confirmed')-&gt;default(0);//判断用户呢是否已经激活他的邮箱
+            $table-&gt;integer('followers_count')-&gt;default(0);
+            $table-&gt;integer('followings_count')-&gt;default(0);
+            $table-&gt;rememberToken();
+            $table-&gt;timestamps();
+        });
+ }
+</code></pre>
+<p>我们也可以尝试创建对应的Factory然后可以生成测试数据:</p>
+<pre><code class="language-php?start_inline=1">$factory-&gt;define(App\User::class, function (Faker\Generator $faker) {
+    static $password;
+
+    return [
+        'name' =&gt; $faker-&gt;name,
+        'email' =&gt; $faker-&gt;unique()-&gt;safeEmail,
+        'avatar' =&gt; $faker-&gt;imageUrl(256, 256),
+        'confirm_code' =&gt; str_random(48),
+        'password' =&gt; $password ?: $password = bcrypt('secret'),
+        'remember_token' =&gt; str_random(10),
+    ];
+});
+</code></pre>
+<p>写好模型工厂后我们可以试着生成几个测试数据 项目终端:</p>
+<pre><code>$ php artisan tinker;
+</code></pre>
+<pre><code>$ namespace App;
+</code></pre>
+<pre><code>$ factory(User::class,4)-&gt;create()
+</code></pre>
+<p>现在我们已经准备好测试数据 当然你也可以使用注册过后的数据</p>
+<p>开始注册之前先去生成对应的<code>Controller</code></p>
+<blockquote>
+<p>我的<code>laravel</code>后端项目是<strong>5.4</strong> 而在<strong>5.4</strong>里面新增了控制器与模型的绑定</p>
+</blockquote>
+<p>在项目终端执行:</p>
+<pre><code>$ php artisan make:controller UserController --model=User
+</code></pre>
+<p>生成控制器后就去路由定义我们的路由方法:</p>
+<pre><code class="language-php?start_inline=1">Route::group(['prefix'=&gt;'user','middleware'=&gt;['api','cors']], function () {
+    Route::post('/register','UserController@store');
+});
+</code></pre>
+<p>而<code>UserController</code>里面的具体逻辑就是平常的注册逻辑:</p>
+<pre><code class="language-php?start_inline=1">public function store(Request $request)
+    {
+        $data = [
+            'avatar' =&gt; '/images/avatar/default.png',
+            'confirm_code' =&gt; str_random(48),
+        ];
+        $user = User::create(array_merge($request-&gt;get('user'),$data));
+        return json_encode([&quot;user_id&quot;=&gt;$user-&gt;id,&quot;status&quot;=&gt;&quot;success&quot;]);
+ }
+</code></pre>
+<p>这样就可以完成注册的后端处理逻辑</p>
+<h2 id="vue基于后端api数据进行数据检验"><code>vue</code>基于后端<code>api</code>数据进行数据检验</h2>
+<p>我们的<code>template</code>内容基本还是那样的判断方式 只不过在这里我对字段的唯一性的针对用户名和邮箱</p>
+<p>所以我的具体<code>validations</code>是这样的:</p>
+<pre><code class="language-php?start_inline=1">validations: {
+    newUser:{
+       name: {
+            required,
+            minLength: minLength(4),
+            async isUnique (value) {
+               if (value === '') return true
+               const response = await fetch(`http://localhost:8000/api/unique/name/${value}`)
+               return Boolean(await response.json())
+            }
+       },
+       email: {
+            required,
+            email,
+            async isUnique (value) {
+               if (value === '') return true
+               const response = await fetch(`http://localhost:8000/api/unique/email/${value}`)
+               return Boolean(await response.json())
+            }
+       },
+       password: {
+           required,
+           minLength: minLength(6)
+       },
+       confirm_pwd: {
+            required,
+            sameAsPassword: sameAs('password')
+       }
+    }
+},
+</code></pre>
+<p>当然这只是对字段检验的要求 后端的检验路由方法:</p>
+<pre><code class="language-php?start_inline=1">Route::group(['prefix'=&gt;'unique','middleware'=&gt;['api','cors']], function () {
+    Route::get('/name/{value}','ValidateController@ValidateName');
+    Route::get('/email/{value}','ValidateController@ValidateEmail');
+});
+</code></pre>
+<blockquote>
+<p>这里我是单独生成了一个<code>Controller</code>去实现方法逻辑</p>
+</blockquote>
+<p>对于用户名的检验:</p>
+<pre><code class="language-php?start_inline=1">public function ValidateName($name)
+    {
+        $res = User::where(&quot;name&quot;,$name)-&gt;count();
+        if($res){
+            return response()-&gt;json(false);
+        }
+        return response()-&gt;json(true);
+}
+</code></pre>
+<p>当然对于邮箱的检验也是一样的</p>
+<p>这些完成后我们再去前端完成我们的注册方法应该就差不多可以了 但其实并不是</p>
+<p>因为注册的前提的是每个字段都符合要求 这样才可以去进行注册这个逻辑</p>
+<p>所以在注册按钮添加方法:</p>
+<pre><code class="language-html">&lt;div class=&quot;control-group&quot;&gt;
+    &lt;button
+            class=&quot;btn btn-primary btn-lg btn-block btn-login-register&quot;
+            @click=&quot;register($v.newUser)&quot;
+    &gt;立即注册
+    &lt;/button&gt;
+&lt;/div&gt;
+</code></pre>
+<p>这里的<code>$v.newUser</code>其实就是所有被检验数据的集合 因为我的<code>data</code>是这样被声明的:</p>
+<pre><code class="language-php?start_inline=1"> data(){
+    return{
+        newUser: {
+            name:'',
+            email:'',
+            password:'',
+            confirm_pwd:''
+        },
+    }
+},
+</code></pre>
+<p>这样完成好后 最终的注册逻辑被我放在了<code>register function</code>里面</p>
+<pre><code class="language-php?start_inline=1">register:function(value){
+    value.$touch();//验证所有信息
+    if(!value.$error){
+        this.axios.post('http://localhost:8000/api/user/register',{user:this.newUser}).then(response =&gt; {
+          console.log(&quot;data = &quot;+response.data.status)
+        })
+    }
+}
+</code></pre>
+<blockquote>
+<p>这里的<code>value.$error</code>是对所有字段的<code>$error</code>的或的结果 只有所有字段的<code>$error</code>为<code>false</code>时 才能通过检验进行下一步的注册</p>
+<p><code>value.$touch()</code> 其实是执行的设置其<code>$dirty</code>为<code>true</code>这些在文档上也都有介绍</p>
+</blockquote>
+<p>这样我们去走一下整个的注册流程</p>
+<ul>
+<li>用户注册<br>
+<img src="https://GeekGhc.github.io/post-images/1616935297358.gif" alt="" loading="lazy"></li>
+</ul>
+<p>我们已经注册过了以为<code>jason</code>的用户</p>
+<ul>
+<li>数据检验<br>
+<img src="https://GeekGhc.github.io/post-images/1616935304856.gif" alt="" loading="lazy"></li>
+</ul>
+<h4 id="资料链接">资料链接</h4>
+<ul>
+<li><a href="https://monterail.github.io/vuelidate/#getting-started">vuelidate网址</a></li>
+<li><a href="https://gist.github.com/GeekGhc/3acfe4275ca6a6cc7587728ff0018715">gist地址1</a></li>
+<li><a href="https://gist.github.com/GeekGhc/c2e1ebb44f63772c0dc59b04681853bb">gist地址2</a></li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/vuelidate-vuejs-yan-zheng-jie-jue-fang-an/" class="post-title gt-a-link">
+                    vuelidate-vueJs验证解决方案
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/vuelidate-jie-he-laravel-hou-duan-shu-ju-zhu-ce-yan-zheng/" class="leancloud_visitors" data-flag-title="vuelidate结合Laravel后端数据注册验证">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

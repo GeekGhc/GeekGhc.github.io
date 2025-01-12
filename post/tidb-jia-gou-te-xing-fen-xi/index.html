@@ -1,0 +1,463 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>TiDB 演进与架构分析 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    TiDB 演进与架构分析
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2022-02-26 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/qTdzyPARh/" class="post-tags">
+                            # 架构设计
+                        </a>
+                    
+                        <a href="https://GeekGhc.github.io/tag/LgJYPHTvll/" class="post-tags">
+                            # DB
+                        </a>
+                    
+                        <a href="https://GeekGhc.github.io/tag/FeJ26LonW/" class="post-tags">
+                            # Go
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h2 id="基本介绍">基本介绍</h2>
+<h3 id="分布式的产生">分布式的产生</h3>
+<p>随着数据量和计算量的增长，集中式系统已无法承载，此时分布式系统则就是数据爆发增长的刚需。分布式本质上也是进行数据和计算的分制，再结合多副本的机制满足了可用性。最终展现出分布式系统的价值。</p>
+<p>纵观分布式的发展历史，Google在06年推出了大数据的三驾马车(GFS、BigTable、MapReduce)。其中GFS解决了分布式文件系统问题，BigTable解决了分布式KV存储问题。MapReduce则解决了在之前两者的基础上如何做分布式计算和分析的问题。</p>
+<h3 id="数据库现状">数据库现状</h3>
+<p>如今各种模型的数据库非常多， 而关系型模型在在线交易场景一直占据很大的权重(72%)。而作为关系型数据库就一定会具备事务，事务的本质就是并发控制单元(操作序列作为工作单位不可分割) 。这里也就涉及了常见的四大特性ACID</p>
+<ul>
+<li>A原子性：事务包含的整体操作是不可分割</li>
+<li>C一致性：事务的前后，所有的数据都保持一致的状态，不可违反数据的一致性检测</li>
+<li>I隔离性：事务之间相互影响的程度，多个事务访问同一资源的行为在不同的隔离性下不同</li>
+<li>D持久性：事务完成后将数据变更的记录存储下来，包括了数据本身和多副本的备份<br>
+所以有没有既是关系型数据库模型又能发挥分布式系统的机制的数据呢，这就是如今的NewSQL数据库也就是原生分布式关系型数据库(分布式+SQL+事务)</li>
+</ul>
+<blockquote>
+<p>NewSQL: 是一类关系数据库，它寻求为在线交易处理(OLTP)工作提供NoSQL系统的可扩展性，同时维护传统数据库系统的ACID保证</p>
+</blockquote>
+<h2 id="主角亮相">主角亮相</h2>
+<p>TiDB作为NewSQL分类的代表是一款PingCAP公司设计，兼容MySQL协议，底层采用RocksDB作为单机存储，通过Raft协议保障一致性高可用的分布式关系型数据库，同时支持在线事务处理，适合高可用、强一致要求较高、数据规模较大等各种应用场景。</p>
+<h3 id="newsql设计目标">NewSQL设计目标</h3>
+<p>在我们熟悉的面向业务场景中，可以总结出这么NewSQL需要支持以下几种能力：</p>
+<ul>
+<li>扩展性</li>
+<li>强一致高可用性</li>
+<li>标准SQL支持ACID事务</li>
+<li>云原生</li>
+<li>混合数据服务(HTAP)
+<ul>
+<li>解决数据容量的前提下，OLTP &amp; OLAP的数据服务融合</li>
+<li>行列混合</li>
+<li>更彻底的资源隔离</li>
+<li>需要开放的、兼容数据库与大数据生态</li>
+<li>统一数据查询服务</li>
+</ul>
+</li>
+<li>兼容主流生态与协议</li>
+</ul>
+<h3 id="计算存储分离">计算存储分离</h3>
+<p>计算与存储强绑定意味着两种资源总有一种是浪费的，另外在对服务器选型时，计算型or存储型也会增加选择的复杂度和通用性。而在云计算的背景下，弹性的颗粒度是机器，并不能做到真正的资源弹性。<br>
+因此TiDB在设计之初就将弹性作为架构核心的主要考量点，所以选择了更为主流的面向未来的计算与存储分离的架构。<br>
+在架构逻辑上，TiDB主要分为三层：</p>
+<ol>
+<li>支持标准SQL的计算引擎：TiDB-Server
+<ol>
+<li>本身并不存储数据，只进行计算</li>
+</ol>
+</li>
+<li>分布式存储引擎：TiKV</li>
+<li>元信息管理与调度的引擎：Placement Driver(PD)
+<ol>
+<li>集群的元信息管理，包括分片分分布，拓扑结构等</li>
+<li>分布式事务ID的分配</li>
+<li>调度中心，每个TiKV节点会在一个周期内定向发送元信息给PD，包括所在节点的分数量、Leader数量等</li>
+</ol>
+</li>
+</ol>
+<h2 id="系统构建">系统构建</h2>
+<h3 id="构建分布式存储系统">构建分布式存储系统</h3>
+<p>对于分布式存储引擎，设计的目标总结为</p>
+<ul>
+<li>更细粒度的弹性扩缩容</li>
+<li>支持高并发读写</li>
+<li>数据准确，不错的容错性(不丢不错)</li>
+<li>多副本保障一致性以及高可用</li>
+<li>支持分布式事务<br>
+而TiKV是如何实现保证以上这些重要的特性和目标的呢<br>
+<img src="https://GeekGhc.github.io/post-images/1658041913907.png" alt="" loading="lazy"></li>
+</ul>
+<h4 id="数据结构">数据结构</h4>
+<p><em>数据结构</em>是计算机存储和祖师数据的方式，是数据库的核心基础技术，首先选择了Key-Value数据模型<br>
+而数据结构在传统的OLTP得系统里，写入是最昂贵的成本。在传统的MySQL中也是最常见的索引结构是B-Tree。<br>
+B-Tree在一次写入需要写两次数据，一次是预写日志(WAL)，一次是写入树本身。而B-Tree是严格平衡的数据结构，它的设计本身就是对读友好。数据的写入触发的B-Tree的分裂和平衡的成本是非常高的。而在传统的主从架构里，集群的写入容量都是无法扩展的，集群的写入容量完全由主库的机器配置决定。在扩容上只能通过非常昂贵的集群拆分(分库)。<br>
+在分布式的场景，对于写入的容量需求会越来越大，因此TiKV节点选择了<em>LSM-Tree</em>结构作为RocksDB引擎的基础。而LSM结构本质上是一个用空间置换写入延迟，用顺序写替换随机写入的数据结构。<br>
+RocksDB引擎是一款非常成熟的LSM-tree存储引擎，它本身还具有其他重要特性，比如支持批量写入，无锁快照读(在数据副本迁移过程中会有用)</p>
+<h4 id="数据副本选择">数据副本选择</h4>
+<p>数据的冗余决定了系统的可用性，在强一致的场景下，最终选择了强一致的复制算法，在一致性算法中，最成功的就属Raft和Paxos算法。而Raft是一种用于替换Paxos的共识算法，相比Paxos，Raft的目标是提供更加清晰的逻辑分工使用算法本身能被更好的理解，也就是说他更容易理解以及工程化实现，同时他的安全性也更高，，并提供了一些额外的特性。<br>
+因此就可以基于RocksDB构建一个多副本的集群</p>
+<h4 id="如何实现扩展">如何实现扩展</h4>
+<p>数据分片是分布式数据里面的关键设计，如果要实现扩展就是需要对数据做分片。而分片则需要注意是预先分片(静态分片)还是自动分片(动态分片)。<br>
+传统的分库分表或者分区的方案都是预先分片，这种分片只解决表容量的问题。因此我们需要自动的分片算法，另外分片总是需要一个维度和算法。<br>
+常见的分片算法有哈希、范围、列举。在TiKV系统中采用了范围Range算法。主要考虑到</p>
+<ul>
+<li>Range分片可以更加高效的扫描数据记录，这种在OLTP业务中是非常常见的</li>
+<li>范围分片可以简单的实现自动完成分裂与合并</li>
+<li>弹性优先，分片需要可以自由调度</li>
+</ul>
+<p>在TiKV中有个重要实现就是<em>Region</em>来做数据的分散。在系统中通过范围的方式将整个K-V空间分成若干段。每一段也是一系列连续的Key-Value。而这每一段就是Region，实际上就是一个分片的概念。每个Region中保存的数据不超过一定的大小(默认96M，可配置)。</p>
+<h4 id="如何分离与调度">如何分离与调度</h4>
+<p>当Region的大小超过了一定的限制(默认144MB)。TiKV会将他分裂成两个或者更多个的Region以保证各个Regon的大小是大致接近的，这样也有利于PD进行调度决策。同样的，当某个Region有大量的删除请求导致Region过小时，TiKV会将两个小的相邻的Region合并为一个。也就是常说的自动Split 和自动Merge。</p>
+<p>为了保证客户端能够访问所需要的数据，TiKV系统中存在组件提供了记录Region在节点上面的分布情况。换句话说，通过一个key就能查询到这个key所在哪个Region以及这个Region在哪个存储节点上。而对于Region通过Raft又进行了三副本的复制</p>
+<h4 id="分布式事务">分布式事务</h4>
+<p>TiKV的MVCC实现是通过在Key后面添加版本号来实现的。TiKV支持分布式事务后，用户可以一次性写入多个kv而不用关心这些kv是否在同一个Region上，是否在同一个物理节点上。</p>
+<p>TiKV通过两阶段提交来保证这一批次的读写请求的ACID约束。分布式事务普遍采用了两阶段提交的方式，而两阶段提交往往需要事务管理器(GTM)，而事务管理器也会成为整个集群的性能瓶颈。<br>
+因此TiKV采取了一个去中心化的两阶段提交：在每个TiKV存储节点上会单独分配一个存储锁信息的地方，TiKV的锁基于列簇，因此这个锁信息我们称为CF Lock。<br>
+PD来保证所有的TiKV节点的顺序的一致性，TiDB的默认隔离级别的是SI，而SI和RR可重复度的隔离级别非常近，同时TiDB也支持RC(提交读)。</p>
+<h2 id="构建分布式sql引擎">构建分布式SQL引擎</h2>
+<h3 id="基于kv实现逻辑表">基于KV实现逻辑表</h3>
+<p><img src="https://GeekGhc.github.io/post-images/1658042572584.png" alt="" loading="lazy"><br>
+TiKV对于每个表分配了一个TableID，每个索引也会分配一个IndexID，每一行数据也会分配RowID。一张表如果有证书的Primary Key，则pk为RowID。因此可以简单的理解为RowID+indexID 作为kv中的Key<br>
+Value则可以看成所有的列按照等位偏移的方式进行的connect进行连接</p>
+<p>在数据查询时通过等位偏移量对Value进行反解析，然后再对应于Schema的元信息进行的列信息映射。<br>
+在TiKV中，二级索引也是全局有序的Key-Value map<br>
+它的Key就是索引的列信息，Value则是原表的Primary Key的主键。通过主键在原表的Key-Value map进行一次扫描找到Value，按照等位偏移量进行列解析。</p>
+<h3 id="sql存储过程">SQL存储过程</h3>
+<p><img src="https://GeekGhc.github.io/post-images/1658042928567.png" alt="" loading="lazy"><br>
+SQL是一个非过程的声明性语言，只描述结果不解读过程。因此SQL引擎最重要的就是优化器。<br>
+TiDB采用了兼容MySQL的策略，也就是说会按照MySQL的语法进行解析以及语义解析。中间过程就包含了权限控制以及对表队列的合理性校验。</p>
+<p>AST抽象语法树主要试讲SQL从文本解析成一个结构化的数据</p>
+<p>SQL逻辑优化部分会将各种SQL等价改写以及优化，比如说将子查询改成表关联，也可以进行一些不必要的信息的裁剪，如列裁剪、分区裁剪、left join裁剪等</p>
+<p>物理优化，优化器会基于统计信息与成本进行生产执行计划。这一步十分关键也是整个SQL优化中最重要，优化空间最大的部分。</p>
+<p>执行殷勤会根据优化器定下来的执行路径进行相应的得数据寻址、数据的计算</p>
+<h3 id="分布式sql引擎的优化策略">分布式SQL引擎的优化策略</h3>
+<p><img src="https://GeekGhc.github.io/post-images/1658043519710.png" alt="" loading="lazy"><br>
+简单来说就是让数据表咋不同的存储节点的分片进行预计算完成本地的数据过滤以及统计，然后再将本地存储节点的临时结果、中间结果上报至Server进行集中计算</p>
+<h4 id="表ddl构建">表DDL构建</h4>
+<p><img src="https://GeekGhc.github.io/post-images/1658043867544.png" alt="" loading="lazy"><br>
+首先在TiDB中没有分表的概念，所以整体DDL的完成过程是非常快的<br>
+再者，TiDB中会把DDL过程分成Public、Delete-only、Write-only 等几个状态，每个状态在多节点之间同步和一致，最终完成完整的DDL。</p>
+<h4 id="tidb-server">TiDB-Server</h4>
+<p><img src="https://GeekGhc.github.io/post-images/1658044269518.png" alt="" loading="lazy"><br>
+最上面是MySQL协议层，按照MyDQL的协议进行编码解析，下面是SQL的核心层也是TiDB-Server的最主要的部分会进行SQL的Parser分析、逻辑优化、物理优化、统计信息收集等<br>
+最后再按照数据收集的方式交给执行器进行执行</p>
+<h2 id="htap的应用分析">HTAP的应用分析</h2>
+<blockquote>
+<p>TiDB是一款支撑HTAP数据服务的数据库</p>
+</blockquote>
+<h3 id="htap的必然性">HTAP的必然性</h3>
+<p><img src="https://GeekGhc.github.io/post-images/1658044778590.png" alt="" loading="lazy"><br>
+HTAP需要同时支持OLTP和OLAP场景，基于创新的计算存储架构，在同一份数据上保证了事务的同时又支持实时分析，省去了费时的ETL过程</p>
+<p>分布式技术的发展逐步解决了数据容量爆炸的问题，而分布式关系型数据库同时满足了OLTP的需求也解决了数据容量的问题，在此基础上，很多传统的OLAP技术可以在此架构上进行再融合，实现了更大树容量的混合数据库(HTAP)</p>
+<h3 id="tidb应用htap">TiDB应用HTAP</h3>
+<p>最早的TiDB是为了解决业务分录分表的问题。早期的定位也是OLTP系统。而之后提供的解决方案将多众多业务系统实时同步至一个TiDB集群，渐渐地也被应用在数据中台，主要源于以下特性：</p>
+<ul>
+<li>TiDB支持海量存储，允许多数据源汇聚，数据实时同步</li>
+<li>支持标准的SQL,多边关联快速出结果</li>
+<li>透明多业务模块、支持分表聚合后可以任务维度查询</li>
+<li>最大下推策略以及并行hash join等算子决定了TiDB在表关联上的优势</li>
+</ul>
+<p><img src="https://GeekGhc.github.io/post-images/1658045896442.png" alt="" loading="lazy"><br>
+对于TiDB面向OLAP用户场景需求，通过引入大数据生态的Spark，让Spark识别TiKV的数据格式、统计信息、索引、执行器最终构建了一个能跑在TiKV上的Spark的计算引擎(封装成TiSpark)<br>
+进而实现了一个分布式的技术的平台，在面向大数据量的报表以及重要级的AdHhoc里提供了可行的方案</p>
+<p>但是Spark只能提供低并发的重量级查询，在很多中小规模的轻量AP查询，也需要高兵大，相对低延迟技术的能力，在这种需求场景下，Spark的技术模型过于厚重，资源消耗也大。这个时候OLTP的查询和TiSpark公用的一套底层存储系统显然是不太合理的，面向软件层面去优化OLAP和OLTP的资源隔离是很难的</p>
+<p>从数据库资源隔离的角度看，依次是数据库软件层、副本调度、容器、虚拟机、物理机等。因此越接近物理机的隔离性会更好(物理隔离是最好的资源隔离)。因此列存天然对OLAP的查询友好，因此借鉴传统的主从架构分离的思想，可以将这个副本放到一个列式引擎上。<br>
+<img src="https://GeekGhc.github.io/post-images/1658046384290.png" alt="" loading="lazy"></p>
+<h3 id="如何进行行列数据同步">如何进行行列数据同步</h3>
+<p>因为要强调数据的时效性，因此采用了复制协议更底层更高效的raft复制<br>
+<img src="https://GeekGhc.github.io/post-images/1658046610024.png" alt="" loading="lazy"><br>
+通过对raft进行进一步的改造，将一个副本的raft设置为只负责同步没有投票权的角色(Learner)<br>
+这样既保证了Raft Group的写入效率又保证了列存副本的极低延迟，同时还可以避免复制组脑裂问题</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/go-syncpool-xing-neng-you-hua/" class="post-title gt-a-link">
+                    Sync.Pool性能优化解析
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/tidb-jia-gou-te-xing-fen-xi/" class="leancloud_visitors" data-flag-title="TiDB 演进与架构分析">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

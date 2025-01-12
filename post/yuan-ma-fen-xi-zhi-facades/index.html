@@ -1,0 +1,535 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>源码分析之-Facades | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    源码分析之-Facades
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2018-12-16 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/tbfpiaKJ1/" class="post-tags">
+                            # 源码
+                        </a>
+                    
+                        <a href="https://GeekGhc.github.io/tag/b0tSda50f/" class="post-tags">
+                            # Laravel
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>首先看一下<code>Laravel</code>官方文档对<code>Facades</code>的解释：</p>
+<blockquote>
+<p>Facades 为应用程序的 服务容器 中可用的类提供了一个「静态」接口。Laravel 本身附带许多的</p>
+<p>facades，甚至你可能在不知情的状况下已经在使用他们！Laravel 「facades」作为在服务容器内基</p>
+<p>类的「静态代理」拥有简洁、易表达的语法优点同时维持着比传统静态方法更高的可测试性和灵活 性。</p>
+</blockquote>
+<p><code>Facades</code>就是一组静态接口或者代理  他们多代表的是一组服务的访问。通过<code>Facades</code>可以访问绑定到服务容器里的各种服务。</p>
+<p>之前有谈过路由这个<code>Facades</code>，他就是<code>\Illuminate\Support\Facades\Route</code>类的别名。他代理的就是注册到服务容器的<code>router</code>服务。通过<code>Router</code>我们可以访问使用<code>router</code>中的各种服务。 我们只需要关注使用，而其中的解析过程则是由laravel内部解析的。这样我们的代码可读性也会高了不少。</p>
+<p>我们现在就来看看一个<code>Facade</code>注册之后是怎么使用在应用程序里的。当然这之前我们需要关注一个引用启动时<code>ServiceProvider</code>这里面的作用</p>
+<pre><code class="language-php">//Class: \Illuminate\Foundation\Http\Kernel
+ 
+protected function sendRequestThroughRouter($request)
+{
+	$this-&gt;app-&gt;instance('request', $request);
+
+    Facade::clearResolvedInstance('request');
+
+	  $this-&gt;bootstrap();
+
+    //请求最终都会通过Pipeline 进行dispatch
+    return (new Pipeline($this-&gt;app))
+                	-&gt;send($request)
+                    -&gt;through($this-&gt;app-&gt;shouldSkipMiddleware() ? [] : $this-&gt;middleware)
+	                -&gt;then($this-&gt;dispatchToRouter());
+}
+
+//引导启动Laravel应用程序
+public function bootstrap()
+{
+	if (! $this-&gt;app-&gt;hasBeenBootstrapped()) {
+   	 /**依次执行$bootstrappers中每一个bootstrapper的bootstrap()函数
+      $this-&gt;bootstrappers = [
+            'Illuminate\Foundation\Bootstrap\DetectEnvironment',
+            'Illuminate\Foundation\Bootstrap\LoadConfiguration',
+            'Illuminate\Foundation\Bootstrap\ConfigureLogging',
+            'Illuminate\Foundation\Bootstrap\HandleExceptions',
+            'Illuminate\Foundation\Bootstrap\RegisterFacades',
+            'Illuminate\Foundation\Bootstrap\RegisterProviders',
+            'Illuminate\Foundation\Bootstrap\BootProviders',
+      ];*/
+      $this-&gt;app-&gt;bootstrapWith($this-&gt;bootstrappers());
+    }
+}
+</code></pre>
+<p>其中会执行 <code>Illuminate\Foundation\Bootstrap\RegisterFacades</code> 在这个阶段会依次注册程序中需要用到的<code>Facades</code></p>
+<pre><code class="language-php">// namespace Illuminate\Foundation\Bootstrap;
+
+class RegisterFacades
+{
+    public function bootstrap(Application $app)
+    {
+        Facade::clearResolvedInstances();
+
+        Facade::setFacadeApplication($app);
+
+        AliasLoader::getInstance(array_merge(
+            $app-&gt;make('config')-&gt;get('app.aliases', []),
+            $app-&gt;make(PackageManifest::class)-&gt;aliases()
+        ))-&gt;register();
+    }
+}
+</code></pre>
+<p>这里会通过<code>AliasLoader</code>事例 为<code>Facades</code>注册别名  而这个别名对应的关系是在定义的<code>app/config.php</code>的<code>配置文件中的 </code>$aliases`数组中</p>
+<pre><code class="language-php">    'aliases' =&gt; [
+        'App' =&gt; Illuminate\Support\Facades\App::class,
+        'Artisan' =&gt; Illuminate\Support\Facades\Artisan::class,
+        'Auth' =&gt; Illuminate\Support\Facades\Auth::class,
+        'Blade' =&gt; Illuminate\Support\Facades\Blade::class,
+        'Broadcast' =&gt; Illuminate\Support\Facades\Broadcast::class,
+        'Bus' =&gt; Illuminate\Support\Facades\Bus::class,
+        'Cache' =&gt; Illuminate\Support\Facades\Cache::class,
+        'Config' =&gt; Illuminate\Support\Facades\Config::class,
+        ......
+    ]
+</code></pre>
+<p>进入<code>AliasLoader</code>  看一下是如何进行注册这些<code>Facades</code>的</p>
+<pre><code class="language-php">// class Illuminate\Foundation\AliasLoader
+
+//获取应用实例
+public static function getInstance(array $aliases = [])
+{
+    if (is_null(static::$instance)) {
+        return static::$instance = new static($aliases);
+    }
+
+    $aliases = array_merge(static::$instance-&gt;getAliases(), $aliases);
+
+    static::$instance-&gt;setAliases($aliases);
+
+    return static::$instance;
+}
+
+public function register()
+{
+    if (! $this-&gt;registered) {
+        $this-&gt;prependToLoaderStack();
+
+        $this-&gt;registered = true;
+    }
+}
+
+protected function prependToLoaderStack()
+{
+    // 把AliasLoader::load()放入自动加载函数队列中，并置于队列头部
+    spl_autoload_register([$this, 'load'], true, true);
+}
+</code></pre>
+<p><code>spl_autoload_register</code> 函数是实现自动加载未定义类功能的的重要方法 这个函数的参数如下</p>
+<h4 id="autoload_function">autoload_function</h4>
+<p>这是一个函数【方法】名称，可以是字符串或者数组（调用类方法使用）。这个函数（方法）的功能就是，来把需要<code>new</code> 的类文件包含<code>include(requeire)</code>进来，这样<code>new</code>的时候就不会找不到文件了。其实就是封装整个项目的include和require功能。</p>
+<h4 id="throw">throw</h4>
+<p>此参数设置了 <code>autoload_function</code> 无法成功注册时， <code>spl_autoload_register()</code>是否抛出异常。</p>
+<h4 id="prepend">prepend</h4>
+<p>如果是 <code>true</code>，<code>spl_autoload_register()</code> 会添加函数到队列之首，而不是队列尾部。</p>
+<p>上面的代码就是 <code>AliasLoader</code> 将load方法注册到<code>SPL __autoload</code>函数队列的头部。</p>
+<p>这样的话当我们需要一个服务类的时候会调用<code>load</code>方法引入进来 看一下<code>load</code>方法的源码</p>
+<pre><code class="language-php">public function load($alias)
+{
+   if (static::$facadeNamespace &amp;&amp; strpos($alias, static::$facadeNamespace) === 0) {
+            $this-&gt;loadFacade($alias);
+            return true;
+        }
+    if (isset($this-&gt;aliases[$alias])) {
+        return class_alias($this-&gt;aliases[$alias], $alias);
+    }
+}
+</code></pre>
+<p>load方法里把$aliases里的配置Facade类创建了对应的别名，比如说我们使用Auth类的时候 laravel内部会通过<code>AliasLoader</code> 的<code>load</code>方法为 <code>Illuminate\Support\Facades\Auth</code> 这个类创建一个别名类<code>Auth</code>。</p>
+<p>所以我们在应用程序中使用的Auth类其实就是使用的 <code>Illuminate\Support\Facades\Auth</code> 这个类</p>
+<h3 id="解析facade代理服务">解析Facade代理服务</h3>
+<p>之前所提到的 我们已经成功将<code>Facade</code>服务注册了  那么我们再使用一些<code>Facades</code> 比如<code>Route::get('/',function(){})</code>这样的方法时 那么此时如何通过Route这个静态代理解析到里面的服务呢。这个就是下面要说的<code>laravel</code>里的隐式解析。</p>
+<p>我们说了Route其实是对应的<code>Illuminate\Support\Facades\Route</code>这个类 可以看下里面都有什么</p>
+<pre><code class="language-php">namespace Illuminate\Support\Facades;
+class Route extends Facade
+{
+    protected static function getFacadeAccessor()
+    {
+        return 'router';
+    }
+}
+</code></pre>
+<p>我们主要看下<code>getFacadeAccessor</code>这个方法  你会发现无论是<code>Route</code>还是<code>Auth</code>等这些<code>Facade</code>所对应的类都会有这个方法</p>
+<p>这里面并没有我们所预期的get、post、patch这些方法  这个我们就去他的父类 <code>Illuminate\Support\Facades\Facade</code>看看  依然没有  我们知道<code>PHP</code>如果执行没有给定的方法  回去执行他的魔术方法  也就是 <code>__callStatic</code>静态方法</p>
+<pre><code class="language-php">namespace Illuminate\Support\Facades;
+
+abstract class Facade
+{
+    public static function __callStatic($method, $args)
+    {
+        $instance = static::getFacadeRoot();
+
+        if (! $instance) {
+            throw new RuntimeException('A facade root has not been set.');
+        }
+
+        return $instance-&gt;$method(...$args);
+    }
+    
+    //获取Facade根对象
+    public static function getFacadeRoot()
+    {
+        return static::resolveFacadeInstance(static::getFacadeAccessor());
+    }
+    
+    /**
+     * 从服务容器里解析出Facade对应的服务
+     */
+    protected static function resolveFacadeInstance($name)
+    {
+        if (is_object($name)) {
+            return $name;
+        }
+
+        if (isset(static::$resolvedInstance[$name])) {
+            return static::$resolvedInstance[$name];
+        }
+
+        return static::$resolvedInstance[$name] = static::$app[$name];
+    }
+}
+</code></pre>
+<p>我们可以发现 <code>Illuminate\Support\Facades\Facade</code> 这个父类是一个抽象类  这样的话我们可以根据自己的需要去增加新的子系统外观类 并让外观类可以正确代理其对应的子系统。</p>
+<p>比如这里的<code>Route</code>那么最终的<code>instance</code>就是 调用的 <code>resolveFacadeInstance('router')</code>  也就是子类<code>Route Facade</code>里设置的<code>accessor</code>(字符串<code>router</code>)  然后从服务容器中解析到对应的服务。</p>
+<p>而<code>router</code>服务是在应用程序初始化时的<code>registerBaseServiceProviders</code>阶段被<code>\Illuminate\Routing\RoutingServiceProvider</code>注册到服务容器里的: 具体可以参考<code>laravel</code> 路由的源码分析。</p>
+<pre><code class="language-php">class RoutingServiceProvider extends ServiceProvider
+{
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this-&gt;registerRouter();
+		......
+    }
+
+    /**
+     * Register the router instance.
+     *
+     * @return void
+     */
+    protected function registerRouter()
+    {
+        $this-&gt;app-&gt;singleton('router', function ($app) {
+            return new Router($app['events'], $app);
+        });
+    }
+    ......
+}
+</code></pre>
+<p><code>router</code>服务对应的类就是<code>\Illuminate\Routing\Router</code>, 所以<code>Route Facade</code>实际上代理的就是这个类</p>
+<p>所以通过<code>Route Facade</code>访问的<code>get</code>、<code>post</code>方法都是访问的<code>\Illuminate\Routing\Router</code>这个类的方法</p>
+<p>值的注意的是</p>
+<ul>
+<li>
+<p>1.解析服务时用的<code>static::$app</code>是在最开始的<code>RegisterFacades</code>里设置的，它引用的是服务容器。</p>
+</li>
+<li>
+<p>2.<code>static::$app['router']</code>  以数组访问的形式能够从服务容器解析出<code>router</code>服务是因为服务容器实现了<code>SPL</code>的<code>ArrayAccess</code>接口, 对这个没有概念的可以看下官方文档<a href="https://www.php.net/manual/zh/class.arrayaccess.php">ArrayAccess</a></p>
+</li>
+</ul>
+<p>对于<code>ArrayAccess</code> 需要实现其四个方法 <code>offsetExists</code>、<code>offsetGet</code>、<code>offsetSet</code>、<code>offsetUnset</code></p>
+<p>通过重写这四个方法 那么我们就可以对服务对象进行存取  和操作数组一样  只不过我们操作的事的各种子服务而已</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/yuan-ma-fen-xi-zhi-laravel-lu-you/" class="post-title gt-a-link">
+                    源码分析之-Laravel路由
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/yuan-ma-fen-xi-zhi-facades/" class="leancloud_visitors" data-flag-title="源码分析之-Facades">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

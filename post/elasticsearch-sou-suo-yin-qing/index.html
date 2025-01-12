@@ -1,0 +1,741 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Elasticsearch搜索引擎 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Elasticsearch搜索引擎
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2018-03-12 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/nvZBgvf_A/" class="post-tags">
+                            # ElasticSearch
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>Elasticsearch是一个基于Apache Lucene(TM)的开源搜索引擎。无论在开源还是专有领域，Lucene可以被认为是迄今为止最先进、性能最好的、功能最全的搜索引擎库。</p>
+<h2 id="简介">简介</h2>
+<p><code>Elasticsearch</code>是一个基于<code>Apache Lucene(TM)</code>的开源搜索引擎。无论在开源还是专有领域，<code>Lucene</code>可以被认为是迄今为止最先进、性能最好的、功能最全的搜索引擎库。</p>
+<p>但是，<code>Lucene</code>只是一个库。想要使用它，你必须使用<code>Java</code>来作为开发语言并将其直接集成到你的应用中，更糟糕的是，<code>Lucene</code>非常复杂，你需要深入了解检索的相关知识来理解它是如何工作的。</p>
+<p><code>Elasticsearch</code>也使用<code>Java</code>开发并使用<code>Lucene</code>作为其核心来实现所有索引和搜索的功能，但是它的目的是通过简单的<code>RESTful API</code>来隐藏<code>Lucene</code>的复杂性，从而让全文搜索变得简单。</p>
+<h2 id="安装">安装</h2>
+<p><code>Elasticsearch</code>需要<code>Java8</code>的运行环境。因此无论你是<code>windows</code>平台还是<code>linux</code>平台。先确保<code>Java</code>环境的安装。可以查看<code>Oracle</code>官网查看，这里不做详述。</p>
+<p><code>Java</code>环境安装完毕之后就可以去下载<code>Elasticsearch</code>。这里我是以<code>Linux</code>的环境进行安装。在官网的下载页面<a href="https://www.elastic.co/downloads/elasticsearch">https://www.elastic.co/downloads/elasticsearch</a></p>
+<p>这里我下载的是<strong>6.2.3</strong>的版本。<strong>6.0</strong>版本更新的还是很多的，这在后面会提到。下载<code>tar</code>包:</p>
+<pre><code class="language-shell">$ curl -L -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.2.3.tar.gz
+</code></pre>
+<p>解压下载的安装包：</p>
+<pre><code class="language-shell">$ tar -xvf elasticsearch-6.2.3.tar.gz
+</code></pre>
+<p>进入解压后的文件夹后我们就可以启动<code>Elasticsearch</code></p>
+<pre><code class="language-shell">$ ./elasticsearch
+</code></pre>
+<p>如果启动成功你会看到这样的:<br>
+<img src="https://GeekGhc.github.io/post-images/1616935929755.png" alt="" loading="lazy"></p>
+<p>启动一个新的窗口 因为服务的默认端口是<strong>9200</strong> 当然可以自行设置  <code>http</code>请求会返回如下</p>
+<pre><code class="language-shell">$ curl -X GET 'localhost:9200/?pretty'
+</code></pre>
+<figure data-type="image" tabindex="1"><img src="https://GeekGhc.github.io/post-images/1616935938837.png" alt="" loading="lazy"></figure>
+<h2 id="基本概念">基本概念</h2>
+<h3 id="集群cluster">集群(Cluster)</h3>
+<p>一个集群是由一个或多个节点(服务器)组成的，通过所有的节点一起保存你的全部数据并且提供联合索引和搜索功能的节点集合。每个集群有一个唯一的名称标识，默认是“elasticsearch”。这个名称非常重要，因为一个节点(Node)只有设置了这个名称才能加入集群，成为集群的一部分。</p>
+<p>确保你没有在不同的环境下重用相同的名称，否则你最终可能会将节点加入错误的集群。例如你可以使用<code>dev</code>，<code>stage</code>和<code>prod</code>来分别给开发，展示和生产集群命名。</p>
+<blockquote>
+<p>一个集群中只有一个节点是有效的并且是非常好的。所以这样的话，你可能需要部署多个集群并且每个集群有它们唯一的集群名称。</p>
+</blockquote>
+<h3 id="索引index">索引(Index)</h3>
+<p>一个索引就是含有某些相似特性的文档的集合。例如，你可以有一个用户数据的索引，还有其他的有规则数据的索引。一个索引被一个名称(必须都是小写)唯一标识，并且这个名称被用于索引通过文档去执行索引，搜索，更新和删除操作。</p>
+<p>这里的索引其实你就可以理解为<code>MySQL</code>中的数据库，因此你在一个集群中可以定义任意多的Index</p>
+<h2 id="使用">使用</h2>
+<p>在开始使用<code>ES</code>之前可以大概了解一下他与我们平时的关系型数据库的对比</p>
+<table>
+<thead>
+<tr>
+<th>MySQL</th>
+<th>ES</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Database（数据库）</td>
+<td>Index （索引）</td>
+</tr>
+<tr>
+<td>Table（表）</td>
+<td>Type （类型）</td>
+</tr>
+<tr>
+<td>Row（行）</td>
+<td>Document （文档）</td>
+</tr>
+<tr>
+<td>Index（索引）</td>
+<td>Everything Indexed by default （所有字段都被索引））</td>
+</tr>
+<tr>
+<td>SQL（结构化查询语言）</td>
+<td>Query DSL（查询专用语言）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>值得注意的是：Type在6.0.0版本中已经不赞成使用</p>
+</blockquote>
+<p>所以在<strong>6.0</strong>版本以后一个<strong>doc</strong>也就是一个文档是一个可被索引的数据的基础单元。我们完全可以通过类似<code>/index/doc/:id</code>这样的形式表现出来</p>
+<h3 id="基本命令">基本命令</h3>
+<p>1.首先我们可以去了解一个集群的阿康状况 使用<code>_cat API</code>去查看(包括查看节点索引这些都会使用这个<code>API</code>)</p>
+<pre><code class="language-shell">$ curl -X GET 'localhost:9200/_cat/health?v&amp;pretty'
+</code></pre>
+<blockquote>
+<p>pretty参数 是返回格式的美化 下面不做太多介绍</p>
+</blockquote>
+<p>响应的结果会是这样：</p>
+<pre><code class="language-shell">epoch  timestamp cluster  status node.total node.data shards pri relo init unassign pending_tasks max_task_wait_time active_shards_percent
+1475247709 17:01:49  elasticsearch green           1         1      0   0    0    0        0             0                  -                100.0%
+</code></pre>
+<p>注意这里的状态为<code>green</code> 这里的状态有三种 <code>red</code>、<code>yellow</code>、<code>green</code></p>
+<ul>
+<li>green - 一切运行正常(集群功能齐全)</li>
+<li>yellow - 所有数据是可以获取的，但是一些复制品还没有被分配(集群功能齐全)</li>
+<li>red  一些数据因为一些原因获取不到(集群部分功能不可用)</li>
+</ul>
+<p>2.查看节点</p>
+<pre><code class="language-shell">$ curl -X GET 'localhost:9200/_cat/nodes?v&amp;pretty'
+</code></pre>
+<p>返回的结果为:</p>
+<pre><code class="language-shell">ip        heap.percent ram.percent cpu load_1m load_5m load_15m node.role master name
+127.0.0.1           16          94   3    0.01    0.01     0.02 mdi       *      XJCA34j
+</code></pre>
+<p>这里可以看到返回的只有一个名为<code>XJCA34j</code>的节点 它也是目前集群中唯一的节点</p>
+<p>3.列出所有索引</p>
+<pre><code class="language-shell">$ curl -X GET 'localhost:9200/_cat/indices?v&amp;pretty'
+</code></pre>
+<p>返回的结果为:</p>
+<pre><code class="language-shell">health status index uuid pri rep docs.count docs.deleted store.size pri.store.size
+</code></pre>
+<h3 id="使用事例">使用事例</h3>
+<p>1.先尝试创建一个索引</p>
+<pre><code class="language-shell">$ curl -X PUT 'localhost:9200/user?pretty&amp;pretty'
+</code></pre>
+<p>返回的结果为:</p>
+<pre><code class="language-shell">{
+  &quot;acknowledged&quot; : true,
+  &quot;shards_acknowledged&quot; : true,
+  &quot;index&quot; : &quot;user&quot;
+}
+</code></pre>
+<p>再列出所有的索引</p>
+<pre><code class="language-shell">$ curl -X GET 'localhost:9200/_cat/indices?v&amp;pretty'
+</code></pre>
+<p>2.插入一条数据(文档)</p>
+<pre><code class="language-shell">curl -X PUT 'localhost:9200/user/doc/1?pretty&amp;pretty' -H 'Content-Type: application/json' -d 
+'{&quot;name&quot;: &quot;GeekGhc&quot;}'
+</code></pre>
+<p>返回的结果为:</p>
+<pre><code class="language-shell">{
+  &quot;_index&quot; : &quot;user&quot;,
+  &quot;_type&quot; : &quot;doc&quot;,
+  &quot;_id&quot; : &quot;1&quot;,
+  &quot;_version&quot; : 1,
+  &quot;result&quot; : &quot;created&quot;,
+  &quot;_shards&quot; : {
+    &quot;total&quot; : 2,
+    &quot;successful&quot; : 1,
+    &quot;failed&quot; : 0
+  },
+  &quot;_seq_no&quot; : 0,
+  &quot;_primary_term&quot; : 1
+}
+</code></pre>
+<p>从返回的结果我们可以看到这条数据的基本信息 如是在<code>user</code>这个<code>index</code> <code>type</code>为<code>doc</code> 并且<code>id</code>为<strong>1</strong></p>
+<p>3.获取一条数据<br>
+那么查看这条数据时执行</p>
+<pre><code class="language-shell">$ curl -X GET 'localhost:9200/user/doc/1?pretty&amp;pretty'
+</code></pre>
+<p>返回的结果为:</p>
+<pre><code class="language-shell">{
+  &quot;_index&quot; : &quot;user&quot;,
+  &quot;_type&quot; : &quot;doc&quot;,
+  &quot;_id&quot; : &quot;1&quot;,
+  &quot;_version&quot; : 1,
+  &quot;found&quot; : true,
+  &quot;_source&quot; : { &quot;name&quot;: &quot;GeekGhc&quot; }
+}
+</code></pre>
+<p>4.修改一条数据<br>
+其实修改和插入形式是一样的  如果存在那个<code>id</code>那么就会更新之前文档的数据  反之则会增加一条文档数据</p>
+<pre><code class="language-shell">curl -X PUT 'localhost:9200/user/doc/1?pretty&amp;pretty' -H 'Content-Type: application/json' -d 
+'{&quot;name&quot;: &quot;JellyBean&quot;}'
+</code></pre>
+<p>5.删除一条索引(可以理解为删除一个数据库)</p>
+<pre><code class="language-shell">$curl -X DELETE 'localhost:9200/customer?pretty&amp;pretty'
+</code></pre>
+<p>在此列出所有索引即可查看到最终效果<br>
+6.批处理数据<br>
+往往我们会需要批处理一些数据 比如我们需要插入几条数据 这个时候我们需要使用<code>_bulk API</code><br>
+举个例子来说就是去插入两条数据</p>
+<pre><code class="language-shell">curl -X POST 'localhost:9200/user/doc/_bulk?pretty&amp;pretty' -H 'Content-Type: application/json' -d'
+{&quot;index&quot;:{&quot;_id&quot;:&quot;1&quot;}}
+{&quot;name&quot;: &quot;Jelly One&quot; }
+{&quot;index&quot;:{&quot;_id&quot;:&quot;2&quot;}}
+{&quot;name&quot;: &quot;Jelly Two&quot; }
+'
+</code></pre>
+<blockquote>
+<p>当然也可以同时进行插入和删除等操作</p>
+</blockquote>
+<h2 id="搜索">搜索</h2>
+<p>在使用搜索之前我们需要一批数据 这里我引用别人的一段<code>json</code>数据 其生成工具是<a href="www.json-generator.com">www.json-generator.com</a></p>
+<blockquote>
+<p>json-generator 里面会有字段的定义语法 对着它的帮组文档可以定义你需要的字段</p>
+</blockquote>
+<p>你可以从这里进行<a href="https://raw.githubusercontent.com/elastic/elasticsearch/master/docs/src/test/resources/accounts.json">下载</a></p>
+<p>下载之后放入当前目录我们就可以加载到集群中</p>
+<pre><code class="language-shell">$ curl -H &quot;Content-Type: application/json&quot; -XPOST 'localhost:9200/bank/account/_bulk?pretty&amp;refresh' --data-binary &quot;@accounts.json&quot;
+</code></pre>
+<p>接着再去查看所有索引</p>
+<pre><code class="language-shell">$ curl -X GET 'localhost:9200/_cat/indices?v&amp;pretty'
+</code></pre>
+<p>这样的话我们就在<code>bank</code>这个<code>Index</code>中的<code>account</code>类型<code>(type)</code>下插入了<strong>1000</strong>条数据</p>
+<h3 id="搜索api">搜索API</h3>
+<p>在执行搜索时我们需要的<code>API</code>是<code>_search</code> 在执行搜索时会有两种方式 一种是通过<code>url</code>方式 而另外一种则是通过将请求放入请求体中</p>
+<p>这里更推荐所有的请求放入请求体  这样更为友好和解读 就以一个简单的搜索来说</p>
+<p>如果是<code>url</code>方式  <code>Curl</code>请求</p>
+<pre><code class="language-shell">$ curl -X GET 'localhost:9200/bank/_search?q=*&amp;sort=account_number:asc&amp;pretty&amp;pretty'
+</code></pre>
+<p>如果是放入请求体中：</p>
+<pre><code class="language-shell">$ curl -X GET 'localhost:9200/bank/_search?pretty' -H 'Content-Type: application/json' -d'
+  {
+    &quot;query&quot;: { &quot;match_all&quot;: {} },
+    &quot;sort&quot;: [
+      { &quot;account_number&quot;: &quot;asc&quot; }
+    ]
+  }
+  '
+</code></pre>
+<p>两者返回结果为:</p>
+<pre><code class="language-shell">{
+  &quot;took&quot; : 63,
+  &quot;timed_out&quot; : false,
+  &quot;_shards&quot; : {
+    &quot;total&quot; : 5,
+    &quot;successful&quot; : 5,
+    &quot;skipped&quot; : 0,
+    &quot;failed&quot; : 0
+  },
+  &quot;hits&quot; : {
+    &quot;total&quot; : 1000,
+    &quot;max_score&quot; : null,
+    &quot;hits&quot; : [ {
+      &quot;_index&quot; : &quot;bank&quot;,
+      &quot;_type&quot; : &quot;account&quot;,
+      &quot;_id&quot; : &quot;0&quot;,
+      &quot;sort&quot;: [0],
+      &quot;_score&quot; : null,
+      &quot;_source&quot; : {&quot;account_number&quot;:0,&quot;balance&quot;:16623,&quot;firstname&quot;:&quot;Bradshaw&quot;,&quot;lastname&quot;:&quot;Mckenzie&quot;,&quot;age&quot;:29,&quot;gender&quot;:&quot;F&quot;,&quot;address&quot;:&quot;244 Columbus Place&quot;,&quot;employer&quot;:&quot;Euron&quot;,&quot;email&quot;:&quot;bradshawmckenzie@euron.com&quot;,&quot;city&quot;:&quot;Hobucken&quot;,&quot;state&quot;:&quot;CO&quot;}
+    }, {
+      &quot;_index&quot; : &quot;bank&quot;,
+      &quot;_type&quot; : &quot;account&quot;,
+      &quot;_id&quot; : &quot;1&quot;,
+      &quot;sort&quot;: [1],
+      &quot;_score&quot; : null,
+      &quot;_source&quot; : {&quot;account_number&quot;:1,&quot;balance&quot;:39225,&quot;firstname&quot;:&quot;Amber&quot;,&quot;lastname&quot;:&quot;Duke&quot;,&quot;age&quot;:32,&quot;gender&quot;:&quot;M&quot;,&quot;address&quot;:&quot;880 Holmes Lane&quot;,&quot;employer&quot;:&quot;Pyrami&quot;,&quot;email&quot;:&quot;amberduke@pyrami.com&quot;,&quot;city&quot;:&quot;Brogan&quot;,&quot;state&quot;:&quot;IL&quot;}
+    }, ...
+    ]
+  }
+}
+</code></pre>
+<p>对于返回结果的字段的解释如下:</p>
+<ul>
+<li>took - <code>ES</code>执行此次搜索所用的时间(单位：毫秒)</li>
+<li>timed_out - 告诉我们此次搜索是否超时</li>
+<li>_shards - 告诉我们搜索了多少分片，还有搜索成功和搜索失败的分片数量</li>
+<li>hits - 搜索结果</li>
+<li>hits.total - 符合搜索条件的文档数量</li>
+<li>hits.hits - 实际返回的搜索结果对象数组(默认只返回前10条)</li>
+<li>hits.sort - 返回结果的排序字段值(如果是按<code>score</code>进行排序，则没有)</li>
+<li>hits._score 和 max_score - 目前先忽略这两个字段</li>
+</ul>
+<h4 id="查询语法">查询语法</h4>
+<p>和很多关系型数据库一样 在查询方面  <code>ES</code>也提供了很多查询方法<br>
+举个例子来说</p>
+<pre><code class="language-shell">curl -X GET 'localhost:9200/bank/_search?pretty' -H 'Content-Type: application/json' -d'
+{
+  &quot;query&quot;: { &quot;match_all&quot;: {} },
+  &quot;sort&quot;: [
+      { &quot;account_number&quot;: &quot;asc&quot; }
+  ],
+  &quot;from&quot;: 10,
+  &quot;size&quot;: 1
+}
+'
+</code></pre>
+<p>这里我一下子列出了几个参数</p>
+<p><code>match_all</code>部分简单指定了我们想去执行的查询类型，这里意思就是在索引中搜索所有的文档。<code>sort</code>来指定搜索结果的顺序。<code>size</code>来指定返回的结果数量。<code>rom</code>参数(从<strong>0</strong>开始)指定了从哪个文档索引开始。</p>
+<p>这个和<code>mysql</code>中的<code>limit</code>和<code>offset</code>是一个意思。</p>
+<p>还有就是在<code>Laravel</code>中有一种字段映射，在<code>MySQL</code>中返回指定字段  那么只需要在请求体中加入<code>_source</code>属性即可:</p>
+<pre><code class="language-shell">curl -X GET 'localhost:9200/bank/_search?pretty' -H 'Content-Type: application/json' -d'
+{
+  &quot;query&quot;: { &quot;match_all&quot;: {} },
+  &quot;_source&quot;: [&quot;account_number&quot;, &quot;balance&quot;]
+}
+'
+</code></pre>
+<p>这样的话我们只会返回<code>account_number</code>和<code>balance</code>两个字段</p>
+<h3 id="关键字搜索">关键字搜索</h3>
+<p>这是为了应对全文搜索这样的应用场景 下面来搜索<code>address</code>字段里有<code>mill</code>这个单词的文档集</p>
+<pre><code class="language-shell">curl -X GET 'localhost:9200/bank/_search?pretty' -H 'Content-Type: application/json' -d'
+{
+  &quot;query&quot;: { &quot;match&quot;: { &quot;address&quot;: &quot;mill&quot; } }
+}
+'
+</code></pre>
+<p>当然我们回遇到多个查询条件 如满足关键词既包含<code>mail</code>也包含<code>com</code>关键词那么其语法为:</p>
+<pre><code class="language-shell">curl -X GET 'localhost:9200/bank/_search?pretty' -H 'Content-Type: application/json' -d'
+{
+  &quot;query&quot;: {
+    &quot;bool&quot;: {
+      &quot;must&quot;: [
+        { &quot;match&quot;: { &quot;address&quot;: &quot;mill&quot; } },
+        { &quot;match&quot;: { &quot;address&quot;: &quot;com&quot; } }
+      ]
+    }
+  }
+}
+'
+</code></pre>
+<p>对应与的操作还有或操作 即包含<code>mail</code>或<code>com</code></p>
+<pre><code class="language-shell">curl -X GET 'localhost:9200/bank/_search?pretty' -H 'Content-Type: application/json' -d'
+{
+  &quot;query&quot;: {
+    &quot;bool&quot;: {
+      &quot;should&quot;: [
+        { &quot;match&quot;: { &quot;address&quot;: &quot;mill&quot; } },
+        { &quot;match&quot;: { &quot;address&quot;: &quot;com&quot; } }
+      ]
+    }
+  }
+}
+'
+</code></pre>
+<p>当然还有非这样的操作 即没有这两个关键词</p>
+<pre><code class="language-shell">curl -X GET 'localhost:9200/bank/_search?pretty' -H 'Content-Type: application/json' -d'
+{
+  &quot;query&quot;: {
+    &quot;bool&quot;: {
+      &quot;must_not&quot;: [
+        { &quot;match&quot;: { &quot;address&quot;: &quot;mill&quot; } },
+        { &quot;match&quot;: { &quot;address&quot;: &quot;com&quot; } }
+      ]
+    }
+  }
+}
+'
+</code></pre>
+<p>从上面三个事例可以看出<code>bool</code>下其实包含了三种组合 <code>must</code> <code>should</code> <code>must_not</code>对应着与或非  你可以随意组合这些条件</p>
+<h3 id="判断过滤">判断过滤</h3>
+<p>在查询语言中经常会遇到一些大于等于小于这些判断过滤  这在<code>ES</code>中的表现为</p>
+<pre><code class="language-shell">curl -X GET 'localhost:9200/bank/_search?pretty' -H 'Content-Type: application/json' -d'
+{
+  &quot;query&quot;: {
+    &quot;bool&quot;: {
+      &quot;must&quot;: { &quot;match_all&quot;: {} },
+      &quot;filter&quot;: {
+        &quot;range&quot;: {
+          &quot;balance&quot;: {
+            &quot;gte&quot;: 20000,
+            &quot;lte&quot;: 30000
+          }
+        }
+      }
+    }
+  }
+}
+'
+</code></pre>
+<p>例使用<code>bool</code>查询返回所有余额在<strong>20000</strong>到<strong>30000</strong>之间的账户(包含边界)。换句话说，我们想查询账户余额大于等于<strong>20000</strong>并且小于等于<strong>30000</strong>的用户。</p>
+<h3 id="使用ik分词进行搜索">使用<code>ik</code>分词进行搜索</h3>
+<p>为了实现分词 在<code>github</code>上根据文档进行安装<a href="https://github.com/medcl/elasticsearch-analysis-ik">https://github.com/medcl/elasticsearch-analysis-ik</a></p>
+<p>因为我这里版本是<strong>6.2.3</strong>的 在当前目录可以执行</p>
+<pre><code class="language-shell">$ ./bin/elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v6.2.3/elasticsearch-analysis-ik-6.2.3.zip
+</code></pre>
+<p>安装完毕之后重启<code>ES</code> 在去执行<code>list</code>命令查看是否有这个<code>plugin</code></p>
+<pre><code class="language-shell">$ ./bin/elasticsearch-plugin list
+</code></pre>
+<p>下面可以进行一次关键词搜索 需指定高亮的字段</p>
+<pre><code class="language-shell">curl -X POST 'localhost:9200/bank/_search?pretty' -H 'Content-Type: application/json' -d'
+{
+  &quot;query&quot;: { &quot;match&quot;: { &quot;address&quot; : &quot;993&quot; } },
+  &quot;highlight&quot; : {
+        &quot;pre_tags&quot; : [&quot;&lt;tag1&gt;&quot;, &quot;&lt;tag2&gt;&quot;],
+        &quot;post_tags&quot; : [&quot;&lt;/tag1&gt;&quot;, &quot;&lt;/tag2&gt;&quot;],
+        &quot;fields&quot; : {
+            &quot;address&quot; : {}
+        }
+    }
+}'
+</code></pre>
+<p>这里我们就是去查找<code>address</code>字段含有<code>993</code>的文档数据</p>
+<p>最后返回的结果为:</p>
+<pre><code class="language-shell">{
+  &quot;took&quot; : 187,
+  &quot;timed_out&quot; : false,
+  &quot;_shards&quot; : {
+    &quot;total&quot; : 5,
+    &quot;successful&quot; : 5,
+    &quot;skipped&quot; : 0,
+    &quot;failed&quot; : 0
+  },
+  &quot;hits&quot; : {
+    &quot;total&quot; : 2,
+    &quot;max_score&quot; : 4.388994,
+    &quot;hits&quot; : [
+      {
+        &quot;_index&quot; : &quot;bank&quot;,
+        &quot;_type&quot; : &quot;account&quot;,
+        &quot;_id&quot; : &quot;766&quot;,
+        &quot;_score&quot; : 4.388994,
+        &quot;_source&quot; : {
+          &quot;account_number&quot; : 766,
+          &quot;balance&quot; : 21957,
+          &quot;firstname&quot; : &quot;Thomas&quot;,
+          &quot;lastname&quot; : &quot;Gillespie&quot;,
+          &quot;age&quot; : 38,
+          &quot;gender&quot; : &quot;M&quot;,
+          &quot;address&quot; : &quot;993 Williams Place&quot;,
+          &quot;employer&quot; : &quot;Octocore&quot;,
+          &quot;email&quot; : &quot;thomasgillespie@octocore.com&quot;,
+          &quot;city&quot; : &quot;Defiance&quot;,
+          &quot;state&quot; : &quot;MS&quot;
+        },
+        &quot;highlight&quot; : {
+          &quot;address&quot; : [
+            &quot;&lt;tag1&gt;993&lt;/tag1&gt; Williams Place&quot;
+          ]
+        }
+      },
+      {
+        &quot;_index&quot; : &quot;bank&quot;,
+        &quot;_type&quot; : &quot;account&quot;,
+        &quot;_id&quot; : &quot;58&quot;,
+        &quot;_score&quot; : 4.388994,
+        &quot;_source&quot; : {
+          &quot;account_number&quot; : 58,
+          &quot;balance&quot; : 31697,
+          &quot;firstname&quot; : &quot;Marva&quot;,
+          &quot;lastname&quot; : &quot;Cannon&quot;,
+          &quot;age&quot; : 40,
+          &quot;gender&quot; : &quot;M&quot;,
+          &quot;address&quot; : &quot;993 Highland Place&quot;,
+          &quot;employer&quot; : &quot;Comcubine&quot;,
+          &quot;email&quot; : &quot;marvacannon@comcubine.com&quot;,
+          &quot;city&quot; : &quot;Orviston&quot;,
+          &quot;state&quot; : &quot;MO&quot;
+        },
+        &quot;highlight&quot; : {
+          &quot;address&quot; : [
+            &quot;&lt;tag1&gt;993&lt;/tag1&gt; Highland Place&quot;
+          ]
+        }
+      }
+    ]
+  }
+}
+</code></pre>
+<h2 id="相关连接">相关连接</h2>
+<ul>
+<li><a href="https://www.elastic.co/guide/en/elasticsearch/reference/6.2/getting-started.html">ES6.2官方文档</a></li>
+<li><a href="https://github.com/medcl/elasticsearch-analysis-ik">IK Analysis for Elasticsearch</a></li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/swagger-gou-jian-xiang-mu-zhong-api-wen-dang/" class="post-title gt-a-link">
+                    Swagger 构建项目中Api文档
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/elasticsearch-sou-suo-yin-qing/" class="leancloud_visitors" data-flag-title="Elasticsearch搜索引擎">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

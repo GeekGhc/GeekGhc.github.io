@@ -1,0 +1,517 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Laravel API结合Dingo API和JWT | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Laravel API结合Dingo API和JWT
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-03-19 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/9-TzKRzh4/" class="post-tags">
+                            # Api
+                        </a>
+                    
+                        <a href="https://GeekGhc.github.io/tag/b0tSda50f/" class="post-tags">
+                            # Laravel
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>在Web开发，Api开发是一项非常重要的技术，这里就以Laravel项目实例来开发API 熟悉下API的具体的流程</p>
+<h2 id="介绍">介绍</h2>
+<p>关于<code>API</code>的开发 不得不提的就是可以利用<code>Dingo</code>来构建更加强大的<code>API</code> 这样我们可以更好的去实现<code>API</code>认证和请求</p>
+<blockquote>
+<p>本文基于laravist的Api教程 作为笔记参考</p>
+</blockquote>
+<h2 id="安装">安装</h2>
+<p>首先当然是去<a href="https://github.com/dingo/api/wiki/Installation">安装页面</a> 根据提供的包进行下载 在<code>laravel</code>项目中就是<code>require</code>这个<code>package</code></p>
+<pre><code class="language-php?start_inline=1">&quot;dingo/api&quot;: &quot;1.0.*@dev&quot;
+</code></pre>
+<p>接着在<code>laravel</code>项目的<code>config</code>的<code>app.php</code>去添加服务</p>
+<pre><code class="language-php?start_inline=1">'providers' =&gt; [
+    Dingo\Api\Provider\LaravelServiceProvider::class
+]
+</code></pre>
+<p>再去生成相应的配置文件</p>
+<pre><code class="language-shell">$ php artisan vendor:publish --provider=&quot;Dingo\Api\Provider\LaravelServiceProvider&quot;
+</code></pre>
+<p>如果需要实现<code>jwt</code> 同样的也是去<a href="https://github.com/tymondesigns/jwt-auth/wiki/Authentication">安装页面</a> 安装这个<code>package</code></p>
+<pre><code class="language-php?start_inline=1">&quot;require&quot;: {
+    &quot;tymon/jwt-auth&quot;: &quot;0.5.*&quot;
+}
+</code></pre>
+<p>添加对应的服务:</p>
+<pre><code class="language-php?start_inline=1">'Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class'
+</code></pre>
+<p>当然也是需要去配置一下他的<code>alias</code></p>
+<pre><code class="language-php?start_inline=1">'JWTAuth' =&gt; Tymon\JWTAuth\Facades\JWTAuth::class,
+'JWTFactory' =&gt; Tymon\JWTAuth\Facades\JWTFactory::class
+</code></pre>
+<p>生成配置文件</p>
+<pre><code class="language-shell">$ php artisan vendor:publish --provider=&quot;Tymon\JWTAuth\Providers\JWTAuthServiceProvider&quot;
+</code></pre>
+<p>生成一个<code>key</code></p>
+<pre><code class="language-shell">$ php artisan jwt:generate
+</code></pre>
+<h2 id="使用">使用</h2>
+<p>1.这个时候我们是在开发的环境下 还需对<code>Dingo</code>进行相应的配置 在<code>.env</code>文件里</p>
+<pre><code class="language-php?start_inline=1">API_STANDARDS_TREE=vnd
+</code></pre>
+<p>添加前缀</p>
+<pre><code class="language-php?start_inline=1">API_PREFIX=api
+</code></pre>
+<p>填写版本 这个我们之前自己写测试的时候也是提供的<strong>v1</strong>以此来区别版本</p>
+<pre><code class="language-php?start_inline=1">API_VERSION=v1
+</code></pre>
+<p>开启<code>Debug</code>模式</p>
+<pre><code class="language-php?start_inline=1">API_DEBUG=true
+</code></pre>
+<p>一开始可以去实现一个<code>jwt</code>的<code>aut</code>h认证 在<code>config/api.php</code>里配置</p>
+<pre><code class="language-php?start_inline=1">'auth' =&gt; [
+    'basic'=&gt;function($app){
+        return new  Dingo\Api\Auth\Provider\Basic($app['auth']);
+    },
+    'jwt'=&gt;function($app){
+        return new  Dingo\Api\Auth\Provider\JWT($app['Tymon\JWTAuth\JWTAuth']);
+    }
+],
+</code></pre>
+<p>这样我们即实现了在<code>Dingo</code>的<code>jwt</code>认证</p>
+<p>2.既然是<code>auth</code>认证我们就需要先注册刚配置好的认证 即在<code>Kernel</code>文件里添加</p>
+<pre><code class="language-php?start_inline=1">'jwt.auth'=&gt; \Tymon\JWTAuth\Middleware\GetUserFromToken::class,
+'jwt.refresh'=&gt;\Tymon\JWTAuth\Middleware\RefreshToken::class,
+</code></pre>
+<p>3.添加<code>api</code>路由<br>
+在<code>laravel 5.2</code>以后的版本我们可以直接放在<code>routes/api.php</code>里</p>
+<pre><code class="language-php?start_inline=1">$api = app('Dingo\Api\Routing\Router');
+</code></pre>
+<p>为了区分开来 我们可以在<code>app</code>目录下新建<code>Api</code>目录然后在新建<code>Controllers</code>和在<code>Https</code>目录一样 在这里用来管理<code>api</code>的控制器</p>
+<p>在这个目录下新建一个基本的控制器<code>BaseController</code></p>
+<pre><code class="language-php?start_inline=1">&lt;?php
+namespace App\Api\Controllers;
+use App\Http\Controllers\Controller;
+use Dingo\Api\Routing\Helpers;
+class BaseController extends Controller
+{
+    use Helpers;
+}
+</code></pre>
+<p>所以这个时候我们再去创建对数据表的<code>api</code>时就可以继承这个表而使用<code>Dingo Api</code>的<code>Helpers</code> 比如在此目录下创建<code>PostsController</code></p>
+<p>这样我们就可以在<code>routes</code>里根据<code>Dingo</code>提供的方法去定义想要的<code>api</code>了</p>
+<pre><code class="language-php?start_inline=1">$api = app('Dingo\Api\Routing\Router');
+
+$api-&gt;version('v1', function ($api) {
+    $api-&gt;group(['namespace' =&gt; 'App\Api\Controllers'], function ($api) {
+        $api-&gt;get('lessons','PostsController@index');
+        $api-&gt;get('lessons/{id}','PostsController@show');
+    });
+});
+</code></pre>
+<p>在<code>PostsController</code>的<code>index</code>返回所有数据 那么再去访问<a href="http://localhost:8000/api/lessons">http://localhost:8000/api/lessons</a><br>
+就可以看到所有的数据了</p>
+<blockquote>
+<p>在这里路由的定义就是这样 这于我们之前自己写的路由方式还是不太一样的 因为这是<code>Dingo</code>为我们封装好的路由</p>
+</blockquote>
+<p>当然和之前的一样 我们需要对数据字段进行映射 那么我们可以在<code>Api</code>目录下新建<code>Transformer</code>目录 然后在这个目录下新建<code>PostTransformer</code></p>
+<pre><code class="language-php?start_inline=1">&lt;?php
+namespace App\Api\Transformer;
+use App\Post;
+use League\Fractal\TransformerAbstract;
+class PostTransformer extends TransformerAbstract
+{
+    public function transform(Post $post)
+    {
+        return [
+            'title' =&gt; $post['title'],
+            'content' =&gt; $post['body'],
+            'is_free' =&gt; (boolean)$ppost['free']
+        ];
+    }
+}
+</code></pre>
+<p>在这里我们是可以使用<code>Dingo API</code>的<code>Transformer</code>即<code>TransformerAbstract</code></p>
+<p>这样写完我们就可以在控制器里去重新返回所有信息</p>
+<pre><code class="language-php?start_inline"> public function index()
+{
+    $lessons =  Post::all();
+
+    return $this-&gt;collection($post,new PostTransformer());
+}
+</code></pre>
+<blockquote>
+<p>这里的<code>PostTransformer</code>是 <code>App\Api\Transformer\PostTransformer</code></p>
+</blockquote>
+<p>当然还有之前的<code>show</code>方法 因为他的返回状态信息之前都是自己写的 其实在<code>Dingo</code>里也有相应的方法</p>
+<pre><code class="language-php?start_inline=1">public function show($id)
+{
+    $lesson = Lesson::find($id);
+    if(! $lesson){
+        return $this-&gt;response-&gt;errorNotFound('Lesson not found');
+    }
+    return $this-&gt;item($lesson,new LessonTransformer());
+}
+</code></pre>
+<h2 id="结合jwt的auth认证">结合Jwt的auth认证</h2>
+<p>在<code>App\Api\Controllers</code>目录下新建<code>AuthController</code>并继承之前定义好的<code>BaseController</code></p>
+<p>在<code>jwt</code>的<a href="https://github.com/tymondesigns/jwt-auth/wiki/Creating-Tokens">创建token的页面</a> 我们就可以使用它的<code>authenticate</code>方法</p>
+<pre><code class="language-php?start_inline=1">public function authenticate(Request $request)
+{
+    // grab credentials from the request
+    $credentials = $request-&gt;only('email','password');
+    try {
+        // attempt to verify the credentials and create a token for the user
+        if (! $token = JWTAuth::attempt($credentials)) {
+            return response()-&gt;json(['error' =&gt; 'invalid_credentials'], 401);
+        }
+    } catch (JWTException $e) {
+        // something went wrong whilst attempting to encode the token
+        return response()-&gt;json(['error' =&gt; 'could_not_create_token'], 500);
+    }
+    // all good so return the token
+    return response()-&gt;json(compact('token'));
+}
+</code></pre>
+<p>为了执行这个方法 可以去路由中定义</p>
+<pre><code class="language-php?start_inline=1">$api-&gt;version('v1', function ($api) {
+    $api-&gt;group(['namespace' =&gt; 'App\Api\Controllers'], function ($api) {
+        $api-&gt;post('user/login','AuthController@authenticate');
+        $api-&gt;post('user/register','AuthController@register');
+    });
+});
+</code></pre>
+<p>这个时候再去查看一下我们的路由的话就会看到新定义的<code>post</code>路由</p>
+<p>为了验证请求的结果 我们可以使用<code>postman</code>这个<code>chrome</code>工具 去请求<a href="http://localhost:8000/api/user/login">http://localhost:8000/api/user/login</a></p>
+<p>这个时候是会返回<code>{&quot;error&quot;:&quot;invalid_credentials&quot;}</code></p>
+<p>为了能够正确通过我们可以在<code>body</code>部分给出用户邮箱和密码(用户可用<code>thinker</code>创建一个) 这个时候就会正确返回一个<code>token</code><br>
+<img src="https://GeekGhc.github.io/post-images/1616820519332.png" alt="" loading="lazy"></p>
+<p>这个<code>token</code>就是用来保护有<code>jwt</code>认证下的信息 我们可以为<code>Post</code>的数据添加一个<code>middleware</code></p>
+<pre><code class="language-php?start_inline=1">$api-&gt;group(['middleware'=&gt;'jwt.auth'],function ($api){
+    $api-&gt;get('posts',PostsController@index');
+    $api-&gt;get('posts/{id}','PostsController@show');
+});
+</code></pre>
+<p>所以这个时候如果我们没有之前<code>authenticate</code>返回的<code>token</code>的话 我们是无法访问<code>api/posts</code>和<code>api/post/{id}</code>的</p>
+<p>只有加上返回的<code>token</code>我们才能继续访问到之前的数据信息 如<code>/api/posts?token=xxxxxx</code></p>
+<p>既然只有登录的用户才能访问到这些资源 那么我们是不是也可以去拿到登录的用户</p>
+<p>在<code>jwt</code>的<code>Authentication</code>里就提供了<code>getAuthenticatedUser</code>这个方法 所以为了查看效果 可以去注册一条路由</p>
+<pre><code class="language-php?start_inline=1">$api-&gt;group(['middleware'=&gt;'jwt.auth'],function ($api){
+    $api-&gt;get('user/me','AuthController@getAuthenticatedUser');
+});
+</code></pre>
+<p>接着在<code>AuthController</code>里去定义这个方法</p>
+<pre><code class="language-php?start_inline=1">public function getAuthenticatedUser()
+{
+    try {
+        if (! $user = JWTAuth::parseToken()-&gt;authenticate()) {
+            return response()-&gt;json(['user_not_found'], 404);
+        }
+    } catch (TokenExpiredException $e) {
+        return response()-&gt;json(['token_expired'], $e-&gt;getStatusCode());
+    } catch (TokenInvalidException $e) {
+        return response()-&gt;json(['token_invalid'], $e-&gt;getStatusCode());
+    } catch (JWTException $e) {
+        return response()-&gt;json(['token_absent'], $e-&gt;getStatusCode());
+    }
+    // the token is valid and we have found the user via the sub claim
+    return response()-&gt;json(compact('user'));
+}
+</code></pre>
+<p>所以说这时候去访问<a href="http://localhost:8000/api/user/me?token=">http://localhost:8000/api/user/me?token=xxx</a>就可以拿到当前登录的用户信息了</p>
+<h2 id="相关链接">相关链接</h2>
+<ul>
+<li><a href="https://github.com/dingo/api">Dingo/api</a></li>
+<li><a href="https://github.com/dingo/api/wiki/Configuration">Dingo/api 配置页面</a></li>
+<li><a href="https://github.com/tymondesigns/jwt-auth">tymondesigns/jwt-auth</a></li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/laravel-api-kai-fa-chu-tan/" class="post-title gt-a-link">
+                    Laravel API开发初探
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/laravel-api-jie-he-dingo-api-he-jwt/" class="leancloud_visitors" data-flag-title="Laravel API结合Dingo API和JWT">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

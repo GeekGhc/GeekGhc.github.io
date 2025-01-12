@@ -1,0 +1,401 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>应用中正则表达式的使用 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    应用中正则表达式的使用
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-05-16 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/asFM02U4E/" class="post-tags">
+                            # Tools
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>无论我们学习哪一门语言 我们都会遇到正则表达式的场景 他的使用确实解决了很多实际应用的很多问题 作为一名开发者这应该是每个人都应掌握的技能</p>
+<h2 id="简介">简介</h2>
+<p>正则表达式对我们来说肯定不陌生了 无论你学习哪门语言 肯定会有所用到它 从js里的表单验证匹配到路由的匹配以及很多后台的</p>
+<p>形式匹配验证 对于开发人员来讲都是很重要的一门技术 尽管平时一直在用 但发现这个却很值得整理一番 毕竟他的所存在的应用场景太多了</p>
+<p>当然这里会推荐一个正则表达式的在线工具<a href="http://regexr.com/">RegExr</a> 一个好的工具对于学习往往可以起到事半功倍的效果</p>
+<p>过程中也会结合<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Regular_Expressions">MDN</a>的正则表达式手册所罗列的内容加以说明</p>
+<h2 id="认识正则表达式">认识正则表达式</h2>
+<p>很多时候我们会去处理一些类似手机号 邮箱的验证 当然一开始我们需要知道的就是字符串的替换</p>
+<p>举例来说的话就是如果我们需要打印<code>hello world</code></p>
+<p>在我们输入<code>hello $text$</code>时 我们希望匹配到结果是<code>hello world</code>所以我们的匹配规则也就是对<code>$text$</code>的匹配</p>
+<p>我们要知道<code>$</code>符号是匹配字符串的一个结尾 所以对于这样的符号要进行转义 即我们的匹配规则也就是</p>
+<p><code>/\$text\$/g</code> 当然这里的 <code>replace</code>的也就是<code>world</code>这个单词</p>
+<blockquote>
+<p>这里符号的转义就是在符号之前加上 \</p>
+</blockquote>
+<p>在匹配规则中对大小写是敏感的 所以如果我们想忽略大小写的限制 那么我们可以在后面加上加上一个 <code>i</code> 标识</p>
+<p>所以这个时候我们的匹配规则是 <code>/\$text\$/ig</code></p>
+<blockquote>
+<p>这里的<code>i</code>也就是<code>ignore</code>  而g这个标识就是<code>global</code>也就是全局性的匹配 就是说对全文都进行字符串的替换</p>
+</blockquote>
+<h2 id="量词的说明">量词的说明</h2>
+<p>这个在<code>RegExr</code>的<code>Reference</code>的<code>Quantifiers &amp; Alternation</code>里面已经列举了 其实主要我们常用的就是</p>
+<ul>
+<li><code>^</code> 匹配输入的开始。如果多行标志被设置为<code>true</code>，那么也匹配换行符后紧跟的位置</li>
+<li><code>$</code> 匹配输入的结束。如果多行标示被设置为<code>true</code>，那么也匹配换行符前的位置</li>
+<li><code>*</code> 匹配前一个表达式<strong>0</strong>次或多次。等价于 <strong>{0,}</strong></li>
+<li><code>+</code> 匹配前面一个表达式<strong>1</strong>次或者多次。等价于 <strong>{1,}</strong></li>
+<li><code>?</code> 匹配前面一个表达式<strong>0</strong>次或者<strong>1</strong>次。等价于 <strong>{0,1}</strong></li>
+<li><code>.</code> （小数点）匹配除换行符之外的任何单个字符。</li>
+</ul>
+<blockquote>
+<p>如果我想匹配指定范围次数时  可以使用<code>{m,n}</code>在这之间加上想要的范围值 这样一来我们也就可以限定<code>character</code>的长度</p>
+</blockquote>
+<p>这些在匹配元素如空格时就会用到 这些都是限定在他之前的元素的出现次数</p>
+<h2 id="元素分类">元素分类</h2>
+<p>通常我们所需要面对的就是数字 单词以及一些特殊字符 在这里<code>RegExr</code>在<code>Character classes</code>列出了一些元素<br>
+我们可以先列举几个</p>
+<ul>
+<li><code>\d</code>  匹配数字 等价于[0-9]</li>
+<li><code>\D</code>  匹配匹配一个非数字字符 等价于[^0-9]。</li>
+<li><code>\w</code>  匹配是一个<code>word</code>即单词</li>
+<li><code>\s</code>  匹配空格</li>
+<li><code>\t</code>  匹配一个水平制表符</li>
+</ul>
+<h2 id="手机号匹配">手机号匹配</h2>
+<p>对于手机号的匹配的应用其实很多 这时我们可以对用户输入的手机号进行正则匹配</p>
+<p>手机号的第一位数字都是 <strong>1</strong> 所以当然一开始的规则也就是<code>/1/ig</code></p>
+<p>对于手机号码的第<strong>2</strong>个数字 因为服务商的不同也会有所不同 那么总结下来主要有<code>34578</code></p>
+<p>那么新的匹配规则就是<code>/1[34578]/ig</code> 也就是第二个数是<code>34578</code>里的其中一个</p>
+<p>当然我们的手机位数都是<strong>11</strong>位 已经确定了2位 那么接下来还有<strong>9</strong>个 这<strong>9</strong>个也都是数字</p>
+<p>所以可以新建规则为 (指明剩下的都是数字且为<strong>9</strong>位 )</p>
+<pre><code class="language-shell">/1[34578][0-9]{9}/ig
+</code></pre>
+<blockquote>
+<p>这里的[0-9]的匹配也可以使用之前所提出的元素也就是 <code>\d</code> 也是代表了数字</p>
+</blockquote>
+<p>这样也就可以匹配最基础的手机号码匹配 当然还有其他的规则 完全可以按照从左到有的匹配规则进行匹配</p>
+<h2 id="用户名匹配">用户名匹配</h2>
+<p>想象一个场景就是在论坛社区里常常会**@<strong>某一个人 那么</strong>@**某个人这个字段会加上一个连接 这样就可以查看对方的个人主页</p>
+<p>那个这个时候我们需要解决的就是匹配<code>@Jelly</code>这样的语句 所以我们可以定义规则如下`</p>
+<pre><code class="language-shell">/@(\w{1,})/
+</code></pre>
+<p>这里的意思就是**@**开头 后面是一个<code>word character</code> 而<code>\w</code>包含了数字字母和下划线 这个也就是一个应户名 同时我们回去匹配 <strong>1</strong> 个或 <strong>1个以上</strong></p>
+<p>而替换的文字当然就是<code>a</code>标签了: <code>&lt;a href=&quot;/$1&quot;&gt;@$1&lt;/a&gt;</code></p>
+<blockquote>
+<p>特别的作为一个整体进行匹配时  在两边加上<code>()</code>用来表明这匹配的一个整体 <code>[]</code>代表的是或的关系即满足一个即可</p>
+</blockquote>
+<h2 id="邮件匹配">邮件匹配</h2>
+<p>用户在注册登录时大都会用到邮件地址 当然用户也有可能输入一个无效的邮箱信息 那么我们就可以用正则表达式去匹配我们所需要的邮件地址  而去除那些没有用的邮件地址</p>
+<p>其实邮件验证的匹配要求会比较严格 所以说实现一个完整的邮件匹配并不容易 但多数场景下借助正则表达式我们就可以满足我们的需求</p>
+<p>首先来匹配到我们常用的邮箱地址 在知道我们邮箱地址的基本形式之后 我们可以去匹配一个基本的邮箱</p>
+<p>因为我们邮箱肯定会有一个@符号 那么在@符号之前会有几个单词或者数字所以一开始我们定义规则为:</p>
+<pre><code class="language-shell">/[\w]+@/g
+</code></pre>
+<p>邮箱当然也会有类似二级域名的形式 如<code>jelly.gavin@sina.com</code> 如果再匹配<code>-</code>符号 所以在<code>\w</code>匹配时需要匹配到这样的形式</p>
+<p>我们之前罗列过小数点可以匹配到除换行符的任何单个字符 那个这里我们需要匹配的是小数点 <code>So</code> 接下来的规则定义就是</p>
+<pre><code class="language-shell">/[\w\.-]+@/g
+</code></pre>
+<p>接下来如果一个邮箱地址如 <code>gehuachun@outlook.com</code> 那么**@**符号后面也是一个单词加一个点</p>
+<pre><code class="language-shell">/[\w]+@[\w\.-]+/g
+</code></pre>
+<p>再者的话就是邮箱地址的后缀 现在邮箱地址的后缀已经有很多种了并不是只有<code>com</code> 所以你认为只是几个字符的话我们就可以使用<code>\w</code></p>
+<pre><code class="language-shell">/[\w]+@[\w\.-]+\.[\w]+/g
+</code></pre>
+<p>这样就基本完成了对邮箱的匹配 当然如果需要限定格式的话比如我们只需要匹配<code>Outlook</code>和<code>QQ</code>邮箱 我们只需要提供两个选择就可以</p>
+<pre><code class="language-shell">/[\w]+@(qq|outlook)\.[\w]+/
+</code></pre>
+<p>因为之前已经说过<code>()</code>作为一个整体部分进行判断匹配 而<code>|</code>则标识或的关系 那么我们就可以成功匹配到我们需要的类型邮箱</p>
+<h2 id="相关链接">相关链接</h2>
+<ul>
+<li><a href="http://regexr.com/">RegExr网址</a></li>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Regular_Expressions">MDN 正则表达式</a></li>
+<li><a href="https://c.runoob.com/front-end/854">菜鸟工具</a></li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/qian-tan-css-chang-yong-de-yu-chu-li-qi-kuang-jia/" class="post-title gt-a-link">
+                    浅谈CSS常用的预处理器(框架)
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/ying-yong-zhong-zheng-ze-biao-da-shi-de-shi-yong/" class="leancloud_visitors" data-flag-title="应用中正则表达式的使用">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

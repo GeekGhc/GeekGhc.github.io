@@ -1,0 +1,601 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>谈谈怎么实现用户的权限管理 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    谈谈怎么实现用户的权限管理
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-04-02 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/a00LrT9BB/" class="post-tags">
+                            # Auth
+                        </a>
+                    
+                        <a href="https://GeekGhc.github.io/tag/b0tSda50f/" class="post-tags">
+                            # Laravel
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>系统的后台管理者用户的信息 其中就包括用户的角色 一个大的系统用户的角色也分很多种 最近在做后台方面的内容 索性就以laravel项目为例 谈谈怎么去实现用户的去权限管理</p>
+<h2 id="介绍">介绍</h2>
+<p>用户对于一个系统而言 可能存在着多种身份 举个例子来说该用户可能是会员或者普通用户 该用户对于一篇文章是作者或者是游客 其实最终设计</p>
+<p>到的一项就是用户的<code>Permission</code>(也就是我们通常所说的权限) 最近自己也正在做后台方面的内容 在之前也接触了不少关于用户的权限这样的场景</p>
+<p>现在就来谈谈在<code>Laravel</code>中如何更好的去实现用户的权限管理</p>
+<p>在<code>Larave</code>l中有两种方式去实现: <strong>Gates</strong>和<strong>Policy(策略)</strong></p>
+<p>这两种方式的简单理解就是路由和控制器的作用 一个方法我们即可以在路由中直接去实现 也可以通过控制器方法去处理</p>
+<h2 id="简单的实例">简单的实例</h2>
+<p>先举一个简单的实例来说就是一个用户对一篇帖子 如果该用户不是帖子的作者 那么他的权限就会受到限制 反之作为作者可以对帖子有更多的权限</p>
+<p>就以<code>Laravel</code>来说 我们先去生成一个<code>Post Model</code></p>
+<pre><code class="language-shell">$ php artisan make:model Post -m
+</code></pre>
+<p>在去生成相应的控制器:</p>
+<pre><code class="language-shell">$ php artisan make:controller PosrController
+</code></pre>
+<p>生成好控制器之后定义好<code>posts table</code>字段信息:</p>
+<pre><code class="language-php?start_inline=1">Schema::create('posts', function (Blueprint $table) {
+    $table-&gt;increments('id');
+    $table-&gt;integer('user_id')-&gt;unsigned();
+    $table-&gt;string('title');
+    $table-&gt;string('body');
+    $table-&gt;timestamps();
+    $table-&gt;foreign('user_id')-&gt;references('id')-&gt;on('users')-&gt;onDelete('cascade');
+});
+</code></pre>
+<p>再去生成一条测试数据 过程这里就不过多阐述 毕竟和本文内容关系不大</p>
+<p>不过最后的结果就是用户<strong>id</strong>为<strong>1</strong>的用户创建了<strong>id</strong>为<strong>1</strong>的<code>post</code> 当然<strong>id</strong>为<strong>2</strong>的用户自然也就是游客的身份了</p>
+<p>好了 接下来我们先去尝试着通过<code>Gates</code>的方式去定义用户的权限</p>
+<p>在<code>app/providers/AuthServiceProvider.php</code>里去声明：</p>
+<pre><code class="language-php?start_inline=1">public function boot()
+{
+    $this-&gt;registerPolicies();
+
+    Gate::define('user-post', function ($user, $post) {
+        return $user-&gt;id == $post-&gt;user_id;
+    });
+}
+</code></pre>
+<p>这里使用了<code>Gates Facade</code>来定义 其中用户和其帖子的权限就命名为<code>user-post</code></p>
+<p>在此之前 先去定义好我们的路由:</p>
+<pre><code class="language-php?start_inline=1">Route::resource('posts','PostController');
+</code></pre>
+<p>为了看见效果 我们去<code>PostController</code>里面的<code>show</code>方法去定义</p>
+<pre><code class="language-php?start_inline=1">public function show($id)
+{
+    Auth::loginUsingId(2);
+    $post = Post::findOrFail($id);
+    if (Gate::denies('user-post', $post)) {
+        abort(403,'Sorry');
+    };
+    return $post-&gt;title;
+}
+</code></pre>
+<p>这里我们登录<strong>id</strong>为<strong>2</strong>的用户 那么我们在浏览器会发现该用户是无法查看<code>post</code>的<code>title</code>的 反之<strong>id</strong>为<strong>1</strong>的用户可以 因为我们赋予了该用户这个权限</p>
+<p>当然我们也是可以指定某一个用户而并不是登录的用户</p>
+<pre><code class="language-php?start_inline=1">if (Gate::forUser($user)-&gt;allows('update-post', $post)) {
+    // 指定用户可以更帖子...
+}
+</code></pre>
+<p>我们也可以使用<code>authorize</code>这个方法去实现</p>
+<pre><code class="language-php?start_inline=1">Auth::loginUsingId(1);
+$post = Post::findOrFail($id);
+$this-&gt;authorize('user-post',$post);
+return $post-&gt;title;
+</code></pre>
+<p>其实除了上面的 我们还可以通过<code>blade</code>模板</p>
+<p>当编写 <code>Blade</code> 模板时，你可能希望页面的指定部分只展示给允许授权访问给定动作的用户。例如，你可能希望只展示更新表单给有权更新帖子的用户。这种情况下，你可以直接使用 <strong>@can</strong> 和 <strong>@cannot</strong> 指令</p>
+<p>举例来说的话我们可以在<code>posts/show.blade.php</code>去看下</p>
+<pre><code class="language-php?start_inline=1">&lt;body&gt;
+&lt;h1&gt;{{$post-&gt;title}}&lt;/h1&gt;
+@can('user-post', $post)
+    &lt;a href=&quot;#&quot;&gt;修改文章&lt;/a&gt;
+@endcan
+&lt;/body&gt;
+</code></pre>
+<p>这样就定义了 如果该用户是帖子的作者就可以更新帖子 反之则不然</p>
+<h2 id="编写策略policy">编写策略(Policy)</h2>
+<p>之前有说在<code>laravel</code>中可以有两种方式去管理用户的权限 其中有一个就是通过创建策略</p>
+<p>当然首先去生成相应的策略(如果你需要基本的<code>CURD</code>操作 可以给一个<code>tag</code>即<code>--model=xxx</code>)</p>
+<pre><code class="language-shell">$ php artisan make:polocy PostPolicy
+</code></pre>
+<p>创建完毕之后我们就会看见在<code>app/policies</code>下的<code>PostPolicy</code>这个类文件<br>
+可以想象的就是对于一个权限他必定包含了一系列的权限操作</p>
+<p>那么在这里我们可以接着上面的来去定义一个更新的操作(这里的<code>owns</code>就是在<code>User Model</code>里面的模型判断)</p>
+<pre><code class="language-php?start_inline=1">public function update(User $user, Post $post)
+{
+    return $user-&gt;owns($post);
+}
+</code></pre>
+<p>创建完毕<code>policy</code>之后我们需要像注册一个事件 命令一样的去告诉<code>laravel</code>启用这个<code>Policy</code> 还是来到 <code>app/providers/AuthServiceProvider.php</code></p>
+<pre><code class="language-php?start_inline=1">protected $policies = [
+    'App\Model' =&gt; 'App\Policies\ModelPolicy',
+    'App\Post' =&gt; 'App\Policies\PostPolicy',
+];
+</code></pre>
+<p>这样一来在<code>PostController</code>里面 我们可以直接去使用<code>update</code>这个权限协议</p>
+<pre><code class="language-php?start_inline=1">Auth::loginUsingId(2);
+$post = Post::findOrFail($id);
+if (Gate::denies('update', $post)) {
+    abort(403,'Sorry');
+};
+return $post-&gt;title;
+</code></pre>
+<p>对于特定的用户 比如对于我们的管理员 那么管理员可以授权所有的权限 那么我们在策略里面就可以提前去声明</p>
+<pre><code class="language-php?start_inline=1">public function before($user, $ability)
+{
+    if ($user-&gt;isSuperAdmin()) {
+        return true;
+    }
+}
+</code></pre>
+<p>这个<code>before</code>方法会在其他方法之前去执行 那么如果是管理员 则用户会有所有的权限</p>
+<h2 id="策略授权动作action">策略授权动作(Action)</h2>
+<p>之前我们在控制器里还是使用了<code>Gates Facade</code>去判断用户对一个帖子的权限 而在<code>Laravel</code>内置的<code>User Model</code>里面我们可以通过<br>
+<strong>can</strong> 和 <strong>cant</strong>来实现</p>
+<pre><code class="language-php?start_inline=1">Auth::loginUsingId(2);
+$post = Post::findOrFail($id);
+if(Auth::user()-&gt;cant('update',$post)){
+    abort(403,'Sorry');
+}
+</code></pre>
+<p>有的时候不需要执行模型的实例 比如去创建一篇帖子 因为这个模型的实例还没有被创建 那么这个时候我们需要传递一个类名</p>
+<p>告诉<code>laravel</code>使用哪种策略就行了</p>
+<pre><code class="language-php?start_inline=1">use App\Post;
+if ($user-&gt;can('create', Post::class)) {
+    // 执行相关策略中的「create」方法...
+}
+</code></pre>
+<h2 id="策略通过中间件">策略通过中间件</h2>
+<p><code>Laravel</code> 包含一个可以在请求到达路由或控制器之前就进行动作授权的中间件</p>
+<p><code>Illuminate\Auth\Middleware\Authorize</code> 中间件被指定到 <code>App\Http\Kernel</code> 类中 <strong>can</strong> 键上。</p>
+<p>我们用一个授权用户更新博帖子的例子来看看 <strong>can中间件</strong>的使用：</p>
+<pre><code class="language-php?start_inline=1">Route::put('/post/{post}', function (Post $post) {
+    // 当前用户可以更新帖子...
+})-&gt;middleware('can:update,post');
+</code></pre>
+<p><strong>can中间件</strong>接受两个参数 第一个是需要授权的动作的名称，第二个是我们希望传递给策略方法的路由参数 当然如果是不需要指定模型实例的话</p>
+<pre><code class="language-php?start_inline=1">Route::post('/post', function () {
+    // 当前用户可以创建帖子...
+})-&gt;middleware('can:create,App\Post');
+</code></pre>
+<p>就这样提供一个类名就行了  当然还有使用<code>authorize</code>这样的<code>helper function</code> 之前我们也有提到过</p>
+<p>使用方法其实都是一样的 具体的看下文档就知道了</p>
+<h2 id="使用数据库来保存用户权限">使用数据库来保存用户权限</h2>
+<p>首先我们可以去创建一个<code>Model Permission</code></p>
+<pre><code class="language-shell">$ php artisan make:model Permission -m
+</code></pre>
+<p>定义字段信息</p>
+<pre><code class="language-php?start_inline=1">Schema::create('permissions', function (Blueprint $table) {
+    $table-&gt;increments('id');
+    $table-&gt;string('name');
+    $table-&gt;string('label')-&gt;nullable();
+    $table-&gt;timestamps();
+});
+</code></pre>
+<p>还有一个就是我们的角色<code>(Role)</code>比如会员 普通用户 和管理员 分别担当者不同的角色 对于每一个角色他的<code>Permission</code>当然也就不同了</p>
+<pre><code class="language-shell">$ php artisan make:model Role -m
+</code></pre>
+<p>定义字段信息</p>
+<pre><code class="language-php?start_inline=1">Schema::create('roles', function (Blueprint $table) {
+    $table-&gt;increments('id');
+    $table-&gt;string('name');//角色的名字
+    $$table-&gt;string('label')-&gt;nullable();
+    $table-&gt;timestamps();
+});
+</code></pre>
+<p>有了<code>users</code> <code>permissions</code> <code>roles</code>这三张表 就可以描述用户在一个系统的权限 当然这三张表之间是一个多对多的关系</p>
+<p>因为一个用户可以有多个角色 一个角色也可以是多个用户所共有的 这样一来我们还需要去生成他们之间的中间表</p>
+<pre><code class="language-shell">$ php artisan make:migration create_role_user_table --create=role_user
+</code></pre>
+<p>生成<code>permission_role</code>表</p>
+<pre><code class="language-shell">$ php artisan make:migration create_permission_role_table --create=permission_role
+</code></pre>
+<p>在每一个中间表去定义字段信息</p>
+<pre><code class="language-php?start_inline=1">Schema::create('role_user', function (Blueprint $table) {
+    $table-&gt;increments('id');
+    $table-&gt;integer('role_id')-&gt;unsigned()-&gt;index();
+    $table-&gt;foreign('role_id')-&gt;references('id')-&gt;on('roles')-&gt;onDelete('cascade');
+    $table-&gt;integer('user_id')-&gt;unsigned()-&gt;index();
+    $table-&gt;foreign('user_id')-&gt;references('id')-&gt;on('users')-&gt;onDelete('cascade');
+    $table-&gt;timestamps();
+});
+</code></pre>
+<p>接着在<code>Model</code>去定义三者之间的关系 当然也就是我们所说的多对多的关系了<br>
+在<code>User Model</code></p>
+<pre><code class="language-php?start_inline=1">public function roles()
+{
+    return $this-&gt;belongsToMany(Role::class);
+}
+</code></pre>
+<p><code>Role Model</code>去定义和<code>Permission</code>的关系</p>
+<pre><code class="language-php?start_inline=1">public function permissions()
+{
+    return $this-&gt;belongsToMany(Permission::class);
+}
+</code></pre>
+<p><code>Permission Model</code>定义和<code>Role</code>的关系</p>
+<pre><code class="language-php?start_inline=1">public function roles()
+{
+    return $this-&gt;belongsToMany(Role::class);
+}
+</code></pre>
+<p>为了方便使用我们可以去定义一些方法 在<code>Role Model</code>里更加赋予角色权限</p>
+<pre><code class="language-php?start_inline=1">//赋予角色权限
+public function givePermission(Permission $permission)
+{
+    return $this-&gt;permissions()-&gt;save($permission);
+}
+</code></pre>
+<p>这样一来去<code>tinker</code>里生成一个<code>role</code>实例和<code>permission</code>实例 再去执行</p>
+<pre><code class="language-shell">$ $role-&gt;givePermission($permission)
+</code></pre>
+<p>就可以在我们的中间表<code>role_permission</code>里看到生成一条对应关系数据</p>
+<p>定义完<code>Role</code>和<code>Permission</code> 现在我们可以去定义<code>User</code>和<code>Role</code> 在<code>app/providers/AuthServiceProvider.php</code>里去声明：</p>
+<pre><code class="language-php?start_inline=1">public function boot()
+{
+    $this-&gt;registerPolicies();
+    foreach ($this-&gt;getPermissions() as $permission){
+        Gate::define($permission-&gt;name,function($user) use ($permission){
+            return $user-&gt;hasRole($permission-&gt;roles);
+        });
+    }
+}
+public function getPermissions()
+{
+    return Permission::with('roles')-&gt;get();
+}
+</code></pre>
+<p>这个即使判断用户是否是这样的一个角色 然后就可以判断该用户是否拥有该角色的权限了</p>
+<p>这个<code>hasRole</code>方法我们还需要在<code>User Model</code>去声明</p>
+<pre><code class="language-php?start_inline=1">public function hasRole($role)
+{
+    if(is_string($role)){
+        return $this-&gt;roles-&gt;contains('name',$role);//admin
+    }
+    //如果是collection
+    return !! $role-&gt;intersect($this-&gt;roles)-&gt;count();
+}
+</code></pre>
+<blockquote>
+<p>这里的<code>hasRole</code>主要就是判断<code>$role</code>是否是一个<strong>字符串</strong>还是一个<code>role</code>的<code>collection</code></p>
+</blockquote>
+<h2 id="middleware-后台管理">Middleware 后台管理</h2>
+<p>其实这样的应用场景就是你必须是<code>admin</code>这个角色的用户才能访问后台的路由 之前我们也提到过的就是可以通过中间件的方式<br>
+来决定用户的权限</p>
+<p>首先创建管理员这个<code>middleware</code></p>
+<pre><code class="language-shell">$ php artisan make:middleware MustBeAnAdmin
+</code></pre>
+<p>创建完毕之后来到这个<code>middleware</code> 我们主要就是去实现这个<strong>handle</strong>方法</p>
+<pre><code class="language-php?start_inline=1">public function handle($request, Closure $next)
+{
+    //Auth::user() 用户必须是登陆并且是管理员的身份
+    if ($request-&gt;user() &amp;&amp; $request-&gt;user()-&gt;isAdmin()) {
+        dd($request-&gt;user());
+        return $next($request);
+    }
+    return redirect('/');
+}
+</code></pre>
+<p>在判断用户是否是管理员时可以在<code>User Model</code>去定义这个<code>function</code></p>
+<pre><code class="language-php?start_inline=1">public function isAdmin()
+{
+  return $this-&gt;hasRole('admin');
+}
+</code></pre>
+<p>当然写完我们的<strong>handle</strong>方法 我们还需要去<code>Kernel.php</code>注册我们这个新的<code>middleware</code></p>
+<pre><code class="language-php?start_inline=1">protected $routeMiddleware = [
+    'auth' =&gt; \Illuminate\Auth\Middleware\Authenticate::class,
+    'auth.basic' =&gt; \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+    'bindings' =&gt; \Illuminate\Routing\Middleware\SubstituteBindings::class,
+    'can' =&gt; \Illuminate\Auth\Middleware\Authorize::class,
+    'guest' =&gt; \App\Http\Middleware\RedirectIfAuthenticated::class,
+    'throttle' =&gt; \Illuminate\Routing\Middleware\ThrottleRequests::class,
+    'admin' =&gt; \App\Http\Middleware\MustBeAnAdmin::class,
+];
+</code></pre>
+<p>接着我们就可以在<code>PostController</code>使用这个<code>middleware</code> 我们在他的构造函数中去指定 当然我们也是可以直接在路由中去指定的</p>
+<pre><code class="language-php?start_inline=1">public function __construct()
+{
+    $this-&gt;middleware('admin');
+}
+</code></pre>
+<p>这样的话如果用户是登陆进来的并且是<code>admin</code>这个角色才能访问到后台路由<br>
+不然的话就会跳转到首页 这也就实现了通过<code>middleware</code>来进行后台的管理操作</p>
+<p>最后推荐几个我用过的感觉非常不错的针对用户权限的<code>Packages</code></p>
+<ul>
+<li><a href="https://github.com/spatie/laravel-permission">Laravel Permission</a> 目前我的项目就是用的这个<code>Package</code></li>
+<li><a href="https://github.com/romanbican/roles">Laravel Roles</a></li>
+<li><a href="https://github.com/ultraware/roles">ultraware/roles</a></li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/fen-xiang-vue-kai-fa-de-yi-xie-you-yong-de-tips/" class="post-title gt-a-link">
+                    分享vue开发的一些有用的Tips
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/tan-tan-zen-me-shi-xian-yong-hu-de-quan-xian-guan-li/" class="leancloud_visitors" data-flag-title="谈谈怎么实现用户的权限管理">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

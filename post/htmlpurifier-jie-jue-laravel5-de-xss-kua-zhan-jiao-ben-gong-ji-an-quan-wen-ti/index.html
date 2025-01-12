@@ -1,0 +1,380 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>HTMLPurifier解决Laravel5的XSS跨站脚本攻击安全问题 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    HTMLPurifier解决Laravel5的XSS跨站脚本攻击安全问题
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-07-12 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/b0tSda50f/" class="post-tags">
+                            # Laravel
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>Web安全问题越来越受到人们的注意 对于XXS是对于站点的用户隐私的攻击 这对于用户安全造成很大的隐患 就目前来说HTMLPurifier是目前最好的PHP富文本HTML过滤器</p>
+<p><code>XXS</code> 也成为跨站脚本攻击 这也是常见的<code>Web</code>攻击 同时<code>XXS</code>涉及三个群体:黑客 客户端 <code>Web</code>站点。就目前来说解决</p>
+<p><code>php</code>中<code>XXS</code>攻击的方法就是使用<code>HTML Purifier</code>  基于他支持自定义过滤规则 可以把不标准的<code>HTML</code>转换为标准的<code>HTML</code></p>
+<blockquote>
+<p>同时我们也要相信一点的就是没有绝对的安全 所以我们也只能尽量的去过滤一些不必要的安全隐患</p>
+</blockquote>
+<p>对于他的自定义规则就是对<code>HTML</code>的标签和属性的的过滤 利用<strong>白名单机制</strong>  在执行<code>clean()</code>方法后 对于不在白名单的<br>
+元素则会被过滤</p>
+<p>下面就来介绍我们需要用到的 <a href="https://github.com/mewebstudio/Purifier">HTMLPurifier for Laravel</a></p>
+<p>在已经创建好的<code>Laravel</code>项目中 执行:</p>
+<pre><code class="language-shell">$composer require mews/purifier
+</code></pre>
+<p>在 <code>config/app.php</code> 文件的 <code>providers</code> 数组里添加</p>
+<pre><code class="language-php?start_inline=1">Mews\Purifier\PurifierServiceProvider::class,
+</code></pre>
+<p>生成 <code>HTMLPurifier for Laravel 5</code> 的配置文件</p>
+<p>在命令行下执行:</p>
+<pre><code class="language-shell">$ php artisan vendor:publish --provider=&quot;Mews\Purifier\PurifierServiceProvider&quot;
+</code></pre>
+<p>这个时候打开<code>config/purifier.php</code>可以看到一系列的配置</p>
+<pre><code class="language-php?start_inline=1">return [
+
+    'encoding'  =&gt; 'UTF-8',
+    'finalize'  =&gt; true,
+    'cachePath' =&gt; storage_path('app/purifier'),
+    'cacheFileMode' =&gt; 0755,
+    'settings'  =&gt; [
+        'default' =&gt; [
+            'HTML.Doctype'             =&gt; 'XHTML 1.0 Strict',
+            'HTML.Allowed'             =&gt; 'div,b,strong,i,em,a[href|title],ul,ol,li,p[style],br,span[style],img[width|height|alt|src]',
+            'CSS.AllowedProperties'    =&gt; 'font,font-size,font-weight,font-style,font-family,text-decoration,padding-left,color,background-color,text-align',
+            'AutoFormat.AutoParagraph' =&gt; true,
+            'AutoFormat.RemoveEmpty'   =&gt; true,
+        ],
+        'test'    =&gt; [
+            'Attr.EnableID' =&gt; true
+        ],
+        &quot;youtube&quot; =&gt; [
+            &quot;HTML.SafeIframe&quot;      =&gt; 'true',
+            &quot;URI.SafeIframeRegexp&quot; =&gt; &quot;%^(http://|https://|//)(www.youtube.com/embed/|player.vimeo.com/video/)%&quot;,
+        ],
+    ],
+
+];
+</code></pre>
+<p>接下来对于接受到的参数 我们就可以使用<code>clean(Input::get('name'))</code>进行过滤了</p>
+<p>当然这里执行的过滤规则是配置文件里<code>setting</code>的<code>default</code>的配置规则 代码如下:</p>
+<pre><code class="language-php?start_inline=1">'default' =&gt; [
+    'HTML.Doctype'             =&gt; 'XHTML 1.0 Strict',
+    'HTML.Allowed'             =&gt; 'div,b,strong,i,em,a[href|title],ul,ol,li,p[style],br,span[style],img[width|height|alt|src]',
+    'CSS.AllowedProperties'    =&gt; 'font,font-size,font-weight,font-style,font-family,text-decoration,padding-left,color,background-color,text-align',
+    'AutoFormat.AutoParagraph' =&gt; true,
+    'AutoFormat.RemoveEmpty'   =&gt; true,
+],
+</code></pre>
+<p>当然我们完全可以自定义过滤规则 如我们定义规则:</p>
+<pre><code class="language-php?start_inline=1">'post_topic' =&gt; array(
+    'HTML.Doctype'             =&gt; 'XHTML 1.0 Strict',
+    'HTML.Allowed'             =&gt; 'div,b,strong,i,em,a[href|title],ul,ol,li,p[style],br,span[style],img[width|height|alt|src],pre,code',
+    'CSS.AllowedProperties'    =&gt; 'font,font-size,font-weight,font-style,font-family,text-decoration,padding-left,color,background-color,text-align',
+    'AutoFormat.AutoParagraph' =&gt; true,
+    'AutoFormat.RemoveEmpty'   =&gt; true,
+),
+</code></pre>
+<p>那么我们就可以在执行过滤是介入第二个参数 <code>clean(Input('name'),'post_topic')</code></p>
+<p>最后还是那句话 <code>web</code>安全的工作终究不是最完美的 我们需要不断的改进我们的防御机制已达到预期的效果</p>
+<h2 id="相关链接">相关链接</h2>
+<ul>
+<li><a href="http://htmlpurifier.org/">HtmlPurifier官网</a></li>
+<li><a href="https://github.com/mewebstudio/Purifier">Purifier-for-laravel</a></li>
+<li><a href="https://www.ibm.com/developerworks/cn/rational/08/0325_segal/">跨站点脚本攻击深入解析</a></li>
+<li><a href="https://laravel-china.org/articles/4798/the-use-of-htmlpurifier-to-solve-the-xss-xss-attacks-of-security-problems-in-laravel">Laravel-China 使用 HTMLPurifier来解决Laravel5中的 XSS 跨站脚本攻击安全问题</a></li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/mint-ui-jie-he-laravel-shi-xian-nei-rong-jia-zai-geng-duo/" class="post-title gt-a-link">
+                    Mint-UI结合laravel实现内容加载更多
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/htmlpurifier-jie-jue-laravel5-de-xss-kua-zhan-jiao-ben-gong-ji-an-quan-wen-ti/" class="leancloud_visitors" data-flag-title="HTMLPurifier解决Laravel5的XSS跨站脚本攻击安全问题">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,437 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Laravel 实现文章浏览次数统计 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Laravel 实现文章浏览次数统计
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-04-21 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/b0tSda50f/" class="post-tags">
+                            # Laravel
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>在实现文章帖子的浏览次数统计时  我们可能会选择Redis作为缓存计算 当然也可以使用session来进行统计<br>
+这里我们再结合事件的监听来计算文章的浏览量</p>
+<h2 id="介绍">介绍</h2>
+<p>在有关用户浏览文章或帖子的访问数的统计时 我们可能会考虑到使用缓存机制来实现 即可以使用<code>Redis</code>来存储一篇帖子的浏览数</p>
+<p>当然我们也可以有其他的更为简单的处理方式 这里我们可以结合<code>Laravel</code>的<code>Event Listener</code>来实现文章浏览的监听</p>
+<p>首先我们可以先去创建一个<code>ArticleController</code> 这样我们就可以去执行文章的一系列业务逻辑</p>
+<pre><code class="language-shell">$ php artisan make:controller ArticleController
+</code></pre>
+<p>接着当然是去生成<code>Article Model</code>和他的数据表</p>
+<pre><code class="language-shell">$ php artisan make:model Article -m
+</code></pre>
+<p>生成完毕之后 可以去定义一下<code>articles</code>这个<code>table</code></p>
+<pre><code class="language-php?start_inline=1">public function up()
+{
+    Schema::create('articles', function (Blueprint $table) {
+        $table-&gt;increments('id');
+        $table-&gt;string('title');
+        $table-&gt;text('body');
+        $table-&gt;integer('user_id')-&gt;unsigned();
+        $table-&gt;integer('last_user_id')-&gt;unsigned();
+        $table-&gt;integer('view_count')-&gt;default(0);
+        $table-&gt;integer('comment_count')-&gt;default(0);
+        $table-&gt;foreign('user_id')
+            -&gt;references('id')
+            -&gt;on('users')
+            -&gt;onDelete('cascade')
+            -&gt;onUpdate('cascade');
+        $table-&gt;timestamps();
+    });
+}
+</code></pre>
+<p>其实在这里主要的就是<code>view_count</code>这个<code>field</code> 因为这里就是我们用来记录文章的浏览次数的</p>
+<p>最后执行数据表迁移:</p>
+<pre><code class="language-shell">$ php artisan migrate
+</code></pre>
+<p>当然这些只是前期工作 我们还是得做的 一些具体内容 个人看具体需求而定</p>
+<h2 id="创建事件监听">创建事件监听</h2>
+<p>我们需要对文章浏览这个事件进行监听 <strong>So</strong> 我们需要创建一个文章浏览的事件并进行监听</p>
+<p>我们可以单独去生成相应的<code>event</code>和<code>listener</code>当然我们也可以在<code>app/Providers/EventServiceProvider</code>去声明:</p>
+<pre><code class="language-php?start_inline=1">protected $listen = [
+    'App\Events\UserRegistered' =&gt; [
+        'App\Listeners\SendWelcomeEmail',
+    ],
+    'App\Events\ArticleView' =&gt; [
+        'App\Listeners\ArticleViewListener',
+    ],
+    'App\Events\PostView' =&gt; [
+        'App\Listeners\PostViewListener',
+    ],
+];
+</code></pre>
+<p>这里给出了两个实例  因为在我之前的项目里是有文章和帖子 当然这并不重要 我们需要关注的就是文章</p>
+<p>声明完成之后 我们再去命令行:</p>
+<pre><code class="language-shell">$ php artisan event:generate
+</code></pre>
+<p>这样我们在<code>app/Events</code> 和 <code>app\Listeners</code>里面就会有相应的事件监听文件</p>
+<p>在<code>app\Events\ArticleView.php</code>去完成一下他的构造函数 因为我们需要知道是对哪一篇文章的浏览</p>
+<pre><code class="language-php?start_inline=1">class ArticleView
+{
+    use InteractsWithSockets, SerializesModels;
+    public $article;
+    public function __construct(Article $article)
+    {
+        $this-&gt;article = $article;
+    }
+    /**
+     * Get the channels the event should broadcast on.
+     *
+     * @return Channel|array
+     */
+    public function broadcastOn()
+    {
+        return new PrivateChannel('channel-name');
+    }
+}
+</code></pre>
+<p>之后我们就要去<code>app\Listeners\ArticleViewListener.php</code>里去写具体的逻辑业务</p>
+<p>首先之前我们说过利用<code>laravel Session</code>机制去实现数量的统计 所以在构造函数中先去注入<code>Session</code></p>
+<pre><code class="language-php?start_inline=1">protected $session;
+
+/**
+ * Create the event listener.
+ *
+ * @return void
+ */
+public function __construct(Store $session)
+{
+    $this-&gt;session = $session;
+}
+</code></pre>
+<p>这样其实也很好理解 而具体的处理代码就是在<code>handle</code>里面 这和我们去定义<code>console command</code>命令是一样的</p>
+<pre><code class="language-php?start_inline=1">public function handle(ArticleView $event)
+{
+    $article = $event-&gt;article;
+    //查看是否被浏览过
+    if(!$this-&gt;hasViewedArticle($article)){
+        //最近没有浏览 则 浏览数加1
+        $article-&gt;increment('view_count');
+        //看过文章之后将保存到Session
+        $this-&gt;storeViewedArticle($article);
+    }
+}
+</code></pre>
+<p>而这里需要的其他方法则定义如下(都给出了相应的解释)</p>
+<pre><code class="language-php?start_inline=1">//文章最近是否被浏览过
+public function hasViewedArticle($article)
+{
+    return array_key_exists($article-&gt;id,$this-&gt;getViewedArticle($article));
+}
+
+//如果浏览过则获取session存入的浏览记录
+public function getViewedArticle($article)
+{
+    return $this-&gt;session-&gt;get('viewed_article', []);
+}
+
+//最近第一次浏览 存入session
+public function storeViewedArticle($article)
+{
+    $key = 'viewed_article.' . $article-&gt;id;
+    $this-&gt;session-&gt;put($key, time());
+}
+</code></pre>
+<p>整个过程和用户的登录差不多  浏览记录不可能每一次刷新都会增加 而是在相应的一段时间内</p>
+<p>所以采用<code>Session</code>来存储当前文章对应的一个时间戳最近一次的浏览记录</p>
+<p>如果最近没有浏览 则相应的文章浏览数加一 否则不作为 原理也很简单 主要就是结合事件取监听文章浏览这个动作</p>
+<p>当然也有相关的<code>Packages</code>可以使用</p>
+<blockquote>
+<p>这里推荐<a href="https://pigjian.com/article/laravel-visitor-registry">cjjian</a>的一篇博文可供参考</p>
+</blockquote>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/css-shi-xian-ios-mao-bo-li-de-xu-hua-xiao-guo/" class="post-title gt-a-link">
+                    CSS 实现IOS毛玻璃的虚化效果
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/laravel-shi-xian-wen-zhang-liu-lan-ci-shu-tong-ji/" class="leancloud_visitors" data-flag-title="Laravel 实现文章浏览次数统计">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

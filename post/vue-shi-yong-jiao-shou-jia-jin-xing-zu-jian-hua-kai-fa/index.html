@@ -1,0 +1,382 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Vue使用脚手架进行组件化开发 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Vue使用脚手架进行组件化开发
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2016-11-04 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/Ynq0DwGia/" class="post-tags">
+                            # Vue
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>Vuejs 脚手架工具是 Vuejs 官方提供的一个命令行操作工具，我们可以初始化一个 Vuejs 项目来进行组件化开发</p>
+<h2 id="1vue-cli安装">1.vue-cli安装</h2>
+<p>1.首先确保你已经正确安装了<strong>nodejs环境</strong>以及<strong>git</strong> 然后可以全局方式安装<strong>vue-cli</strong>：</p>
+<p>vue-cli github地址<a href="https://github.com/vuejs/vue-cli">https://github.com/vuejs/vue-cli</a></p>
+<blockquote>
+<p>当然对<code>node</code> 和 <code>npm</code> 版本也有一定要求</p>
+</blockquote>
+<pre><code>$ npm install -g vue-cli
+</code></pre>
+<p>安装完毕之后我们可以在命令行执行一个vue的命令:</p>
+<pre><code>$ vue
+</code></pre>
+<p>2.初始化项目</p>
+<pre><code>$ vue init &lt;template-name&gt; &lt;project-name&gt;
+</code></pre>
+<p>现在我们开始创建我们的项目:</p>
+<pre><code>$ vue init webpack my-project
+</code></pre>
+<blockquote>
+<p>这里的<code>webpack</code>是指我们生成的<code>project</code>是使用<code>webpack</code>构建工具</p>
+</blockquote>
+<p>当然也会有其他的选择 这在<code>github</code>上已经给出了:</p>
+<ul>
+<li><a href="https://github.com/vuejs-templates/webpack">webpack</a> - A full-featured Webpack + vue-loader setup with hot reload, linting, testing &amp; css extraction.</li>
+<li><a href="https://github.com/vuejs-templates/webpack-simple">webpack-simple</a> - A simple Webpack + vue-loader setup for quick prototyping.</li>
+<li><a href="https://github.com/vuejs-templates/browserify">browserify</a> - A full-featured Browserify + vueify setup with hot-reload, linting &amp; unit testing.</li>
+<li><a href="https://github.com/vuejs-templates/browserify-simple">browserify-simple</a> - A simple Browserify + vueify setup for quick prototyping.</li>
+<li><a href="https://github.com/vuejs-templates/simple">simple</a> - The simplest possible Vue setup in a single HTML file</li>
+</ul>
+<p>在生成项目时我们都选择默认 同时也需要注意一下几点:</p>
+<ul>
+<li>特别的在<code>Runtime + Compiler</code>和<code> Runtime-only</code>时我们还是选择<code>Runtime + Compiler</code>模式</li>
+<li>在选择是否需要安装vue-router时 选择<code>N</code>为的是一开始我们更容易去学习和理解</li>
+<li>然后会问你是否需要<code>ESLint</code>, 因为我们是刚开始我们选择<code>N</code>(因为<code>ESLint</code>语法要求比较严格)</li>
+<li><code>unit tests</code>我们也不需要了</li>
+</ul>
+<p>接下来我们进入到我们的项目<code>my-peoject</code>执行<code>npm install</code>以及我们的</p>
+<pre><code>$ npm run dev
+</code></pre>
+<blockquote>
+<p>如果你在npm install下载的时候发生错误 大都需要你升级nodejs和npm到最新的版本 之前我们也提到过就是在官方给出就是对版本也有一定要求</p>
+</blockquote>
+<p>执行完<code>npm run dev</code>会启动一个服务器 并运行在我们的8080端口:<br>
+<img src="https://GeekGhc.github.io/post-images/1617517148395.png" alt="" loading="lazy"></p>
+<p>用<code>phpstrom</code>打开我们的项目 可以看到我们的文件目录(而我们最需要关注的就是我们的<code>src</code>目录)</p>
+<h2 id="2vue-cli-项目结构">2.vue-cli 项目结构</h2>
+<p>1.<strong>src</strong>目录是我们的组件存放等文件的目录</p>
+<p><img src="https://GeekGhc.github.io/post-images/1617517158171.png" alt="" loading="lazy"><br>
+在<code>main.js</code>里定义了我们<code>vueJs</code>的一个实例:</p>
+<pre><code class="language-php?start_inline=1">import Vue from 'vue'
+import App from './App'
+import router from './router'
+
+/* eslint-disable no-new */
+new Vue({
+  el: '#app',
+  router,
+  template: '&lt;App/&gt;',
+  components: { App }
+})
+</code></pre>
+<blockquote>
+<p><code>router</code>是我在初始化项目时确认安装的 当然这在之后也可以进行安装引入 我们在接下来会用到这个(不过我觉得初始化时不用去安装vue-router 这样刚接触时会更容易理解)</p>
+</blockquote>
+<p>除此之外我们可以看到这个<code>vue</code>实例包含了一个<code>App template</code> 而这个<code>template</code>就在我们的同级目录下的<code>App.vue</code></p>
+<p>来到我们的<code>App.vue</code> 可以看到在上面其实就是定义了一个<code>template</code> 下面是一个<code>script</code>标签用来指明这个<code>template</code><br>
+然后就是我们的<code>style</code>标签定义的样式</p>
+<p>可以想象得到的是因为我们我们是使用的<code>webpack</code>这个构建工具 所以<code>template</code>这个是交由我们的<code>html loader</code>去处理的</p>
+<p>而<code>script</code>里的内容是由<code>script loader</code>  <code>style</code>标签里的内容是交由我们的<code>style loader</code>去处理的</p>
+<p>在<code>App.vue</code>这个<code>template</code>里引入了在同级目录<code>components</code>下的<code>Hello</code>组件 它里面的内容就是我们一开始<strong>8080</strong>端口所看到的内容</p>
+<p>在这之后我们就可以往用vue-cli构建的项目里面去添加我们需要的组件内容了</p>
+<p>假使我们需要添加一个<code>Todo</code>组件我们就可以在<code>src/components</code>下去创建<code>Todo.vue</code></p>
+<p>他的具体内容当然是根据自己的业务去写了 每个组件的组成形式也就是我们之前提到的<code>Hello.vue</code>这样的(学习过vueJs的应该很容易就能理解这些文件的内容了)</p>
+<p>用<code>vue-cli</code>去构建我们的<code>vueJs</code>组件化开发大概就是这样 当然在这之后我们可以去利用<code>vueJs</code>官方推荐的<code>vue-router</code></p>
+<p>去构建我们的<strong>SPA(单页面应用)</strong></p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/webpack-ji-ben-shi-yong/" class="post-title gt-a-link">
+                    Webpack基本使用
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/vue-shi-yong-jiao-shou-jia-jin-xing-zu-jian-hua-kai-fa/" class="leancloud_visitors" data-flag-title="Vue使用脚手架进行组件化开发">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

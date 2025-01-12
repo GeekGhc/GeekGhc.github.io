@@ -1,0 +1,391 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>git-flow开发使用姿势 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    git-flow开发使用姿势
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-02-04 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/tuiAlV8lP/" class="post-tags">
+                            # Git
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <figure data-type="image" tabindex="1"><img src="https://GeekGhc.github.io/post-images/1616764768656.png" alt="" loading="lazy"></figure>
+<h3 id="master分支">master分支</h3>
+<p>最为稳定功能比较完整的随时可发布的代码，即代码开发完成，经过测试，没有明显的<code>bug</code>，才能合并到 <code>master</code> 中。请注意永远不要在 <code>maste</code> 分支上直接开发和提交代码，以确保 <code>master</code> 上的代码一直可用</p>
+<h3 id="develop分支">develop分支</h3>
+<p>用作平时开发的主分支，并一直存在，永远是功能最新最全的分支，包含所有要发布 到下一个 <code>release</code> 的代码，主要用于合并其他分支，比如 <code>feature</code> 分支； 如果修改代码，新建 <code>feature</code> 分支修改完再合并到 <code>develop</code> 分支。所有的 <code>feature</code>、<code>release</code> 分支都是从 <code>develop</code> 分支上拉的。</p>
+<h3 id="feature分支">feature分支</h3>
+<p>这个分支主要是用来开发新的功能，一旦开发完成，通过测试没问题（这个测试，测试新功能没问题），我们合并回<code>develop</code> 分支进入下一个 <code>release</code> 。</p>
+<h3 id="release分支预发布分支">release分支(预发布分支)</h3>
+<p>用于发布准备的专门分支。当开发进行到一定程度，或者说快到了既定的发布日，可以发布时，建立一个 <code>release</code> 分支并指定版本号(可以在 <code>finish</code> 的时候添加)。开发人员可以对 <code>release</code> 分支上的代码进行集中测试和修改<code>bug</code>。（这个测试，测试新功能与已有的功能是否有冲突，兼容性）全部完成经过测试没有问题后，将 <code>release</code> 分支上的代码合并到 <code>master</code> 分支和 <code>develop</code> 分支。</p>
+<h3 id="hotfix分支bug修复分支">hotfix分支(bug修复分支)</h3>
+<p>用于修复线上代码的<code>bug</code>。当需要修复线上<code>bug</code>时从 <code>master</code> 分支上拉。完成 <code>hotfix</code> 后，打上 <code>tag</code> 我们合并回 <code>master</code> 和 <code>develop</code> 分支 这样保证了开发分支和线上分支代码肯定会一致的。</p>
+<h2 id="使用姿势">使用姿势</h2>
+<p>初始化分支 以<code>git-flow</code>工作流方式(<code>phpstrom</code>需要下载<code>flow</code>插件)<br>
+默认会初始化 <code>master develop</code> 两个主干分支。如果已有了不同分支，初始化的时候，可能需要手动指定 <code>maste</code> 分支 跟 <code>develop</code> 分支。(<code>develop</code>命名可稍有差异)</p>
+<h3 id="开发分支feature">开发分支feature</h3>
+<p>1.分支的名称都是以 <code>feature/*-20180102</code> 打头，不需要做修改  如<code>feature/register-20180102</code> 即为用户注册的功能分支<br>
+2.基于<code>develop</code>分支，可以有多个功能分支进行开发<br>
+3.<code>feature</code>分支做完后，必须合并回<code>develop</code> 分支，合并完分支后一般会删除这个 <code>feature</code> 分支（也就是 <code>finish</code> 一般由测试进行，或者经过测试允许），也可以视情况保留</p>
+<h3 id="发布分支release">发布分支release</h3>
+<p>1.分支名称以 <code>release/*-2080102</code> 为例<br>
+2.<code>release</code>分支基于<code>develop</code>创建； 当完成一阶段的功能开发需要上线 这时创建基于<code>develop</code>的发布分支<code>release</code>，一旦创建了<code>release</code>分支，不能再从 <code>develop</code> 分支合并新的改动到 <code>release</code> 分支 但不会影响功能分支合并到<code>develop</code>,可以基于<code>release</code>分支进行测试和<code>bug</code>修改，测试不用在另外创建用于测试的分支<br>
+3.<code>release</code> 发布的时候，合并到 <code>master</code> 和 <code>develop</code> 分支，同时打<code>tag</code>，视情况删除<code>release</code>分支，通常应该删除掉<br>
+维护修复分支(<code>hotfix</code>、<code>bugfix</code>命名可不同)<br>
+1.分支名称以 <code>hotfix/*</code> 为例 如<code>hotfix/homepage</code> 即完成首页<code>bug</code>修复<br>
+2.<code>hotfix</code> 分支基于 <code>master</code> 分支创建，开发完毕后合并到 <code>master</code> 和 <code>develop</code> 分支，同时创建 <code>tag</code>(创建<code>tag</code>视团队情况而定)<br>
+3.这是唯一可以直接从 <code>master</code> 分支 <code>fork</code>出来的分支。<br>
+开发功能时基于开发分支的规范 <code>bug</code>修复时基于维护分支的规范即可 主干分支提交时 拉取后再提交</p>
+<h2 id="命令行使用">命令行使用</h2>
+<h3 id="创建develop分支">创建develop分支</h3>
+<p>git branch develop<br>
+git push -u origin develop</p>
+<h3 id="创建开发新的feature">创建开发新的feature</h3>
+<pre><code class="language-shell">git checkout -b 分支名称 develop
+# 推送功能分支到远程(可选)
+git push -u origin 分支名称
+</code></pre>
+<h3 id="功能feature开发完成">功能feature开发完成</h3>
+<pre><code class="language-shell"># 先拉取远程develop分支
+git pull origin develop
+git checkout develop
+git merge —-no-ff 分支名称 //合并开发的功能分支到develop
+git push origin develop
+git branch -d 分支名称//删除本地的功能分支
+git push origin —-delete 远程分支名称//删除远程的开发的功能分支 通常名称一样  如没提交则不删
+</code></pre>
+<h3 id="创建release分支">创建release分支</h3>
+<pre><code class="language-shell">git checkout -b 分支名称 develop //从develop创建release分支(预发布分支)
+</code></pre>
+<h3 id="完成release分支">完成release分支</h3>
+<pre><code class="language-shell">// 合并release到master分支
+git checkout master
+git merge —-no-ff 分支名称
+git push
+//合并release分支到develop(因为可能会在release做一些测试和上线前的修复)
+git checkout develop
+git merge —-no-ff 分支名称
+git push
+// 删除release分支 (可暂时保留 由于打上tag 一般都会做删除)
+git branch -d 分支名称
+git branch origin —-delete 远程分支名称//删除远程的开发的功能分支 通常名称一样  如没提交则不删
+git tag -a tag tag名称 master
+git push tags
+</code></pre>
+<h3 id="创建hotfix分支">创建hotfix分支</h3>
+<pre><code class="language-shell">git checkout -b 分支名称 master
+</code></pre>
+<h3 id="完成hotfix分支">完成hotfix分支</h3>
+<pre><code class="language-shell">git checkout master
+git merge —-no-ff 分支名称
+git push
+git checkout develop
+git merge —-no-ff 分支名称
+git push
+git branch -d 分支名称
+git tag -a tag tag名称 master
+git push tags
+</code></pre>
+<p>注意事项<br>
+1.所有开发分支从 <code>develop</code> 分支拉取新的开发分支。<br>
+2.所有 <code>hotfix</code> 分支从 <code>master</code> 拉新的<code>bug</code>修复分支。<br>
+3.所有在 <code>master</code> 上的提交都必要要有 <code>tag</code>，方便回滚。<br>
+4.只要有合并到 <code>master</code> 分支的操作，都需要和 <code>develop</code> 分支合并下，保证同步 如维护分支的合并。<br>
+5.<code>master</code> 和 <code>develop</code> 分支是主要分支，主要分支每种类型只能有一个，辅助分支<code>release</code>和<code>hotfix</code>分支需要时创建 <code>release</code>预发布分支可保留<br>
+6.<code>—-no-ff</code>合并模式 合并分支删除后 有历史 看得出合并记录 即有<code>merge commit</code>记录</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/webhook-zi-dong-bu-shu/" class="post-title gt-a-link">
+                    Webhook 自动部署
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/git-flow-kai-fa-shi-yong-zi-shi/" class="leancloud_visitors" data-flag-title="git-flow开发使用姿势">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

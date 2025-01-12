@@ -1,0 +1,466 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>vuex开发SPA应用 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    vuex开发SPA应用
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-01-15 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/Ynq0DwGia/" class="post-tags">
+                            # Vue
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>在使用vueJs开发SPA应用时 官方也提供了我们解决方案就是vuex 他就是使用状态管理机制去实现数据的更新</p>
+<h2 id="1安装vuex">1.安装vuex</h2>
+<p>文档:<a href="http://vuex.vuejs.org/en/">http://vuex.vuejs.org/en/</a></p>
+<p>来到我们的<a href="https://github.com/vuejs/vuex">github</a>上面打开我们的文档开始安装:</p>
+<pre><code>$ npm install vuex --save
+</code></pre>
+<p>当然来到我们的<code>main.js</code>去引入<code>vuex</code></p>
+<pre><code class="language-php?start_inline=1">import Vuex from 'vuex'
+Vue.use(Vuex)
+</code></pre>
+<h2 id="2处理业务">2.处理业务</h2>
+<p>1.其实最主要的我们是去理解官方所示的流程图<br>
+<img src="https://GeekGhc.github.io/post-images/1617517422748.png" alt="" loading="lazy"></p>
+<p>我们可以先从提供的<code>demo</code>开始:</p>
+<p>还是去<code>main.js</code>文件加入官方提供的<code>demo</code>:</p>
+<pre><code class="language-php?start_inline=1">const store = new Vuex.Store({
+  state: {
+    count: 0
+  },
+  mutations: {
+    increment (state) {
+      state.count++
+    }
+  }
+})
+</code></pre>
+<p>还是以任务管理系统为应用场景 这时我们在去定义我们的<code>vuex</code>(这时最后的业务代码):</p>
+<pre><code class="language-php?start_inline=1">const store = new Vuex.Store({
+  state: {
+      todos:[],
+      newTodo: {
+        id: null,
+        title: '',
+      }
+  },
+  mutations: {
+    get_todos_list (state,todos) {
+      state.todos = todos
+    },
+    delete_todo(state,index){
+      state.todos.splice(index,1);
+    },
+    add_todo(state,todo){
+      state.todos.push(todo);
+    }
+  },
+  actions:{
+    getTodos(store){
+      Vue.axios.get('http://localhost:8000/api/todos').then(response=&gt;{
+        store.commit('get_todos_list',response.data);
+      });
+    },
+    removeTodo(store,payload){
+      console.log('pindex = '+payload.index);
+      Vue.axios.delete('http://localhost:8000/api/todo/'+payload.todo.id+'/delete').then(response=&gt;{
+        store.commit('delete_todo',payload.index);
+      });
+    },
+    saveTodo(store,todo){
+      Vue.axios.post('http://localhost:8000/api/todo/create',{'title':todo.title}).then(response=&gt;{
+        console.log(response.data);
+        store.commit('add_todo',response.data);
+      });
+      store.state.newTodo = {id: null, title: '', completed: false}
+    }
+  }
+})
+</code></pre>
+<p>需要说明的是:</p>
+<ul>
+<li>**<code>mutations</code>**可以理解成在有了后端数据后去处理我们前端的数据内容</li>
+<li>**<code>actions</code>**则是去实现方法的具体业务逻辑 他负责去与我们后端的数据进行交互 在每个<code>component</code>可以<code>dispatch</code>一个<code>action</code><br>
+比如触发了一个更新操作</li>
+</ul>
+<blockquote>
+<p>理解起来即使<code>component</code>也可以说是一个视图里去<code>dispatc</code>一个<code>action</code> , <code>action</code>里面就是和后端去进行交互 ,<br>
+得到或者更新数据之后再<code>commit</code> 一个<code>mutation</code> 这样一来<code>mutation</code>就会去改变了<code>state</code>里面的数据 ,<br>
+而一旦我们<code>state</code>里面的数据发生改变它就会去渲染我们的<code>Vue Components</code></p>
+</blockquote>
+<p>还有要说明的就是前后端数据肯定是统一的 那么在<code>vuex</code>里 后端数据的操作就是通过<code>action</code>去实现的  而前端的数据就是通过<code>mutation</code>去改变<code>state</code>里面的<br>
+数据 这样前后端就统一起来了</p>
+<p>而<code>state</code>里面的数据是每个组件都可以访问 这和我们通常的全局变量的功能差不多 当我们的项目越来越大的时候 我们的<code>store</code>也会变得十分臃肿</p>
+<p>维护起来也十分困难 那么我们可以将<code>store</code>分成几个<code>module</code> 每个<code>module</code>有相当于一个<code>store</code> 因为它有自身的<br>
+<code>state</code>、<code>mutation</code>、<code>action</code>、<code>getters</code></p>
+<p>举个例子来说就是</p>
+<p>我们在<code>App.vue</code>里面去触发一个<code>action</code>:</p>
+<pre><code class="language-php?start_inline=1">export default {
+  name: 'app',
+  mounted(){
+    this.$store.dispatch('getTodos')
+   },
+}
+</code></pre>
+<p>就是在生成页面时<code>dispatch</code>了一个<code>action</code>: <strong>getTodos</strong></p>
+<pre><code class="language-php?start_inline=1">getTodos(store){
+      Vue.axios.get('http://localhost:8000/api/todos').then(response=&gt;{
+        store.commit('get_todos_list',response.data);
+      });
+},
+</code></pre>
+<p><code>getTodos</code>去从后端拿到了所有的任务数据 然后它<code>commit</code>了一个<code>get_todos_list</code>的<code>mutation</code>:</p>
+<pre><code class="language-php?start_inline=1">get_todos_list (state,todos) {
+      state.todos = todos
+},
+</code></pre>
+<p><code>get_todos_list</code>将从后端得到的数据赋予给了我们<code>state</code>里面的<code>todos</code>:</p>
+<pre><code class="language-php?start_inline=1">state: {
+      todos:[],
+      newTodo: {
+        id: null,
+        title: '',
+      }
+},
+</code></pre>
+<p><code>state</code>的<code>todos</code>的内容改变后就会去渲染我们的<code>Vue Components</code><br>
+我们就可以看到页面的数据信息发生改变 这样也就完成用户和数据的交互过程</p>
+<p>当然除了<code>Actions</code> ， <code>Mutations</code> 还有<code>Getters</code></p>
+<p>这里的<code>Getters</code>会从<code>store</code>的对象的<code>state</code>派生出一些其他的状态</p>
+<p>这个理解起来可以是是对原本<code>state</code>的进行一个再生和过滤</p>
+<p>比如我们需要其中的一个状态的数据长度(这也是官方给出的一个实例)</p>
+<pre><code class="language-php?start_inline=1">getters: {
+  // ...
+  doneTodosCount: (state, getters) =&gt; {
+    return getters.doneTodos.length
+  }
+}
+</code></pre>
+<p>由于我们声明了这个<code>getter</code>  而我们是可以获取<code>Getters</code> 的 <code>store.getters</code> 对象：</p>
+<p>因此我们在需要时可以以这种方式去得到这样的派生出来的一种数据</p>
+<pre><code class="language-php?start_inline=1">store.getters.doneTodos // -&gt; [{ id: 1, text: '...', done: true }]
+</code></pre>
+<p>最后还有一个核心的概念就是<code>Modules</code>  举个例子来说 项目里有很多的<code>Service</code>那么我们完全可以将这些<code>Service</code>分离开来</p>
+<p>在<code>index.js</code>里我们就可引入其他的<code>Modules</code></p>
+<pre><code class="language-php?start_inline=1">import Vue from 'vue'
+import Vuex from 'vuex'
+
+import PlayService from './PlayService'
+import ApiService from './ApiService'
+import NotifyService from './NotifyService'
+
+Vue.use(Vuex)
+
+export default new Vuex.Store({
+  modules: {
+    PlayService,
+    ApiService,
+    NotifyService
+  }
+})
+</code></pre>
+<p>这里只是其中的一个实例</p>
+<p>对于<code>vuex</code>的使用 最好还是官方推荐的架构形式</p>
+<p>以我的一个项目为例来说吧 就是将各个工作模块区分开来<br>
+<img src="https://GeekGhc.github.io/post-images/1617517436454.png" alt="" loading="lazy"></p>
+<p>我们可以直接去引用我们<code>index.js</code>作为入口 具体的怎么实现 我可能需要重新在一篇文章中去写到</p>
+<p>参考资料:</p>
+<ul>
+<li><a href="http://vuex.vuejs.org/en/">http://vuex.vuejs.org/en/</a></li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/vue-router-chu-li-qian-duan-lu-you/" class="post-title gt-a-link">
+                    vue-router处理前端路由
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/vuex-kai-fa-spa-ying-yong/" class="leancloud_visitors" data-flag-title="vuex开发SPA应用">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

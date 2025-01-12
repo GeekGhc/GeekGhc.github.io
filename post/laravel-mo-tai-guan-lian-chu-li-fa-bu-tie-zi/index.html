@@ -1,0 +1,393 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Laravel模态关联处理发布帖子 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Laravel模态关联处理发布帖子
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-03-05 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/b0tSda50f/" class="post-tags">
+                            # Laravel
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>在一个社区或者技术圈中用户肯定需要去发表自己的帖子文章 而如果你以Laravel作为开发框架的话 他提供的模型关联就是通过定义各个对象的关系来处理这种应用场景</p>
+<h2 id="介绍">介绍</h2>
+<p>最近在完成自己的<code>SPA</code>项目时 涉及到用户的帖子发布 其实这个应用场景之前在学习<code>laravel</code>时就遇到过</p>
+<p>自己在写社区这个项目时 模型之间的关联显然比我目前的需求更为复杂 在这里 我想实现的就只是用户在社区圈发布自己的帖子</p>
+<p>这样的关系就只是帖子和用户之间  而社区这个场景的话 里面有文章 帖子 视频 特别是在评论和标签这些的关联</p>
+<p>当然在这个项目里我肯定还是回去定义帖子 评论 用户之间的关联 而在社区里就评论而言 评论可以是对帖子 文章 视频</p>
+<p>这也就涉及到模型间的多态关联 在这里我还是去实现模型间的一对多的关联 因为完全可以达到我的需求了</p>
+<h2 id="定义表字段信息">定义表字段信息</h2>
+<p>当然定义模型之间的关联之前还是得去定义模型的字段信息:</p>
+<p>首先在<code>User Eloquent Model</code>里还是按照实际场景去定义 在这里我是这样的定义的:</p>
+<pre><code class="language-php?start_inline=1">Schema::create('users', function (Blueprint $table) {
+    $table-&gt;increments('id');
+    $table-&gt;string('name');
+    $table-&gt;string('email')-&gt;unique();
+    $table-&gt;string('password');
+    $table-&gt;string('avatar');//保存用户头像
+    $table-&gt;string('confirm_code',64);//邮箱确认激活code
+    $table-&gt;smallInteger('is_confirmed')-&gt;default(0);//判断用户呢是否已经激活他的邮箱
+    $table-&gt;integer('followers_count')-&gt;default(0);
+    $table-&gt;integer('followings_count')-&gt;default(0);
+    $table-&gt;rememberToken();
+    $table-&gt;timestamps();
+});
+</code></pre>
+<p>这个就是<code>User Model</code>的定义 接着去定义<code>Post Model</code></p>
+<pre><code class="language-php?start_inline=1">Schema::create('posts', function (Blueprint $table) {
+    $table-&gt;increments('id');
+    $table-&gt;text('body');
+    $table-&gt;text('html_body');
+    $table-&gt;integer('user_id')-&gt;unsigned();//发表帖子的用户
+    $table-&gt;integer('last_user_id')-&gt;unsigned();//更新帖子的用户
+    $table-&gt;integer('comment_count')-&gt;default(0);//评论数
+    $table-&gt;integer('vote_count')-&gt;default(0);//点赞数
+    $table-&gt;string('is_first',8)-&gt;default('F');
+    $table-&gt;timestamps();
+});
+</code></pre>
+<p>这里包含了一个帖子的基本信息 当然还有包括点赞 评论功能 这些我们都要去定义实现</p>
+<h2 id="建立模型间的关系">建立模型间的关系</h2>
+<p>我们可以知道一个用户是对应着多个帖子 那么也就是一对多的关系 其实无论是文章还是和用户之间</p>
+<p>我们更多的看到的还是一个一对多的关系 那么我们可以在<code>User Model</code> 去声明一下与帖子的关系:</p>
+<pre><code class="language-php?start_inline=1">//用户----帖子
+    public function posts()
+    {
+        return $this-&gt;hasMany(Post::class);//$user-&gt;posts()
+    }
+</code></pre>
+<p>下面就是去在<code>Post Model</code>声明与用户的关系:</p>
+<pre><code class="language-php?start_inline=1">//帖子----用户
+   public function user()
+   {
+       return $this-&gt;belongsTo('App\User');//$post-&gt;user()
+   }
+
+   //帖子----最后更新用户
+   public function last_user()
+   {
+       return $this-&gt;belongsTo('App\User');
+   }
+</code></pre>
+<p>这里我声明两个关系 一个是帖子的发表用户 一个是帖子最近更新用户</p>
+<p>当一个帖子的发布必然包含这个帖子的所有者 然后如果需要知道帖子最近被更新的用户的信息</p>
+<p>那么我们就需要去声明这个<code>last_user</code>这个<code>eager load</code></p>
+<h2 id="检验关系模型">检验关系模型</h2>
+<p>声明完这两个模型之间的关系我们可以尝试着去生成几条测试数据 在这之前我已经完成好<code>Model Factory</code></p>
+<p>为了检验模型间的关系 我们可以去<code>tinker</code>去查看一下有没有拿到对应的帖子</p>
+<blockquote>
+<p>这里我在之前已经生成了几条数据 就拿来用了 下面是<code>Post database table</code>:</p>
+</blockquote>
+<figure data-type="image" tabindex="1"><img src="https://GeekGhc.github.io/post-images/1616820333971.png" alt="" loading="lazy"></figure>
+<blockquote>
+<p>这里是<code>windows</code>环境下 所以我用的还是<strong>Navicat Premium</strong> 管理数据库 因为支持多种数据库 用起来还是相当方便的</p>
+<p>如果是<code>Mac</code>环境下的话 <strong>Sequel Pro</strong> 肯定是一个非常好的选择</p>
+</blockquote>
+<p>接着去项目终端执行:</p>
+<pre><code class="language-shell">$ php artisan tinerk
+</code></pre>
+<pre><code class="language-shell">$ namespace App;
+</code></pre>
+<p>接着去拿到id为6的user</p>
+<pre><code class="language-shell">$ $user = User::find(6);
+</code></pre>
+<p>现在我们就可以看下是不是可以拿到这三条post数据:</p>
+<pre><code class="language-shell">$ $user-&gt;posts
+</code></pre>
+<p>执行完后你就可以看到 成功的拿到了三条数据 这就是帖子和用户之间的关联 之后我们还会实现<strong>点赞</strong>  <strong>评论</strong>的模型之间的关联</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/vue-cli-ji-cheng-quill-fu-wen-ben-bian-ji-qi/" class="post-title gt-a-link">
+                    vue-cli集成quill富文本编辑器
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/laravel-mo-tai-guan-lian-chu-li-fa-bu-tie-zi/" class="leancloud_visitors" data-flag-title="Laravel模态关联处理发布帖子">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,372 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>PHP中的正则表达式 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    PHP中的正则表达式
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-06-24 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/x4piCdT_z/" class="post-tags">
+                            # PHP
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>最近遇到公司的一个emoji表情替换的应用场景 于是我立马想到了这样的一个需求就可以用正则表达式来解决 只需要把相应的表情文本替换成表情的地址即可</p>
+<h2 id="简介">简介</h2>
+<p>最近公司需要App端的网页端的页面分享 在书籍的评论区处 会有遇到<code>Emoji</code>表情的解析  当然这在移动端都是以图片的形式存储的</p>
+<p>所以在网页端 自然我也需要对评论的内容找那个涉及到评论图片的地方进行解析 当然我的第一反应就是利用正则表达式去解析到</p>
+<p>对应的表情代码 然后再去解析成图片的地址</p>
+<blockquote>
+<p>相应的解析代码我会放到我的<code>gist</code>里 <a href="https://gist.github.com/GeekGhc/69fd78164664f3515eb646d25eabd61a">Emotion.php</a></p>
+</blockquote>
+<h2 id="开始">开始</h2>
+<p>在数据库中用户的评论表情是以一定的文本格式存储的 比如<code>[dog-00]</code>,<code>[拜拜]</code>这样的形式 那么我们需要对这些特定的格式进行解析成</p>
+<p>相应的图片的地址 这样就可以显示出具体的评论内容</p>
+<p>1.当然首先对于这些评论图片我们可以放在本地的目录  这里我以安卓端的文件夹目录放在<code>/img/mipmap</code></p>
+<p>2.对于评论的获取 这些我们可以在对应的控制器方法中去获取评论 这里给出一个事例:</p>
+<pre><code class="language-php?start_inline=1">$comments = DB::table('posts')
+            -&gt;where('book_num', $book-&gt;book_num)
+            -&gt;join('user', 'user.id', '=', 'posts.uid')
+            -&gt;orderBy('posts.release_time', 'desc')
+            -&gt;get();
+</code></pre>
+<p>这里只是一个对后台评论的获取</p>
+<p>3.对于模板的评论内容的展示当然以我们的<code>html</code>形式展现 即<code>{!! $comment-&gt;content !!}</code></p>
+<h2 id="关于解析的核心代码">关于解析的核心代码</h2>
+<p>为了功能的解耦 这里我将表情的解析放在一个<code>Repositories</code>目录下的<code>Emotion.php</code>里</p>
+<p>在这个类文件里我写了一个替换方法</p>
+<pre><code class="language-php?start_inline=1"> function replace_emotion($content)
+    {
+
+        preg_match_all('/\[[\s\S]+?\]/', $content, $arr);
+        $emotions = array(
+            &quot;[ej-01]&quot; =&gt; 'tieba_emotion_01',
+            &quot;[ej-02]&quot; =&gt; 'tieba_emotion_02',
+            &quot;[ej-03]&quot; =&gt; 'tieba_emotion_03',
+            &quot;[ej-04]&quot; =&gt; 'tieba_emotion_04',
+            &quot;[ej-05]&quot; =&gt; 'tieba_emotion_05',
+            &quot;[ej-06]&quot; =&gt; 'tieba_emotion_06',
+            &quot;[ej-07]&quot; =&gt; 'tieba_emotion_07',
+            &quot;[ej-08]&quot; =&gt; 'tieba_emotion_08',
+            &quot;[ej-09]&quot; =&gt; 'tieba_emotion_09',
+            &quot;[ej-10]&quot; =&gt; 'tieba_emotion_10');
+            foreach ($arr[0] as $v) {
+                foreach ($emotions as $key =&gt; $value) {
+                    if($v==$key){
+                        $content = str_replace($v, '&lt;img src=&quot;/img/mipmap/' . $value . '.png&quot; width=&quot;24&quot; height=&quot;24&quot;/&gt;', $content);
+                        continue;
+                    }
+                }
+            }
+            return $content;
+    }
+</code></pre>
+<p>这里给出其中的一小段实例 这里就是利用正则表达式对类似<code>[xxxx]</code>这样的形式 解析成对应的图片路径</p>
+<h2 id="控制器方法依赖注入">控制器方法依赖注入</h2>
+<p>对于写好的方法类 在构造函数里进行依赖注入就是了</p>
+<pre><code class="language-php?start_inline=1">protected $emotion;
+public function __construct(Emotion $emotion)
+{
+    $this-&gt;emotion = $emotion;
+}
+</code></pre>
+<p>所以这样依赖对于获取的评论列表数据的内容都需要进行解析替换 因为返回的是一个<code>collection</code> <code>so</code> 我们通过<code>map</code>处理</p>
+<pre><code class="language-php?start_inline=1">$collections = $comments-&gt;map(function($item,$key){
+   $item-&gt;content = $this-&gt;emotion-&gt;replace_emotion($item-&gt;content);
+});
+</code></pre>
+<p>这样一来在评论文本中如果有类似<code>[ej-02]</code>这样的形式就会解析成对应的表情图片</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/app-wei-xin-zhi-fu-bao-zhi-fu-fu-wu-duan-jie-kou/" class="post-title gt-a-link">
+                    APP微信支付宝支付服务端接口
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/php-zhong-de-zheng-ze-biao-da-shi/" class="leancloud_visitors" data-flag-title="PHP中的正则表达式">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

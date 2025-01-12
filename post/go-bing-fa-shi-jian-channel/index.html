@@ -1,0 +1,764 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Go并发实践-Channel | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Go并发实践-Channel
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2021-05-02 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/FeJ26LonW/" class="post-tags">
+                            # Go
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h2 id="概念介绍">概念介绍</h2>
+<p>想必在Go的并发领域中都听说过一句话：</p>
+<blockquote>
+<p>Don’t communicate by sharing memory, share memory by communicating.</p>
+</blockquote>
+<p>解释就是：不要用共享内存的方式进行通信，而是用通信的方式共享内存<br>
+而这里的通信方式也就是go所提供的channel，channel 作为Go中特有的数据结构。和其他的并发原语不一样的是，可以直接使用，无需引用额外的包。<br>
+通常结合Go中著名的goroutine使用一起提供更加轻便的并发方案，同时也演进了很多并发模式</p>
+<h2 id="基本使用">基本使用</h2>
+<p>在channel定义上可以分为只能接受、只能发送和既可以发送和接收这三种：</p>
+<pre><code>var xx chan struct{}        // 可以发送接收
+var xx chan&lt;- struct{}      // 只能接收
+var xx &lt;-chan struct{}      // 只能发送
+</code></pre>
+<blockquote>
+<p>箭头的匹配遵循最左结合规则<br>
+通过make可以初始化channel,当然和切片一样，可以声明其容量。默认则为0。因为区分为buffered channel和 unbuffered channel</p>
+</blockquote>
+<pre><code>ch1 := make(chan int)          //unbuffered channel
+ch2 := make(chan int,123)      //buffered channel
+</code></pre>
+<p>常用操作包含了发送、接收、关闭等</p>
+<pre><code>ch1 &lt;- 100   //发送数据
+x &lt;- ch1     //接收数据
+&lt;- ch1       //丢弃处理
+close(ch1)   //关闭chan
+</code></pre>
+<p>以上都是一些基本使用，有兴趣或者详情的可以查阅官方文档即可，不是本次重点</p>
+<h2 id="底层理解">底层理解</h2>
+<p>如果要想掌握channel的功能和特性，就需要了解本身的底层实现。</p>
+<h3 id="数据结构">数据结构</h3>
+<p>首先看下基本数据结构：https://github.com/golang/go/blob/master/src/runtime/chan.go#L32</p>
+<pre><code>type hchan struct {
+        qcount   uint           // 循环队列的元素大小 == len()
+        dataqsiz uint           // 循环队列的大小 == cap()
+        buf      unsafe.Pointer // 循环队列的指针
+        elemsize uint16         // chan中元素大小和元素类型相关
+        closed   uint32         // 是否close
+        elemtype *_type         // chan中的元素类型
+        sendx    uint           // send 在buf中的索引
+        recvx    uint           // recv 在buf中的索引
+        recvq    waitq          // receiver 等待队列
+        sendq    waitq          // send 等待队列
+
+        // lock protects all fields in hchan, as well as several
+        // fields in sudogs blocked on this channel.
+        //
+        // Do not change another G's status while holding this lock
+        // (in particular, do not ready a G), as this can deadlock
+        // with stack shrinking.
+        lock mutex               //互斥锁，并发基础，资源保护
+}
+
+type _type struct {
+   size       uintptr
+   ptrdata    uintptr // size of memory prefix holding all pointers
+   hash       uint32
+   tflag      tflag
+   align      uint8
+   fieldAlign uint8
+   kind       uint8
+   // function for comparing objects of this type
+   // (ptr to object A, ptr to object B) -&gt; ==?
+   equal func(unsafe.Pointer, unsafe.Pointer) bool
+   // gcdata stores the GC type data for the garbage collector.
+   // If the KindGCProg bit is set in kind, gcdata is a GC program.
+   // Otherwise it is a ptrmask bitmap. See mbitmap.go for details.
+   gcdata    *byte
+   str       nameOff
+   ptrToThis typeOff
+}
+
+type waitq struct {
+   first *sudog
+   last  *sudog
+}
+
+初始化
+func makechan(t *chantype, size int) *hchan {
+   elem := t.elem
+
+   // compiler checks this but be safe.
+   if elem.size &gt;= 1&lt;&lt;16 {
+      throw(&quot;makechan: invalid channel element type&quot;)
+   }
+   if hchanSize%maxAlign != 0 || elem.align &gt; maxAlign {
+      throw(&quot;makechan: bad alignment&quot;)
+   }
+
+   mem, overflow := math.MulUintptr(elem.size, uintptr(size))
+   if overflow || mem &gt; maxAlloc-hchanSize || size &lt; 0 {
+      panic(plainError(&quot;makechan: size out of range&quot;))
+   }
+
+   // Hchan does not contain pointers interesting for GC when elements stored in buf do not contain pointers.
+   // buf points into the same allocation, elemtype is persistent.
+   // SudoG's are referenced from their owning thread so they can't be collected.
+   // TODO(dvyukov,rlh): Rethink when collector can move allocated objects.
+   var c *hchan
+   switch {
+   case mem == 0:
+      // Queue or element size is zero.
+      c = (*hchan)(mallocgc(hchanSize, nil, true))
+      // Race detector uses this location for synchronization.
+      c.buf = c.raceaddr()
+   case elem.ptrdata == 0:
+      // Elements do not contain pointers.
+      // Allocate hchan and buf in one call.
+      c = (*hchan)(mallocgc(hchanSize+mem, nil, true))
+      c.buf = add(unsafe.Pointer(c), hchanSize)
+   default:
+      // Elements contain pointers.
+      c = new(hchan)
+      c.buf = mallocgc(mem, elem, true)
+   }
+
+   c.elemsize = uint16(elem.size)
+   c.elemtype = elem
+   c.dataqsiz = uint(size)
+
+   if debugChan {
+      print(&quot;makechan: chan=&quot;, c, &quot;; elemsize=&quot;, elem.size, &quot;; dataqsiz=&quot;, size, &quot;\n&quot;)
+   }
+   return c
+}
+</code></pre>
+<p>上面的整体初始化流程可以概括为：</p>
+<ol>
+<li>channel初始化size检查</li>
+<li>声明的是unbuffered channel，不创建buf。见 c.buf = c.raceaddr()</li>
+<li>声明的不是指针类型，则分配一段连续的内存和buf给到chan</li>
+<li>声明的为指针类型，单独申请buf：c.buf = mallocgc(mem, elem, true)</li>
+<li>初始化结构参数</li>
+</ol>
+<h3 id="数据send">数据Send</h3>
+<p>这里以数据发送为例，最终编译时会调用chansend1: https://github.com/golang/go/blob/master/src/runtime/chan.go#L158<br>
+我们解析下期中的逻辑</p>
+<pre><code>func chansend1(c *hchan, elem unsafe.Pointer) {
+    chansend(c, elem, true, getcallerpc())
+}
+func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr) bool {
+    if c == nil {
+      if !block {
+        return false
+      }
+      gopark(nil, nil, waitReasonChanSendNilChan, traceEvGoStop, 2)
+      throw(&quot;unreachable&quot;)
+    }
+    ......
+    if !block &amp;&amp; c.closed == 0 &amp;&amp; full(c) { return false }
+}
+</code></pre>
+<p>判断chan是否为nil,如果是的话，通过gopark将调用者的groutine阻塞并休眠</p>
+<pre><code>if !block &amp;&amp; c.closed == 0 &amp;&amp; ((c.dataqsiz == 0 &amp;&amp; c.recvq.first == nil) ||
+   (c.dataqsiz &gt; 0 &amp;&amp; c.qcount == c.dataqsiz)) {
+   return false
+}
+</code></pre>
+<p>如果本身chan没有close,并且已满时，如果不想阻塞(取决于block)当前的调用直接返回</p>
+<pre><code>lock(&amp;c.lock)
+
+if c.closed != 0 {
+   unlock(&amp;c.lock)
+   panic(plainError(&quot;send on closed channel&quot;))
+}
+</code></pre>
+<p>这里是值得注意的一部分，经常会遇到这样的场景：如果chan已经被close了，再往里面发数据就会panic</p>
+<pre><code>if sg := c.recvq.dequeue(); sg != nil {
+   // Found a waiting receiver. We pass the value we want to send
+   // directly to the receiver, bypassing the channel buffer (if any).
+   send(c, sg, ep, func() { unlock(&amp;c.lock) }, 3)
+   return true
+}
+</code></pre>
+<p>如果等待的队列有等待的recevier,那么将数据交给他进行处理，这样就可以不用再放入buf中，减少操作开支<br>
+具体数据处理参考：memmove(dst, src, t.size)</p>
+<pre><code>if c.qcount &lt; c.dataqsiz {
+   // Space is available in the channel buffer. Enqueue the element to send.
+   qp := chanbuf(c, c.sendx)
+   if raceenabled {
+      raceacquire(qp)
+      racerelease(qp)
+   }
+   typedmemmove(c.elemtype, qp, ep)
+   c.sendx++
+   if c.sendx == c.dataqsiz {
+      c.sendx = 0
+   }
+   c.qcount++
+   unlock(&amp;c.lock)
+   return true
+}
+</code></pre>
+<p>到这里就是常见的发送数据场景：当前没有receiver,这时数据押入循环队列，返回成功</p>
+<pre><code>if !block {
+   unlock(&amp;c.lock)
+   return false
+}
+...
+</code></pre>
+<p>最后就是处理buf满的情况，这时的goroutine就会加入到发送等待队列中，直到下次唤醒。</p>
+<h3 id="数据receive">数据Receive</h3>
+<p>https://github.com/golang/go/blob/master/src/runtime/chan.go#L454</p>
+<h3 id="chan-close">Chan Close</h3>
+<p>https://github.com/golang/go/blob/master/src/runtime/chan.go#L355</p>
+<h2 id="避坑指南">避坑指南</h2>
+<h3 id="问题case">问题Case</h3>
+<p>无论是在开源的知名项目还是日常开发中，我们在引入channle这个新的概念都会遇到不少问题，最常见的无非就是panic和goroutine泄露<br>
+经过上面的底层结果分析，不难发现，panic的情况总结可以为三种</p>
+<ul>
+<li>Close 为nil的channel</li>
+<li>Close 已经close的channel</li>
+<li>Send 已经被close的channel</li>
+</ul>
+<figure data-type="image" tabindex="1"><img src="https://GeekGhc.github.io/post-images/1653922113765.png" alt="" loading="lazy"></figure>
+<p>主要原因也说的比较清楚：创建了unbuffered chan:applyConfChan，这个gorountine中只有一个receiver，但是send是在业务逻辑的一个loop(循环)中，这样子gorountine就会block因为没有接收和发送同步。<br>
+如果要解决的话也很简单：修改发送逻辑，业务循环处理完成后再send即可</p>
+<h3 id="总结建议">总结建议</h3>
+<p>channel在不同状态时我们都需要注意，具体总结如下</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">nil</th>
+<th style="text-align:center">empty</th>
+<th style="text-align:center">Buf full</th>
+<th style="text-align:center">Not empty&amp;full</th>
+<th style="text-align:center">closed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">send</td>
+<td style="text-align:center">block</td>
+<td style="text-align:center">ok</td>
+<td style="text-align:center">block</td>
+<td style="text-align:center">ok</td>
+</tr>
+<tr>
+<td style="text-align:center">receiver</td>
+<td style="text-align:center">block</td>
+<td style="text-align:center">block</td>
+<td style="text-align:center">ok</td>
+<td style="text-align:center">ok</td>
+</tr>
+<tr>
+<td style="text-align:center">close</td>
+<td style="text-align:center">panic</td>
+<td style="text-align:center">block</td>
+<td style="text-align:center">ok&amp;保留已有数据</td>
+<td style="text-align:center">ok&amp;保留已有数据</td>
+</tr>
+</tbody>
+</table>
+<h2 id="实践运用">实践运用</h2>
+<p>综合channel的基本特性和原理，通常我们可以总结为如下的场景：<br>
+<code>1-发布订阅</code><br>
+最典型的应该就是生产消费，是可以当做内部消息队列的。而其设计的也是多生产者和多消费者模型<br>
+<code>2-数据传递</code><br>
+作为消息的通信渠道，在通信上可以将数据进行处理传递<br>
+<code>3-信号处理</code><br>
+其本身也是基于生产和发布的模式再结合chan的特性，可以很好的实现基于信号的处理<br>
+<code>4-锁</code><br>
+基于基本结构实现的互斥，因此也可以实现互斥锁的机制</p>
+<h3 id="数据传递">数据传递</h3>
+<p>这个场景其实比较常见，举例来说就是：有4个goroutine，可以为其编号。如果需要定时顺序打印各自编号，这个就是个数据传递的过程。<br>
+应用到现有的设计模式就是责任链模式，在很多上下文处理都有所使用<br>
+那怎么实现这个过程，其实可以定义变量令牌作为标识，哪个goroutine拿到令牌就做任务处理，这里我们只做打印</p>
+<pre><code>//定义令牌
+type token struct{}
+
+func newWorker(id int, ch chan token, nextCh chan token) {
+   for {
+      // 取得令牌
+      token := &lt;-ch 
+      // 打印处理，这里可以针对token做一系列的业务处理，最终再下发token
+      fmt.Println(&quot;data = &quot;, id)
+      time.Sleep(time.Second)
+      nextCh &lt;- token
+   }
+}
+
+func TestChannel(t *testing.T) {
+   chs := []chan token{make(chan token), make(chan token), make(chan token), make(chan token)}
+
+   // 创建n个worker goroutine
+   for i := 0; i &lt; 4; i++ {
+      go newWorker(i, chs[i], chs[(i+1)%4])
+   }
+
+   //令牌开始传递，不用指定顺序，这里从0开始
+   chs[0] &lt;- struct{}{}
+
+   //常驻执行
+   select {}
+}
+
+=== RUN   TestChannel
+data =  0
+data =  1
+data =  2
+data =  3
+data =  0
+data =  1
+...
+</code></pre>
+<p>这样的场景需要注意的是，当前的goroutine只需要关注自己的token即可，内部的处理也会是基于接收到的token进行处理。处理完成之后进行传递即可</p>
+<h3 id="信号处理">信号处理</h3>
+<p>想象一下传统的notify/wait的场景，其实利用channnel本身的特性也可以实现。主要就是基于chan为空，那么receiver就会进行阻塞等待，当有消息来时或者关闭chan会进行响应处理这个特性<br>
+举例来说就是通常我们需要在程序退出之前执行一些连接关闭、文件close等操作。实际上很多框架的优雅退出都是基于此来实现的<br>
+可以先看一个最简单的信号通知的case:</p>
+<pre><code>func TestQuit(t *testing.T) {
+   g := make(chan int)
+   quit := make(chan struct{})
+
+   go func() {
+      for {
+         select {
+         case v := &lt;-g:
+            t.Log(v)
+         case &lt;-quit:
+            t.Log(&quot;service 退出&quot;)
+            return
+         }
+      }
+   }()
+
+   for i := 0; i &lt; 3; i++ {
+      g &lt;- i
+   }
+   quit &lt;- struct{}{}
+   t.Log(&quot;TestQuit 退出&quot;)
+}
+</code></pre>
+<p>而在实现程序的优雅退出时，我们需要考虑这样的情况：<br>
+程序在关闭时会有一些流程需要处理，这些流程中间都会花费一些时间，比如说上面的的链接关闭，文件关闭等。这个时候程序是处理一个关闭中的状态<br>
+而这个关闭的过程如果太久肯定是不可接受的，因此需要设置超时时间，到达这个时间，可以直接退出。<br>
+程序完全退出时，这个时候才是真正的closed<br>
+因此针对以上考虑，我们可以设计优雅关闭的流程如下：</p>
+<pre><code>func TestGracefulDown(t *testing.T) {
+   var closing = make(chan struct{})
+   var closed = make(chan struct{})
+
+   go func() {
+      // 模拟业务处理
+      for {
+         select {
+         case &lt;-closing:
+            return
+         default:
+            // 业务处理流程
+            time.Sleep(100 * time.Millisecond)
+         }
+      }
+   }()
+
+   // 处理CTRL+C等中断信号
+   termChan := make(chan os.Signal)
+   signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM)
+   &lt;-termChan
+
+   close(closing)
+   // 执行退出之前的清理动作
+   go doCleanup(closed)
+
+   select {
+   case &lt;-closed:
+   case &lt;-time.After(time.Second):
+      t.Log(&quot;清理超时，不等了&quot;)
+   }
+   t.Log(&quot;graceful log out...&quot;)
+}
+
+func doCleanup(closed chan struct{}) {
+   //中间处理执行一分钟
+   time.Sleep(1 * time.Minute)
+   close(closed)
+}
+</code></pre>
+<h3 id="锁实现">锁实现</h3>
+<p>在底层结构的分析中就可以看到，chan的内部就有互斥锁的保护。因此是可以保证只有当数据进入队列后(不一定指进入buf中)才可以被消费<br>
+最常见基于channel的实现主要有两种，这两种都是基于chan的特性决定的</p>
+<ul>
+<li>初始化一个buffer为1的channel。上面也说了内部可以保证只有进入channel的数据才可以被receive，因此获得这个元素的就等价于获得了锁</li>
+<li>初始化一个buffer为1的channel。在发送给一个full chan的时候会block这个前提下，可以知道可以发送元素到这个chan的就代表了获得了锁</li>
+</ul>
+<p>通常锁场景是需要重试和超时的，而chan结合select可以很好的实现这些特性<br>
+两种方式其实都大同小异，这里以第一个场景为例</p>
+<pre><code>// 定义互斥锁
+type Mutex struct {
+   ch chan struct{}
+}
+
+// 初始化
+func NewMutex() *Mutex {
+   // buffer为1
+   mu := &amp;Mutex{make(chan struct{}, 1)}
+   // 放入元素
+   mu.ch &lt;- struct{}{}
+   return mu
+}
+
+// 请求锁，直到获取到
+func (m *Mutex) Lock() {
+   &lt;-m.ch
+}
+
+// 释放锁
+func (m *Mutex) Unlock() {
+   select {
+   case m.ch &lt;- struct{}{}:
+   default:
+      panic(&quot;unlock of unlocked mutex&quot;)
+   }
+}
+
+// 尝试获取锁
+func (m *Mutex) TryLock() bool {
+   select {
+   case &lt;-m.ch:
+      return true
+   default:
+   }
+   return false
+}
+
+// 加入一个超时的设置
+func (m *Mutex) LockTimeout(timeout time.Duration) bool {
+   timer := time.NewTimer(timeout)
+   select {
+   case &lt;-m.ch:
+      timer.Stop()
+      return true
+   case &lt;-timer.C:
+   }
+   return false
+}
+
+// 锁是否已被持有
+func (m *Mutex) IsLocked() bool {
+   return len(m.ch) == 0
+}
+
+func TestLock(t *testing.T) {
+   m := NewMutex()
+   ok := m.TryLock()
+   t.Logf(&quot;locked %v\n&quot;, ok)
+   ok = m.TryLock()
+   t.Logf(&quot;locked %v\n&quot;, ok)
+}
+</code></pre>
+<p>整个流程就是:</p>
+<ol>
+<li>初始化锁的时候，先将一个元素推入chan，</li>
+<li>之后成功获取这个元素的就代表了获得这个锁。</li>
+<li>完成操作后再将这个元素推入chan即可，推入的过程就是释放锁。<br>
+因为元素在没有再次推入chan之前是不会有任何goroutine可以拿到这个元素的。这也就实现了锁的互斥</li>
+</ol>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/redis-fen-bu-shi-ji-qun/" class="post-title gt-a-link">
+                    Redis分布式集群
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/go-bing-fa-shi-jian-channel/" class="leancloud_visitors" data-flag-title="Go并发实践-Channel">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,567 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>vue-router处理前端路由 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    vue-router处理前端路由
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-01-12 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/ZM9_9Ca4o/" class="post-tags">
+                            # Router
+                        </a>
+                    
+                        <a href="https://GeekGhc.github.io/tag/Ynq0DwGia/" class="post-tags">
+                            # Vue
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>vue-router是Vue.js官方的路由插件，我们可以用它去处理我们前端路由,比较适合用于构建单页面应用 在构建前端vue-cli项目我们就可以利用他去实现路由的处理</p>
+<h3 id="1介绍">1.介绍</h3>
+<p>在标准的<code>SPA应用</code>中 我们的前端路由都是交给我们的前端框架去处理的</p>
+<p><code>vueJs</code>官方推荐的路由处理就是我们的<code>vue-router</code></p>
+<h3 id="2安装">2.安装</h3>
+<p>1.在命令行执行</p>
+<pre><code>$ npm install vue-router
+</code></pre>
+<p>安装完毕之后我们只需要import进来就可以使用</p>
+<pre><code class="language-php?start_inline=1">import VueRouter from 'vue-router'
+Vue.use(VueRouter)
+</code></pre>
+<blockquote>
+<p>如果我们初始化项目时就已经安装了<code>vue-router</code> 那么就会默认的在<code>src/router</code>下生成了<code>index.js</code>文件<br>
+这样我们的路由就可以在里面定义(我觉得这样去定义更加清晰 当然定义的方法都是同理的)</p>
+</blockquote>
+<p>这样我们的路由就会交给我们的<code>vue-router</code>去处理</p>
+<p>如果这个时候我们的浏览器的访问时是<code>http://localhost:8080/#/</code>这样的 就说明我们已经使用了<code>vue-router</code></p>
+<h3 id="3要点说明">3.要点说明</h3>
+<blockquote>
+<p>以下说明我个人结合文档和自己在写项目时的体会 如有不到位还请见谅</p>
+</blockquote>
+<h5 id="1路由的命名">1.路由的命名</h5>
+<p>路由的命名采取<code>name</code>去定义 这样在路由跳转时 可以直接提供这个路由的<code>name</code> 就拿官方文档的例子来说</p>
+<pre><code class="language-php?start_inline=1">const router = new VueRouter({
+  routes: [
+    {
+      path: '/user/:userId',
+      name: 'user',
+      component: User
+    }
+  ]
+})
+</code></pre>
+<p>这边定义了一个名字为user的路由 这样我们在链接到一个路由时就可以这样给出</p>
+<pre><code class="language-html">&lt;router-link :to=&quot;{ name: 'user', params: { userId: 123 }}&quot;&gt;User&lt;/router-link&gt;
+</code></pre>
+<blockquote>
+<p>这里的params是以一个参数传递的 也就是userId的值 那么这样就可以跳转到名为user这个路由</p>
+</blockquote>
+<p>而<code>:to</code>这样的定义和<code>router.push</code>是一样的 这个在下面会说到</p>
+<h5 id="2首先谈一下vue-router的路由嵌套">2.首先谈一下vue-router的路由嵌套</h5>
+<p>其实官方解释起来也很简单 例如我们在实现<code>/user</code>展示的<code>User</code>这个<code>component</code> 而``/user/post/:id`展示的是用户的一个帖子</p>
+<p>那么我们在之前我们路由的渲染是放在<code>App</code>这个入口<code>component</code> 我们在里面是这样定义的</p>
+<pre><code class="language-html">&lt;template&gt;
+    &lt;div id=&quot;app&quot;&gt;
+        &lt;router-view&gt;&lt;/router-view&gt;
+    &lt;/div&gt;
+&lt;/template&gt;
+</code></pre>
+<p>这里的 <code>&lt;router-view&gt;</code> 是最顶层的出口  同时我们也是可以在User component去包含 <code>&lt;router-view&gt;</code></p>
+<p>这样就相当于他的子路由就会在这里被渲染  那么我们在路由的定义的时候就可以去定义它的子路由</p>
+<pre><code class="language-php?start_inline=1">const router = new VueRouter({
+  routes: [
+    {
+      path: '/user', component: User,
+      children: [
+        // 当 /user 匹配成功，
+        // Post 会被渲染在 User 的 &lt;router-view&gt; 中
+        { path: '', component: Post },
+        // ...其他子路由
+      ]
+    }
+  ]
+})
+</code></pre>
+<h6 id="3-routerpush-routerreplace-和-routergo">3. <strong>router.push</strong>、 <strong>router.replace</strong> 和 <strong>router.go</strong></h6>
+<p>这三者如果说区别的话 我们从字面的解释也可以看出一二</p>
+<p>对于<code>router.push</code>就可以想象成一个堆栈的组合 那么我们在路由导航时定义的</p>
+<pre><code class="language-html">&lt;router-link :to=&quot;...&quot; name=&quot;&quot;&gt;&lt;/router-link&gt;
+</code></pre>
+<p>这样的作用就等同与<code>router.push</code> 这样我们在访问每一个组件回退到上一个页面 其实最终的效果就是这样的</p>
+<p>当然我们也会用到<code>router-replace</code>就是一个替换 他不像<code>router-push</code>会将之前的路由记录保存</p>
+<p>对于<code>router-go</code> 作用就是<code>js</code>里的<code>window.history.go(n)</code> 我们在一开始写<code>js</code>跳转页面的时候肯定用到过</p>
+<h6 id="4-导航钩子">4. 导航钩子</h6>
+<p>这个其实说起来就是一个中间件的作用 这个在<code>laravel</code>我们会经常接触到</p>
+<p>那么在<code>vue-router</code>里 这样的钩子可以是全局的 也可以是由单个组件 也可以是一个组件</p>
+<p>那么就谈一下全局的路由钩子好了 其余的官方文档将的也很清楚了</p>
+<p>首先我们在<code>route</code>的<code>index.js</code>(也就是初始化路由的<strong>index</strong>文件)去注册这样的全局性的钩子</p>
+<pre><code class="language-php?start_inline=1">const router = new VueRouter({ ... })
+
+router.beforeEach((to, from, next) =&gt; {
+  // ...
+})
+</code></pre>
+<p>这三个参数的作用就是(发现文档的解释还是挺容易理解的):</p>
+<ul>
+<li><strong>to</strong>: <code>Route</code>: 即将要进入的目标 路由对象</li>
+<li><strong>from</strong>: <code>Route</code>: 当前导航正要离开的路由</li>
+<li><strong>next</strong>: <code>Function</code>: 一定要调用该方法来 <code>resolve</code> 这个钩子。可以说执行了一个类似回调函数</li>
+</ul>
+<h5 id="5-导航的数据获取">5. 导航的数据获取</h5>
+<p>首先明白一点的是导航的数据获取可以在导航完成之前也可以是导航完成之后 这个主要取决于你所想要的用户体验</p>
+<p>1.导航完成后获取数据<br>
+结合官方给出的例子来说就是在导航结束后 我们可以在组件created这个时间钩子去获取路由中的数据</p>
+<blockquote>
+<p>比如在展示一个用户主页的需求时 在导航之后获取到用户的<code>id</code>这样就可以去服务器去请求这个<code>id</code>用户的数据信息</p>
+</blockquote>
+<p>官方给出的实例是展示一个<code>post</code>的信息 和展示用户是一样的 在组件<code>created</code>这个钩子去调用<code>fetchData</code>方法<br>
+在<code>fetchData</code>方法里去请求<code>post</code>的数据</p>
+<p>2.在导航完成前获取数据</p>
+<p>在导航转入新的路由前获取数据。我们可以在接下来的组件的 <code>beforeRouteEnter</code> 钩子中获取数据，当数据获取成功后只调用 <code>next</code> 方法</p>
+<p>我们之前也有说过钩子可以是组件级的 这样一来我们在组件的路由钩子中我们就可以去获取路由的数据</p>
+<p>这里我们在获取数据的期间 用户也会停留在当前的界面 这个时候我们可以加一些进度条 缓冲的效果之类的</p>
+<h5 id="6-路由的懒加载">6. 路由的懒加载</h5>
+<p>官方给出的说法就是我们在打包项目时 我们可以将每个组件打包成异步加载 这样你的路由被访问的时候就高效多了</p>
+<p>我们需要做的就是将每个组件定义成异步组件 在配置路由时依然和之前的一样  不同的是在路由的定义上</p>
+<p>就拿我项目里的几条路由来说就是这样去定义:</p>
+<pre><code class="language-php?start_inline=1">const Profile = r =&gt; require.ensure([], () =&gt; r(require('components/users/Profile')), 'profile')
+const Account = r =&gt; require.ensure([], () =&gt; r(require('components/users/Account')), 'account')
+</code></pre>
+<p>这边就定义了两个异步组件 然后我们爱配置的时候还是之前的配置</p>
+<pre><code class="language-php?start_inline=1">export default new Router({
+    mode: 'history',
+    history: true,
+    routes: [
+        {path: '/profile', name: 'profile', component: Profile},
+        {path: '/account', name: 'account', component: Account},
+    ]
+})
+</code></pre>
+<h3 id="4结合简单业务处理">4.结合简单业务处理</h3>
+<p>这里我们还是以一个任务管理系统为应用场景</p>
+<p>1.下面就是定义我们的路由</p>
+<blockquote>
+<p>前端的路由定义是交给我们的<code>component</code>去处理 而我们熟悉的框架路由是交给我们的<strong>视图</strong>去处理<br>
+其实可以这么理解<code>SPA</code>中不同的<code>component</code>就代替了我们传统框架中每个不同的<strong>视图</strong></p>
+</blockquote>
+<pre><code class="language-php?start_inline=1">const routes = [
+  { path: '/', component: Todos },
+  { path: '/todo/:id', component: Todo ,name:'todo'}
+]
+</code></pre>
+<p>就是说我们的首页就是我们的<code>Todos</code>这个<code>component</code>(之前也说了<code>SPA</code>应用中每个视图就是一个<code>component</code>)</p>
+<p>当然我们得去引进我们的<code>Todos</code>和<code>Todo component</code>:</p>
+<pre><code class="language-php?start_inline=1">import Todos from './components/Todos'
+import Todo from './components/Todo'
+</code></pre>
+<p>定义完我们的路由后我们就需要去实例化我们的:</p>
+<pre><code class="language-php?start_inline=1">//实例化我们的router
+const router = new VueRouter({
+  routes // （缩写）相当于 routes: routes
+})
+</code></pre>
+<p>2.在我们的laravel返回我们的todos数据:</p>
+<pre><code class="language-php?start_inline=1">Route::get('/todos',function(){
+    $todos = Todo::all();
+    return $todos;
+})-&gt;middleware('api','cors');
+</code></pre>
+<p>有了数据之后我们需要将数据交给我们的<code>component</code> 当然<code>component</code>也会交给我们的<code>vue-router</code>去处理</p>
+<p>在<code>vue-router</code>官网上是这样给出的:</p>
+<pre><code class="language-php?start_inline=1"> &lt;router-view&gt;&lt;/router-view&gt;
+</code></pre>
+<p>我们之前已经定义过每个路由的指向(即每个路由都需要访问到的<code>component</code>)</p>
+<blockquote>
+<p>我们可以这么理解: 当访问到一个路由时 那么这个<code>router-view</code>就会去访问到我们指向的<code>component</code><br>
+这个<code>router-view</code>就是填充我们需要展示的<code>component</code>的<br>
+就比如访问到首页时就展示的是<code>Todos</code>这个<code>component</code>的内容<br>
+当访问到<strong>http://localhost:8000/todo/2</strong> 就会展示id为<strong>2</strong>的<code>Todo</code>的内容</p>
+</blockquote>
+<p>因为我们需要渲染我们后端传过来的数据 我们需要将我们的数据传入:</p>
+<pre><code class="language-php?start?inline=1">&lt;router-view :todos=&quot;todos&quot;&gt;&lt;/router-view&gt;
+</code></pre>
+<blockquote>
+<p>另外我们可以想象得到的是一个视图是由很多组件构成 而有个组件下面会有很多的子组件 而这个父组件(应该可以这么说吧)<br>
+就代表了我们这个视图</p>
+</blockquote>
+<p>3.接下来就是去实现我们另一条路由 也就是<code>/todo/:id</code>这条路由了</p>
+<p>其实实现起来的效果就是当我们点击某任务时就会跳转到这个任务的详情 也就是去展示这个任务的数据</p>
+<p>我们可以先去完成好我们每个任务也就是Todo component的内容(大致就是去展示它的具体内容):</p>
+<pre><code class="language-php?start_inline=1">&lt;template&gt;
+    &lt;div class=&quot;todo&quot;&gt;
+        &lt;div class=&quot;loading&quot; v-if=&quot;loading&quot;&gt;
+            Loading...
+        &lt;/div&gt;
+
+        &lt;div v-if=&quot;error&quot; class=&quot;error&quot;&gt;
+            {{ error }}
+        &lt;/div&gt;
+
+        &lt;div v-if=&quot;todo&quot; class=&quot;content&quot;&gt;
+            &lt;h2&gt;{{ todo.title }}&lt;/h2&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/template&gt;
+</code></pre>
+<p>这是官方给出的一个实例我们加以修改让它去展示我们任务的名称就行</p>
+<p>而在script里我们也要给出每个任务的数据(依然使用我们的<code>vue-axios</code>):</p>
+<pre><code class="language-php?start_inline=1">&lt;script&gt;
+  export default {
+  data () {
+    return {
+      loading: false,
+      todo: null,
+      error: null
+    }
+  },
+  created () {
+    // 组件创建完后获取数据，
+    // 此时 data 已经被 observed 了
+    this.fetchData()
+  },
+  watch: {
+    // 如果路由有变化，会再次执行该方法
+    '$route': 'fetchData'
+  },
+  methods: {
+    fetchData () {
+      this.error = this.todo = null
+      this.loading = true
+      this.axios.get(&quot;http://localhost:8000/api/todo/&quot;+this.$route.params.id).then(response=&gt;{
+         this.todo = response.data;
+         console.log(response.data);
+         this.loading = false
+      })
+    }
+  }
+}
+&lt;/script&gt;
+</code></pre>
+<p>在这边<code>this.$route.params.id</code>就可以获取到我们路由的<code>id</code>值</p>
+<p>当然在后端我们是可以通过这个<code>url</code>去获取我们指定<code>id</code>的任务信息的:</p>
+<pre><code class="language-php?start_inline=1">Route::get('/todo/{id}',function($id){
+    $data = Todo::find($id);
+    return $data;
+})-&gt;middleware('api','cors');
+</code></pre>
+<p>这些都定义好之后 我们就可以去定义我们的链接了:</p>
+<p>我们可以去参照我们的官方文档<a href="https://router.vuejs.org/zh-cn/api/router-link.html">router-link</a></p>
+<p>我们在T<code>odos component</code>里面就可以去定义我们的链接:</p>
+<pre><code class="language-php?start_inline=1"> &lt;router-link :to=&quot;{ name: 'todo', params: { id: todo.id }}&quot;&gt;{{todo.title}}&lt;/router-link&gt;
+</code></pre>
+<p>这里的<code>name</code>我们是可以在定义路由时给出的:</p>
+<pre><code class="language-php?start_inline=1">const routes = [
+  { path: '/', component: Todos },
+  { path: '/todo/:id', component: Todo ,name:'todo'}
+]
+</code></pre>
+<p>这个就和我们<code>laravel</code>里面通过<code>use</code>的<strong>路由命名</strong>是一个意思 这样我们就可以对应到我们的这个路由了</p>
+<p>这个时候我们把去查看页面的链接时就会发现是诸如这样的<code>http://localhost:8080/#/todo/2</code></p>
+<p>我们点击链接之后就会跳转到我们<code>Todo</code>这个<code>component</code>的内容页面</p>
+<blockquote>
+<p>当然这个时候我们会发现<code>url</code>都是<code>http://localhost:8080/todo/2</code>这样的形式 如果你想去掉<code>#</code><br>
+我们可以在定义路由时在这样去定义</p>
+</blockquote>
+<pre><code class="language-php?start_inline=1">const router = new VueRouter({
+    mode: 'history',
+    history: true,
+    routes // （缩写）相当于 routes: routes
+})
+</code></pre>
+<h4 id="参考资料">参考资料:</h4>
+<ul>
+<li><a href="https://router.vuejs.org/zh-cn/">https://router.vuejs.org/zh-cn/</a></li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/laravel-composer-package-kai-fa-jian-ming-jiao-cheng/" class="post-title gt-a-link">
+                    Laravel Composer Package 开发简明教程
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/vue-router-chu-li-qian-duan-lu-you/" class="leancloud_visitors" data-flag-title="vue-router处理前端路由">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

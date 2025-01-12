@@ -1,0 +1,492 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Sync.Pool性能优化解析 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Sync.Pool性能优化解析
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2022-01-25 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/FeJ26LonW/" class="post-tags">
+                            # Go
+                        </a>
+                    
+                        <a href="https://GeekGhc.github.io/tag/tbfpiaKJ1/" class="post-tags">
+                            # 源码
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h2 id="场景">场景</h2>
+<p>我们知道Go本身采用三色标记法自动进行垃圾回收，而在一些高性能的场景下，就不得不为“自动”进行严格控制。毕竟大量的在堆上创建堆对象的话，不仅影响对象标记的时间而且对于频繁的垃圾回收也会影响程序的性能。<br>
+因此在做性能优化时常用的思路就是对象池的方式：把不用的对象回收起来避免被垃圾回收后重新创建。<br>
+在Go的标准库中提供了Pool来创建池化的对象，不过值得注意的是采用同Pool创建的对象<strong>可能</strong>会被垃圾回收掉。所以对于一些类似TCP连接池、数据库连接池这些场景是不适合。不过这也是有办法的。</p>
+<h2 id="基本介绍">基本介绍</h2>
+<h3 id="数据类型">数据类型</h3>
+<p>Sync.Pool用来保存一组可独立访问的临时对象，所池化的对象会在未来的某个时间点被移除掉。不过核心还是会通过减少新对象的产生，从而提高性能</p>
+<h3 id="使用方法">使用方法</h3>
+<p>Sync.Pool 提供了3个方法：New、Get、Put</p>
+<h4 id="new">New</h4>
+<p>New字段的类型是func interface{}，当调用Get从池中获取对象并且没有没有空闲元素可返回时会调用New方法来创建新的元素。而如果没有设置New字段，当没有空闲元素时会返回nil以表示没有可用的元素<br>
+值得注意的是New可变的字段，因此在程序运行中是可以改变元素的创建方法的，不过一般也没必要这么做。</p>
+<h4 id="get">Get</h4>
+<p>调用Get方式时，会从Pool取走元素并返回，不过当New没有设置，并且也没有可用元素时也会返回nil，因此在使用时需要判断下</p>
+<h4 id="put">Put</h4>
+<p>Put方法会将一个元素给到Pool保存在池中，以此来进行复用</p>
+<h2 id="实现原理">实现原理</h2>
+<p>在Go1.13之前Pool的实现有两大问题：</p>
+<ol>
+<li>每次Gc都会回收创建的对象<br>
+如果缓存的元素太多，就会导致STW的耗时变长；而缓存元素被回收后也会导致Get的命中率下降，因此会创建很多新的对象</li>
+<li>底层使用了Mutex锁，对这个多并发请求激烈时会导致性能的下降</li>
+</ol>
+<p>在1.13中sync.Pool做了大量的优化：<strong>Go 对 Pool 的优化就是避免使用锁，同时将加锁的 queue 改成 lock-free 的 queue 的实现，给即将移除的元素再多一次“复活”的机会</strong><br>
+当前，sync.Pool 的数据结构如下图所示：<br>
+<img src="https://static001.geekbang.org/resource/image/f4/96/f4003704663ea081230760098f8af696.jpg?wh=**3659*2186**" alt="" loading="lazy"><br>
+Pool 最重要的两个字段是 local 和 victim，因为它们两个主要用来存储空闲的元素</p>
+<p>每次垃圾回收的时候，Pool 会把 victim 中的对象移除，然后把 local 的数据给 victim，这样的话，local 就会被清空，而 victim 就像一个垃圾分拣站，里面的东西可能会被当做垃圾丢弃了，但是里面有用的东西也可能被捡回来重新使用</p>
+<p>victim 中的元素如果被 Get 取走，那么这个元素就很幸运，因为它又“活”过来了。但是，如果这个时候 Get 的并发不是很大，元素没有被 Get 取走，那么就会被移除掉，因为没有别人引用它的话，就会被垃圾回收掉</p>
+<p>垃圾回收时的处理逻辑：</p>
+<pre><code>func poolCleanup() {
+    // 丢弃当前victim, STW所以不用加锁
+    for _, p := range oldPools {
+        p.victim = nil
+        p.victimSize = 0
+    }
+
+    // 将local复制给victim, 并将原local置为nil
+    for _, p := range allPools {
+        p.victim = p.local
+        p.victimSize = p.localSize
+        p.local = nil
+        p.localSize = 0
+    }
+
+    oldPools, allPools = allPools, nil
+}
+</code></pre>
+<p>其中local字段会包含当前所有空闲的可用的元素，请求元素时也是优先从local中读取，local字段包含一个poolLocalInternal 字段，并提供 CPU 缓存对齐，从而避免 false sharing</p>
+<blockquote>
+<p>缓存对齐：当读取某一个值x做读写操作时，并不是只读取一个值，而是按块来读取（因为cpu读取，很可&gt; 能会用到相邻的数据，比如把y也一起读取进去了），此时如果另一个cpu操作y，就会出现伪共享问题。解&gt; 决方式：在x, y插入一些无用的内存，将y排出当前的缓存行即可</p>
+</blockquote>
+<p>poolLocalInternal 也包含两个字段：private 和 shared</p>
+<ul>
+<li>private，代表一个缓存的元素，而且只能由相应的一个 P 存取。因为一个 P 同时只能执行一个 goroutine，所以不会有并发的问题</li>
+<li>shared，可以由任意的 P 访问，但是只有本地的 P 才能 pushHead/popHead，其它 P 可以 popTail，相当于只有一个本地的 P 作为生产者（Producer），多个 P 作为消费者（Consumer），它是使用一个 local-free 的 queue 列表实现的</li>
+</ul>
+<h3 id="get方法实现">Get方法实现</h3>
+<pre><code>func (p *Pool) Get() interface{} {
+    // 把当前goroutine固定在当前的P上
+    l, pid := p.pin()
+    x := l.private // 优先从local的private字段取，快速
+    l.private = nil
+    if x == nil {
+        // 从当前的local.shared弹出一个，注意是从head读取并移除
+        x, _ = l.shared.popHead()
+        if x == nil { // 如果没有，则去偷一个
+            x = p.getSlow(pid) 
+        }
+    }
+    runtime_procUnpin()
+    // 如果没有获取到，尝试使用New函数生成一个新的
+    if x == nil &amp;&amp; p.New != nil {
+        x = p.New()
+    }
+    return x
+}
+</code></pre>
+<p>主要执行流程：</p>
+<ol>
+<li>优先从local的private取元素，这个过程没有锁，所以会很快</li>
+<li>如果private没有则从shared中弹出一个</li>
+<li>如果shared也没有元素，则通过getSlow方法去偷一个(类似GMP模型)
+<ol>
+<li>首先遍历所有的local尝试从shared中弹出一个返回</li>
+<li>没有找到的话则开始遍历victim</li>
+<li>遍历victim也是先从private查找，然后再从shared中查找</li>
+</ol>
+</li>
+<li>如果也没偷到则尝试New重新创建一个</li>
+</ol>
+<h3 id="put方法实现">Put方法实现</h3>
+<pre><code>func (p *Pool) Put(x interface{}) {
+    if x == nil { // nil值直接丢弃
+        return
+    }
+    l, _ := p.pin()
+    if l.private == nil { // 如果本地private没有值，直接设置这个值即可
+        l.private = x
+        x = nil
+    }
+    if x != nil { // 否则加入到本地队列中
+        l.shared.pushHead(x)
+    }
+    runtime_procUnpin()
+}
+</code></pre>
+<p>Put执行时会优先设置本地private，如果有值就push到本地shared队列中</p>
+<h3 id="syncpool的坑">sync.Pool的坑</h3>
+<h4 id="内存泄漏">内存泄漏</h4>
+<p>在将sync.Pool作为buffer池的场景中，因为取出来的bytes.buffer在使用后容量会变得很大，这个时候再存放回池子中后，由于对象的容量在重置后还是很大，而这些可能并不会被回收就会一直占用比较大的内存空间。<br>
+常见的解决思路是：在将Buffer放回池子中时增加大小的判断，超过一定大小的buffer则直接丢弃<br>
+因此在回收buffer时一定要检查buffer对象的大小</p>
+<h4 id="内存浪费">内存浪费</h4>
+<p>池子中的 buffer 都比较大，但在实际使用的时候，很多时候只需要一个小的 buffer，这就是一种浪费现象<br>
+解决思路就是我们可以将buffer池根据元素大小分成几层<br>
+如<a href="https://github.com/golang/go/blob/617f2c3e35cdc8483b950aa3ef18d92965d63197/src/net/http/server.go">net/http/server</a>中提供了2k和4k两个writer的池子<br>
+<img src="https://static001.geekbang.org/resource/image/55/35/55086ccba91975a0f65bd35d1192e335.png?wh=628*611" alt="" loading="lazy"></p>
+<h2 id="连接池">连接池</h2>
+<p>在之前说过很少会使用sync.Pool去池化连接对象，是因为Pool会无通知的在某个时刻去除元素也就是连接对象，因此在需要持久化连接对象时会使用其他的方法</p>
+<h4 id="标准库http-client">标准库http client</h4>
+<p>标准库的http client通过池化的方式来缓存一定数量的连接，以便后续对象的重复使用从而来提供性能<br>
+主要实现实在Transport类型，其中idleCoon用来保存持久化的可重用的长连接<br>
+<img src="https://static001.geekbang.org/resource/image/14/ec/141ced98a81466b793b0f90b9652afec.png?wh=1192*430" alt="" loading="lazy"></p>
+<h4 id="tcp连接池">TCP连接池</h4>
+<p>常用的TCP连接池如: <a href="https://github.com/fatih/pool">fatih/pool</a><br>
+管理的则是更加通用的net.Conn</p>
+<pre><code>// 工厂模式，提供创建连接的工厂方法
+factory    := func() (net.Conn, error) { return net.Dial(&quot;tcp&quot;, &quot;127.0.0.1:4000&quot;) }
+
+// 创建一个tcp池，提供初始容量和最大容量以及工厂方法
+p, err := pool.NewChannelPool(5, 30, factory)
+
+// 获取一个连接
+conn, err := p.Get()
+
+// Close并不会真正关闭这个连接，而是把它放回池子，所以你不必显式地Put这个对象到池子中
+conn.Close()
+
+// 通过调用MarkUnusable, Close的时候就会真正关闭底层的tcp的连接了
+if pc, ok := conn.(*pool.PoolConn); ok {
+  pc.MarkUnusable()
+  pc.Close()
+}
+
+// 关闭池子就会关闭=池子中的所有的tcp连接
+p.Close()
+
+// 当前池子中的连接的数量
+current := p.Len()
+</code></pre>
+<p>通过把 net.Conn 包装成 PoolConn，实现了拦截 net.Conn 的 Close 方法，避免了真正地关闭底层连接，而是把这个连接放回到池中：</p>
+<pre><code>    type PoolConn struct {
+    net.Conn
+    mu       sync.RWMutex
+    c        *channelPool
+    unusable bool
+  }
+  
+    //拦截Close
+  func (p *PoolConn) Close() error {
+    p.mu.RLock()
+    defer p.mu.RUnlock()
+  
+    if p.unusable {
+      if p.Conn != nil {
+        return p.Conn.Close()
+      }
+      return nil
+    }
+    return p.c.put(p.Conn)
+  }
+</code></pre>
+<h4 id="数据库连接池">数据库连接池</h4>
+<p>标准库 sql.DB 还提供了一个通用的数据库的连接池，通过 MaxOpenConns 和 MaxIdleConns 控制最大的连接数和最大的 idle 的连接数</p>
+<p>DB 的 freeConn 保存了 idle 的连接，这样，当我们获取数据库连接的时候，它就会优先尝试从 freeConn 获取已有的连接 <a href="https://github.com/golang/go/blob/4fc3896e7933e31822caa50e024d4e139befc75f/src/database/sql/sql.go#L1196">conn</a></p>
+<h4 id="worker-pool">Worker Pool</h4>
+<p>尽管goroutine的初始栈大小只有2048字节，但是在有些场景如果每次处理都需要创建goroutine的话，大量的goroutine无论是资源消耗还是垃圾回收都会有很大影响<br>
+因此通常会创建一定数量的Worker Pool去减少goroutine的使用<br>
+比如 比如 fasthttp 中的<a href="https://github.com/valyala/fasthttp/blob/9f11af296864153ee45341d3f2fe0f5178fd6210/workerpool.go#L16">Worker Pool</a></p>
+<p>大部分的 Worker Pool 都是通过 Channel 来缓存任务的，因为 Channel 能够比较方便地实现并发的保护，有的是多个 Worker 共享同一个任务 Channel，有些是每个 Worker 都有一个独立的 Channel</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/fen-bu-shi-gong-shi-suan-fa/" class="post-title gt-a-link">
+                    分布式共识算法
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/go-syncpool-xing-neng-you-hua/" class="leancloud_visitors" data-flag-title="Sync.Pool性能优化解析">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

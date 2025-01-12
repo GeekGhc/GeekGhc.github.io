@@ -1,0 +1,474 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>MySQL · 最佳实践 · 分区表基本类型(转载) | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    MySQL · 最佳实践 · 分区表基本类型(转载)
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2018-11-02 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/EDjG5j1xN/" class="post-tags">
+                            # SQL
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h2 id="mysql分区表概述">MySQL分区表概述</h2>
+<p>随着<code>MySQL</code>越来越流行，<code>Mysql</code>里面的保存的数据也越来越大。<br>
+在日常的工作中，我们经常遇到一张表里面保存了上亿甚至过十亿的记录。<br>
+这些表里面保存了大量的历史记录。 对于这些历史数据的清理是一个非常头疼事情，由于所有的数据都一个普通的表里。<br>
+所以只能是启用一个或多个带<code>where</code>条件的<code>delete</code>语句去删除（一般<code>where</code>条件是时间）。<br>
+这对数据库的造成了很大压力。即使我们把这些删除了，但底层的数据文件并没有变小。<br>
+面对这类问题，最有效的方法就是在使用分区表。最常见的分区方法就是按照时间进行分区。<br>
+分区一个最大的优点就是可以非常高效的进行历史数据的清理。</p>
+<h2 id="分区类型">分区类型</h2>
+<p>目前<code>MySQL</code>支持范围分区（RANGE），列表分区（LIST），哈希分区（HASH）以及<code>KEY</code>分区四种。下面我们逐一介绍每种分区：</p>
+<h3 id="range分区">RANGE分区</h3>
+<p>基于属于一个给定连续区间的列值，把多行分配给分区。最常见的是基于时间字段. 基于分区的列最好是整型，如果日期型的可以使用函数转换为整型。本例中使用<code>to_days</code>函数</p>
+<pre><code class="language-sql">CREATE TABLE my_range_datetime(
+    id INT,
+    hiredate DATETIME
+) 
+PARTITION BY RANGE (TO_DAYS(hiredate) ) (
+    PARTITION p1 VALUES LESS THAN ( TO_DAYS('20171202') ),
+    PARTITION p2 VALUES LESS THAN ( TO_DAYS('20171203') ),
+    PARTITION p3 VALUES LESS THAN ( TO_DAYS('20171204') ),
+    PARTITION p4 VALUES LESS THAN ( TO_DAYS('20171205') ),
+    PARTITION p5 VALUES LESS THAN ( TO_DAYS('20171206') ),
+    PARTITION p6 VALUES LESS THAN ( TO_DAYS('20171207') ),
+    PARTITION p7 VALUES LESS THAN ( TO_DAYS('20171208') ),
+    PARTITION p8 VALUES LESS THAN ( TO_DAYS('20171209') ),
+    PARTITION p9 VALUES LESS THAN ( TO_DAYS('20171210') ),
+    PARTITION p10 VALUES LESS THAN ( TO_DAYS('20171211') )，
+    PARTITION p11 VALUES LESS THAN (MAXVALUE) 
+);
+</code></pre>
+<p><code>p11</code>是一个默认分区，所有大于<code>20171211</code>的记录都会在这个分区。<code>MAXVALUE</code>是一个无穷大的值。<code>p11</code>是一个可选分区。如果在定义表的没有指定的这个分区，当我们插入大于<code>20171211</code>的数据的时候，会收到一个错误。</p>
+<p>我们在执行查询的时候，必须带上分区字段。这样可以使用分区剪裁功能</p>
+<pre><code class="language-shell">mysql&gt; insert into my_range_datetime select * from test;                                                                    
+Query OK, 1000000 rows affected (8.15 sec)
+Records: 1000000  Duplicates: 0  Warnings: 0
+
+mysql&gt; explain partitions select * from my_range_datetime where hiredate &gt;= '20171207124503' and hiredate&lt;='20171210111230'; 
++----+-------------+-------------------+--------------+------+---------------+------+---------+------+--------+-------------+
+| id | select_type | table             | partitions   | type | possible_keys | key  | key_len | ref  | rows   | Extra       |
++----+-------------+-------------------+--------------+------+---------------+------+---------+------+--------+-------------+
+|  1 | SIMPLE      | my_range_datetime | p7,p8,p9,p10 | ALL  | NULL          | NULL | NULL    | NULL | 400061 | Using where |
++----+-------------+-------------------+--------------+------+---------------+------+---------+------+--------+-------------+
+1 row in set (0.03 sec)
+</code></pre>
+<p>注意执行计划中的<code>partitions</code>的内容，只查询了<code>p7</code>，<code>p8</code>，<code>p9</code>，<code>p10</code>三个分区，由此来看，使用<code>to_days</code>函数确实可以实现分区裁剪。</p>
+<p>上面是基于<code>datetime</code>的，如果是<code>timestamp</code>类型，我们遇到上面问题呢？</p>
+<p>事实上，<code>MySQL</code>提供了一种基于<code>UNIX_TIMESTAMP</code>函数的<code>RANGE</code>分区方案，而且，只能使用<code>UNIX_TIMESTAMP</code>函数，如果使用其它函数，譬如<code>to_days</code>，<br>
+会报如下错误：<code>“ERROR 1486 (HY000): Constant, random or timezone-dependent expressions in (sub)partitioning function are not allowed”</code>。</p>
+<p>而且官方文档中也提到<code>“Any other expressions involving TIMESTAMP values are not permitted. (See Bug #42849.)”</code>。</p>
+<p>下面来测试一下基于<code>UNIX_TIMESTAMP</code>函数的<code>RANGE</code>分区方案，看其能否实现分区裁剪。</p>
+<p>针对<code>TIMESTAMP</code>的分区方案</p>
+<p>创表语句如下：</p>
+<pre><code class="language-sql">CREATE TABLE my_range_timestamp (
+    id INT,
+    hiredate TIMESTAMP
+)
+PARTITION BY RANGE ( UNIX_TIMESTAMP(hiredate) ) (
+    PARTITION p1 VALUES LESS THAN ( UNIX_TIMESTAMP('2017-12-02 00:00:00') ),
+    PARTITION p2 VALUES LESS THAN ( UNIX_TIMESTAMP('2017-12-03 00:00:00') ),
+    PARTITION p3 VALUES LESS THAN ( UNIX_TIMESTAMP('2017-12-04 00:00:00') ),
+    PARTITION p4 VALUES LESS THAN ( UNIX_TIMESTAMP('2017-12-05 00:00:00') ),
+    PARTITION p5 VALUES LESS THAN ( UNIX_TIMESTAMP('2017-12-06 00:00:00') ),
+    PARTITION p6 VALUES LESS THAN ( UNIX_TIMESTAMP('2017-12-07 00:00:00') ),
+    PARTITION p7 VALUES LESS THAN ( UNIX_TIMESTAMP('2017-12-08 00:00:00') ),
+    PARTITION p8 VALUES LESS THAN ( UNIX_TIMESTAMP('2017-12-09 00:00:00') ),
+    PARTITION p9 VALUES LESS THAN ( UNIX_TIMESTAMP('2017-12-10 00:00:00') ),
+    PARTITION p10 VALUES LESS THAN (UNIX_TIMESTAMP('2017-12-11 00:00:00') )
+);
+</code></pre>
+<p>插入数据并查看上述查询的执行计划</p>
+<pre><code class="language-shell">mysql&gt; insert into my_range_timestamp select * from test;
+Query OK, 1000000 rows affected (13.25 sec)
+Records: 1000000  Duplicates: 0  Warnings: 0
+
+mysql&gt; explain partitions select * from my_range_timestamp where hiredate &gt;= '20171207124503' and hiredate&lt;='20171210111230';
++----+-------------+-------------------+--------------+------+---------------+------+---------+------+--------+-------------+
+| id | select_type | table             | partitions   | type | possible_keys | key  | key_len | ref  | rows   | Extra       |
++----+-------------+-------------------+--------------+------+---------------+------+---------+------+--------+-------------+
+|  1 | SIMPLE      | my_range_timestamp | p7,p8,p9,p10 | ALL  | NULL          | NULL | NULL    | NULL | 400448 | Using where |
++----+-------------+-------------------+--------------+------+---------------+------+---------+------+--------+-------------+
+1 row in set (0.00 sec)
+</code></pre>
+<p>同样也能实现分区裁剪。</p>
+<p>在<strong>5.7</strong>版本之前，对于<code>DATA</code>和<code>DATETIME</code>类型的列，如果要实现分区裁剪，只能使用<code>YEAR()</code> 和<code>TO_DAYS()</code>函数，在<strong>5.7</strong>版本中，又新增了<code>TO_SECONDS()</code>函数。</p>
+<h3 id="list-分区">LIST 分区</h3>
+<p><code>LIST</code>分区和<code>RANGE</code>分区类似，区别在于<code>LIST</code>是枚举值列表的集合，<code>RANGE</code>是连续的区间值的集合。二者在语法方面非常的相似。同样建议<code>LIST</code>分区列是非<code>null</code>列，<br>
+否则插入<code>null</code>值如果枚举列表里面不存在<code>null</code>值会插入失败，这点和其它的分区不一样，<code>RANGE</code>分区会将其作为最小分区值存储，<code>HASH\KEY</code>分为会将其转换成<strong>0</strong>存储，<br>
+主要<code>LIST</code>分区只支持整形，非整形字段需要通过函数转换成整形.</p>
+<pre><code class="language-sql">create table t_list( 
+　　a int(11), 
+　　b int(11) 
+　　)(partition by list (b) 
+　　partition p0 values in (1,3,5,7,9), 
+　　partition p1 values in (2,4,6,8,0) 
+　　);
+</code></pre>
+<h3 id="hash-分区">Hash 分区</h3>
+<p>我们在实际工作中经常遇到像会员表的这种表。并没有明显可以分区的特征字段。但表数据有非常庞大。<br>
+为了把这类的数据进行分区打散<code>mysql</code> 提供了<code>hash</code>分区。基于给定的分区个数，将数据分配到不同的分区，<br>
+<code>HASH</code>分区只能针对整数进行<code>HASH</code>，对于非整形的字段只能通过表达式将其转换成整数。表达式可以是<code>mysql</code>中任意有效的函数或者表达式，<br>
+对于非整形的<code>HASH</code>往表插入数据的过程中会多一步表达式的计算操作，所以不建议使用复杂的表达式这样会影响性能。</p>
+<p><code>Hash</code>分区表的基本语句如下：</p>
+<pre><code class="language-sql">CREATE TABLE my_member (
+    id INT NOT NULL,
+    fname VARCHAR(30),
+    lname VARCHAR(30),
+    created DATE NOT NULL DEFAULT '1970-01-01',
+    separated DATE NOT NULL DEFAULT '9999-12-31',
+    job_code INT,
+    store_id INT
+)
+PARTITION BY HASH(id)
+PARTITIONS 4;
+</code></pre>
+<p>注意：<br>
+1.<code>HASH</code>分区可以不用指定<code>PARTITIONS</code>子句，如上文中的<code>PARTITIONS</code> 4，则默认分区数为1。<br>
+2.不允许只写<code>PARTITIONS</code>，而不指定分区数。<br>
+3.同<code>RANGE</code>分区和<code>LIST</code>分区一样，<code>PARTITION BY HASH (expr)</code>子句中的<code>expr</code>返回的必须是整数值。<br>
+4.<code>HASH</code>分区的底层实现其实是基于MOD函数。譬如，对于下表</p>
+<p><code>CREATE TABLE t1 (col1 INT, col2 CHAR(5), col3 DATE) PARTITION BY HASH( YEAR(col3) ) PARTITIONS 4;</code><br>
+如果你要插入一个<code>col3</code>为<code>“2017-09-15”</code>的记录，则分区的选择是根据以下值决定的：</p>
+<p><code>MOD(YEAR(‘2017-09-01’),4) = MOD(2017,4) = 1</code></p>
+<h3 id="linear-hash分区">LINEAR HASH分区</h3>
+<p><code>LINEAR HASH</code>分区是<code>HASH</code>分区的一种特殊类型，与<code>HASH</code>分区是基于<code>MOD</code>函数不同的是，它基于的是另外一种算法。</p>
+<p>格式如下：</p>
+<pre><code class="language-sql">CREATE TABLE my_members (
+    id INT NOT NULL,
+    fname VARCHAR(30),
+    lname VARCHAR(30),
+    hired DATE NOT NULL DEFAULT '1970-01-01',
+    separated DATE NOT NULL DEFAULT '9999-12-31',
+    job_code INT,
+    store_id INT
+)
+PARTITION BY LINEAR HASH( id )
+PARTITIONS 4;
+</code></pre>
+<p>说明： 它的优点是在数据量大的场景，譬如<code>TB</code>级，增加、删除、合并和拆分分区会更快，缺点是，相对于<code>HASH</code>分区，它数据分布不均匀的概率更大。</p>
+<h3 id="key分区">KEY分区</h3>
+<p><code>KEY</code>分区其实跟<code>HASH</code>分区差不多，不同点如下：</p>
+<p>1.<code>KEY</code>分区允许多列，而<code>HASH</code>分区只允许一列。<br>
+2.如果在有主键或者唯一键的情况下，<code>key</code>中分区列可不指定，默认为主键或者唯一键，如果没有，则必须显性指定列。<br>
+3.<code>KEY</code>分区对象必须为列，而不能是基于列的表达式。<br>
+4.<code>KEY</code>分区和<code>HASH</code>分区的算法不一样，<code>PARTITION BY HASH (expr)，MOD</code>取值的对象是<code>expr</code>返回的值，而<code>PARTITION BY KEY (column_list)</code>，基于的是列的<code>MD5</code>值。</p>
+<p>格式如下：</p>
+<pre><code class="language-sql">CREATE TABLE k1 (
+    id INT NOT NULL PRIMARY KEY,    
+    name VARCHAR(20)
+)
+PARTITION BY KEY()
+PARTITIONS 2;
+</code></pre>
+<p>在没有主键或者唯一键的情况下，格式如下：</p>
+<pre><code class="language-sql">CREATE TABLE tm1 (
+    s1 CHAR(32)
+)
+PARTITION BY KEY(s1)
+PARTITIONS 10;
+</code></pre>
+<h2 id="总结">总结：</h2>
+<p>1.<code>MySQL</code>分区中如果存在主键或唯一键，则分区列必须包含在其中。<br>
+2.对于原生的<code>RANGE</code>分区，<code>LIST</code>分区，<code>HASH</code>分区，分区对象返回的只能是整数值。<br>
+3.分区字段不能为<code>NULL</code>，要不然怎么确定分区范围呢，所以尽量<code>NOT NULL</code></p>
+<h2 id="相关链接">相关链接</h2>
+<ul>
+<li><a href="http://mysql.taobao.org/monthly/2017/11/09/">数据库内核月报 － 2017 / 11</a></li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/liao-liao-php-zhong-shi-xian-de-yi-lai-zhu-ru-dishi-xian/" class="post-title gt-a-link">
+                    聊聊PHP中实现的依赖注入(Di)实现
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/mysql-zui-jia-shi-jian-fen-qu-biao-ji-ben-lei-xing-zhuan-zai/" class="leancloud_visitors" data-flag-title="MySQL · 最佳实践 · 分区表基本类型(转载)">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

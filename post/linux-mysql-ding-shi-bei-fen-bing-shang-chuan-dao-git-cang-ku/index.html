@@ -1,0 +1,406 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Linux MySQL定时备份并上传到git仓库 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Linux MySQL定时备份并上传到git仓库
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-07-18 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/VS6MQaBI8/" class="post-tags">
+                            # Linux
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>在Linux执行定时任务 很多都已经很熟悉 那么在我们可能部署一个小的项目时 对于mysql的数据 我们会需要定时备份 这就需要我们的定时任务</p>
+<h2 id="简介">简介</h2>
+<p>我们在部署我们的中小型项目时 在数据存储 我们通常选择<code>mysql</code>作为我们的存储工具 那么对于一个大的项目来说</p>
+<p>每天的数据量是十分大的  对于每天产生的数据 如果哪一天我们的网站或者服务器受到攻击 我们的数据丢失是个很爆炸的事情</p>
+<p>所以说自然这设计到数据库的备份 那么怎样的备份是我们想要的呢</p>
+<p>对于备份的数据文件我们可能会存放在服务器目录 备份周期的话当然是按照数据量来说的 这里我们一般都是每天的凌晨备份一次</p>
+<p>备份后的文件存放在我们的服务器的目录下面 但是万一有一天服务器也崩溃了 那么备份的文件也就没了</p>
+<p>所以我们设想一个好的方案就是数据库每天备份 每次备份自动提交到远程仓库  这里我以码云为例</p>
+<h2 id="码云">码云</h2>
+<p>首先建立好远程仓库 在这里我选择了<a href="http://git.oschina.net/">码云</a></p>
+<p>新建一个私有仓库  当然为了每次可以免密码提交文件 在服务器里可以生成<code>ssh key</code> 具体的可以看我的以前的一篇<a href="http://jellybook.me/articles/2017/01/ssh-login-server-without-password">博客</a></p>
+<h2 id="服务器新建备份">服务器新建备份</h2>
+<p>在服务器为了存储备份后的文件 新建一个备份目录</p>
+<pre><code class="language-shell">$ mkdir /bak
+</code></pre>
+<p>进入该目录后 继续新建两个文件夹 <code>mysqlBak</code>和<code>shDir</code> 一个是放脚本文件 一个是放具体备份后的文件</p>
+<p>下面我们可以去新建脚本了  进入<code>shDir</code>目录后 执行</p>
+<pre><code class="language-shell">$ vim mysqlBak.sh
+</code></pre>
+<p>具体的代码如下:</p>
+<pre><code class="language-php?start_inline=1">#!bin/sh
+###################数据库配置信息#######################
+createAt=`date +%Y-%m-%d-%H:%M:%S`
+user=root
+passwd=ghc1996
+dbname=ispace
+mysql_back_path=/bak/mysqlBak
+###################执行命令#######################
+mysqldump -u $user -p$passwd $dbname &gt; $mysql_back_path/$createAt.sql
+cd /bak/mysqlBak
+/usr/local/git/bin/git add .
+/usr/local/git/bin/git commit -m $createAt
+/usr/local/git/bin/git push
+</code></pre>
+<p>这里只是一个简单的脚本 我想了解<code>linux</code>的很容易看的懂 执行的就是备份数据库并<code>push</code>到远程仓库</p>
+<p>那么既然是脚本  我们需要指明什么时候执行这个脚本  指定脚本执行</p>
+<pre><code class="language-shell">$ crontab -e
+</code></pre>
+<p>我们希望是每天的凌晨执行一次备份 并添加到远程仓库 那么添加</p>
+<pre><code class="language-shell">$ 0 0 * * * /bin/sh /bak/shDir/mysqlbak.sh
+</code></pre>
+<p>对<code>linux</code>的<code>crontab</code>指定的时间只有<strong>五</strong>个部分</p>
+<table>
+<thead>
+<tr>
+<th>段位</th>
+<th>时间</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第一段</td>
+<td>代表分钟 0—59</td>
+</tr>
+<tr>
+<td>第二段</td>
+<td>代表小时 0—23</td>
+</tr>
+<tr>
+<td>第三段</td>
+<td>代表日期 1—31</td>
+</tr>
+<tr>
+<td>第四段</td>
+<td>代表月份 1—12</td>
+</tr>
+<tr>
+<td>第五段</td>
+<td>代表星期几，0代表星期日 0—6</td>
+</tr>
+</tbody>
+</table>
+<p>使用命令 <code>crontab -e</code> 然后直接编辑定时脚本。 时间 +具体的名字</p>
+<p>举个列子来说就是</p>
+<pre><code class="language-shell">0 0,3,7,9,12,15,18,21,23 * * * /bin/sh /bak/shell/mysqlBak.sh
+</code></pre>
+<p>这样的话就是我每天<strong>0,,3,7,9,12,15,18,21,23</strong>点时会去执行这个脚本文件 那么这就实现了基本的数据库的备份</p>
+<p>执行定时任务</p>
+<pre><code class="language-shell">$ crontab -l
+</code></pre>
+<p>如果服务没有启动 那么重新启动定时任务</p>
+<pre><code class="language-shell">$ systemctl restart crond
+</code></pre>
+<p>那么现在这个定时任务就已经启动了 对于提交远程仓库前提是在服务器生成ssh key并添加到码云 这在上面也提到过</p>
+<p>对于需要提交文件的目录初始化<code>git</code>目录就可以了 这样局可以构成了我们需要的本分任务</p>
+<p>当然过程中可能会遇到一些问题  我在下面的相关链接都已经罗列出来了</p>
+<p>这样一来我们就可以实现了每天的凌晨备份我们的数据库 并同时提交到我们的码云这个远程仓库  这也是我们想要的效果</p>
+<blockquote>
+<p>我也说过备份的周期视我们的项目的数据量的大小而定</p>
+</blockquote>
+<p>对于每个框架都有自己的备份机制  我这里所写的是我们自己实现的一个通用的备份机制</p>
+<h2 id="相关链接">相关链接</h2>
+<ul>
+<li><a href="https://crontab.guru/">crontab验证</a></li>
+<li><a href="http://fenxiang.banguanshui.com/content/oschina%E7%A0%81%E4%BA%91git%E5%85%8D%E7%99%BB%E9%99%86%E4%BD%BF%E7%94%A8">oschina码云GIT免登陆用</a></li>
+<li><a href="http://git.mydoc.io/?t=154712">码云平台帮助文档</a></li>
+<li><a href="http://blog.csdn.net/shenlingsuifeng/article/details/50888061">CentOS下使用crontab命令来定时执行任务</a></li>
+<li><a href="http://www.linuxidc.com/Linux/2016-01/127976.htm">CentOS Linux下每天自动备份MySQL数据库</a></li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/htmlpurifier-jie-jue-laravel5-de-xss-kua-zhan-jiao-ben-gong-ji-an-quan-wen-ti/" class="post-title gt-a-link">
+                    HTMLPurifier解决Laravel5的XSS跨站脚本攻击安全问题
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/linux-mysql-ding-shi-bei-fen-bing-shang-chuan-dao-git-cang-ku/" class="leancloud_visitors" data-flag-title="Linux MySQL定时备份并上传到git仓库">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,514 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Ubuntu 搭建k8s集群 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Ubuntu 搭建k8s集群
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2022-04-22 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/k8s/" class="post-tags">
+                            # K8s
+                        </a>
+                    
+                        <a href="https://GeekGhc.github.io/tag/ZoiasA4ez/" class="post-tags">
+                            # Cluster
+                        </a>
+                    
+                        <a href="https://GeekGhc.github.io/tag/5hUnL9hCn/" class="post-tags">
+                            # 分布式
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h2 id="简介">简介</h2>
+<p>本文主要介绍基于Ubuntut通过官方社区推出的快速部署kubeneters集群的工具kubeadm来快速搭建k8s集群。<br>
+官方地址：<a href="https://kubernetes.io/docs/reference/setup-tools/kubeadm/">https://kubernetes.io/docs/reference/setup-tools/kubeadm/</a></p>
+<h2 id="安装条件">安装条件</h2>
+<p>在开始之前，部署K8s集群需要做以下环境准备<br>
+准备两台虚拟机，这里我用的Ubuntu20.0.5LTS版本</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">集群角色</th>
+<th style="text-align:center">服务IP</th>
+<th style="text-align:center">主机名</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">控制节点</td>
+<td style="text-align:center">192.168.32.32</td>
+<td style="text-align:center">master-k8s</td>
+</tr>
+<tr>
+<td style="text-align:center">工作节点</td>
+<td style="text-align:center">192.168.32.32</td>
+<td style="text-align:center">worker-k8s</td>
+</tr>
+</tbody>
+</table>
+<h2 id="机器环境准备">机器环境准备</h2>
+<h3 id="网络配置">网络配置</h3>
+<p>这里假设用的是一个新的Liunx Ubuntu环境<br>
+首先为虚拟机设置固定服务IP，这里取决于虚拟机工具设置的共享网络&quot;Host-only&quot;,这里需要新增网络配置<br>
+这里可以参考在Parellels的设置<br>
+<img src="https://GeekGhc.github.io/post-images/1663856616271.png" alt="" loading="lazy"></p>
+<p>接着在两个虚拟机中设置固定网络<br>
+比如在Master节点的机器上配置网络Method为Manual<br>
+<img src="https://GeekGhc.github.io/post-images/1663857113715.jpg" alt="" loading="lazy"></p>
+<p>最终通过<code>ip addr</code>查看两台机器网卡ip信息<br>
+<img src="https://GeekGhc.github.io/post-images/1663857155831.png" alt="" loading="lazy"></p>
+<h3 id="软件安装">软件安装</h3>
+<p>网络配置后，安装基本的软件</p>
+<pre><code>sudo apt update
+sudo apt install -y git vim curl jq
+</code></pre>
+<p>开始安装并启动Docker</p>
+<pre><code>sudo apt install -y docker.io     #安装Docker Engine
+sudo service docker start         #启动docker服务
+</code></pre>
+<p>另外需要把当前的用户加入 Docker 的用户组，这是因为操作 Docker 必须要有 root 权限，而直接使用 root 用户不够安全，加入 Docker 用户组是一个比较好的选择，这也是 Docker 官方推荐的做法</p>
+<pre><code>sudo usermod -aG docker ${USER}   #当前用户加入docker组
+</code></pre>
+<p>执行成功后退出系统重新登录使修改的用户组生效<br>
+最终通过执行<code>docker version</code>查看系统信息<br>
+<img src="https://GeekGhc.github.io/post-images/1663857517926.jpg" alt="" loading="lazy"></p>
+<p>如果遇到<code>Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock</code>，refer <a href="https://linuxhandbook.com/docker-permission-denied/">https://linuxhandbook.com/docker-permission-denied/</a><br>
+退出系统重新登录即可</p>
+<p>Docker完成安装后需要对配置进行一点修改，在“/etc/docker/daemon.json”里把 cgroup 的驱动程序改成 systemd ，然后重启 Docker 的守护进程。<br>
+daemon.json 内容如下</p>
+<pre><code>{  
+        &quot;exec-opts&quot;: [&quot;native.cgroupdriver=systemd&quot;],  
+        &quot;log-driver&quot;: &quot;json-file&quot;,  
+        &quot;log-opts&quot;: {    &quot;max-size&quot;: &quot;100m&quot;  },  
+        &quot;storage-driver&quot;: &quot;overlay2&quot;,
+        &quot;registry-mirrors&quot;: [&quot;https://6kx4zyno.mirror.aliyuncs.com&quot;,&quot;https://registry.docker-cn.com&quot;]
+}
+</code></pre>
+<p>修改完成后重启docker daemon</p>
+<pre><code>sudo systemctl enable docker
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+</code></pre>
+<p>为了让 Kubernetes 能够检查、转发网络流量，你需要修改 iptables 的配置，启用“br_netfilter”模块：</p>
+<pre><code>cat &lt;&lt;EOF | sudo tee /etc/modules-load.d/k8s.conf
+br_netfilter
+EOF
+
+cat &lt;&lt;EOF | sudo tee /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+net.ipv4.ip_forward=1 # better than modify /etc/sysctl.conf
+EOF
+
+sudo sysctl --system
+</code></pre>
+<p>接着你需要修改“/etc/fstab”，关闭 Linux 的 swap 分区，提升 Kubernetes 的性能：</p>
+<pre><code>sudo swapoff -a
+sudo sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
+</code></pre>
+<h3 id="安装kubeadm">安装kubeadm</h3>
+<p>现在我们就要安装 kubeadm 了，在 Master 节点和 Worker 节点上都需要这么做<br>
+kubeadm 可以直接从 Google 自己的软件仓库下载安装，但国内的网络不稳定，很难下载成功，需要改用其他的软件源</p>
+<pre><code>sudo apt install -y apt-transport-https ca-certificates curl
+
+curl https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg | sudo apt-key add -
+
+cat &lt;&lt;EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
+deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main
+EOF
+
+sudo apt update
+</code></pre>
+<p>更新完成后，就可以开始下载kubeadm相关的kubeadm、kubelet 和 kubectl工具，默认会下载最新版本，这里指定固定版本</p>
+<pre><code>#查看有哪些版本
+sudo apt-cache madison kubeadm
+#指定版本
+sudo apt install -y kubeadm=1.23.3-00 kubelet=1.23.3-00 kubectl=1.23.3-00
+</code></pre>
+<p>如果需要防止意外升级工具版本，可以锁定相关软件的版本</p>
+<pre><code>sudo apt-mark hold kubeadm kubelet kubectl
+</code></pre>
+<p>查看安装信息</p>
+<pre><code>kubeadm version
+</code></pre>
+<h3 id="kubernetes-组件镜像">Kubernetes 组件镜像</h3>
+<p>首先我们需要查看安装kubernetes所需要的镜像列表，其中参数<code>--kubernetes-version</code>可以指定版本号</p>
+<pre><code>kubeadm config images list --kubernetes-version v1.23.3
+
+k8s.gcr.io/kube-apiserver:v1.23.3
+k8s.gcr.io/kube-controller-manager:v1.23.3
+k8s.gcr.io/kube-scheduler:v1.23.3
+k8s.gcr.io/kube-proxy:v1.23.3
+k8s.gcr.io/pause:3.6
+k8s.gcr.io/etcd:3.5.1-0
+k8s.gcr.io/coredns/coredns:v1.8.6
+</code></pre>
+<p>接着就需要下载k8s相关镜像了，因为kubeadm把apiserver、etcd、scheduler相关组件都打包成了镜像，并以容器的方式启动kubernetes<br>
+但是这些镜像的还是在Google自己的仓库，因为众所周知的原因，我们可以从国内镜像网站下载这些镜像</p>
+<pre><code># 镜像下载执行脚本
+repo=registry.aliyuncs.com/google_containers
+
+for name in `kubeadm config images list --kubernetes-version v1.23.3`; do
+
+    src_name=${name#k8s.gcr.io/}
+    src_name=${src_name#coredns/}
+
+    docker pull $repo/$src_name
+
+    docker tag $repo/$src_name $name
+    docker rmi $repo/$src_name
+done
+</code></pre>
+<p>下载完成后看下相关镜像信息即可</p>
+<pre><code>docker image list
+</code></pre>
+<figure data-type="image" tabindex="1"><img src="https://GeekGhc.github.io/post-images/1664876145692.png" alt="" loading="lazy"></figure>
+<h2 id="集群配置">集群配置</h2>
+<p>基本的软件准备工作完成后，就可以开始进行k8s集群配置了</p>
+<h3 id="master节点">Master节点</h3>
+<p>基于kubeadm只需要kubeadm init命令就可以把组件在Master节点上运行起来，不过在这过程中有很多参数来进行集群配置。更多参数可以使用 <code>-h</code> 查看<br>
+这里我们主要需要以下参数</p>
+<ul>
+<li>--pod-network-cidr，设置集群里 Pod 的 IP 地址段。</li>
+<li>--apiserver-advertise-address，设置 apiserver 的 IP 地址，对于多网卡服务器来说很重要（比如 VirtualBox 虚拟机就用了两块网卡），可以指定 apiserver 在哪个网卡上对外提供服务。</li>
+<li>--kubernetes-version，指定 Kubernetes 的版本号。</li>
+</ul>
+<p>那么在Mater节点上我们执行</p>
+<pre><code>sudo kubeadm init \
+    --pod-network-cidr=10.244.0.0/16 \
+    --apiserver-advertise-address=192.168.32.32 \
+    --kubernetes-version=v1.23.3
+</code></pre>
+<p>最终的执行结果<br>
+<img src="https://GeekGhc.github.io/post-images/1664878769417.png" alt="" loading="lazy"></p>
+<p>值得注意的是，最后有个重要的执行命令表示其他节点要加入集群必须要用指令里的 token 和 ca 证书</p>
+<pre><code>kubeadm join 192.168.32.32:6443 --token 9xx5kx.dyjebdab12bukhja \
+	--discovery-token-ca-cert-hash sha256:a7f1d7794e90796ad0a1792fa392e67ce7cd16bbddeb52bb5a3d43a630305c0a 
+</code></pre>
+<p>若果没有记录下来可以使用以下命令查看:</p>
+<pre><code>kubeadm token create --print-join-command
+</code></pre>
+<p>安装过程中也会提示接下来所需要执行的操作</p>
+<pre><code>To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+</code></pre>
+<p>安装完成后，你就可以使用 kubectl version、kubectl get node 来检查 Kubernetes 的版本和集群的节点状态了</p>
+<pre><code>kubectl version
+kubectl get node
+</code></pre>
+<p>这时候发现集群节点还是<code>NotReady</code>的状态，因为还缺少网络插件，集群的内部网络还没有正常运作</p>
+<h3 id="安装flannel网络插件">安装Flannel网络插件</h3>
+<pre><code>kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+</code></pre>
+<p>稍等会儿，再使用<code>kubectl get node</code>查看下，发现节点已经是Ready状态<br>
+<img src="https://GeekGhc.github.io/post-images/1664883290623.png" alt="" loading="lazy"></p>
+<h3 id="worker-节点">Worker 节点</h3>
+<p>如果你成功安装了 Master 节点，那么 Worker 节点的安装就简单多了，只需要用之前拷贝的那条 kubeadm join 命令就可以了，记得要用 sudo 来执行</p>
+<pre><code>kubeadm join 192.168.32.32:6443 --token 9xx5kx.dyjebdab12bukhja \
+	--discovery-token-ca-cert-hash sha256:a7f1d7794e90796ad0a1792fa392e67ce7cd16bbddeb52bb5a3d43a630305c0a 
+</code></pre>
+<p>它会连接 Master 节点，然后拉取镜像，安装网络插件，最后把节点加入集群<br>
+<img src="https://GeekGhc.github.io/post-images/1664886450317.png" alt="" loading="lazy"></p>
+<p>现在让我们用 kubectl run ，运行 Nginx 来测试一下：</p>
+<pre><code>kubectl run ngx --image=nginx:alpine
+kubectl get pod -o wide
+</code></pre>
+<p><img src="https://GeekGhc.github.io/post-images/1664886551278.png" alt="" loading="lazy"><br>
+可以看到Pod成功运行在了workre节点上</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/ji-qi-xue-xi-zhi-shi-ku/" class="post-title gt-a-link">
+                    机器学习知识库
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/ubuntu-da-jian-k8s-ji-qun/" class="leancloud_visitors" data-flag-title="Ubuntu 搭建k8s集群">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

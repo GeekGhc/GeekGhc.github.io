@@ -1,0 +1,772 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>向量数据库：AI 时代的创新引擎 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    向量数据库：AI 时代的创新引擎
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2024-10-16 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/Q54kdB4mNi/" class="post-tags">
+                            # AI
+                        </a>
+                    
+                        <a href="https://GeekGhc.github.io/tag/gEo5laVycDL/" class="post-tags">
+                            # 向量数据库
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h2 id="本期要点">本期要点</h2>
+<ol>
+<li>初识向量数据库</li>
+<li>案例引入，为什么需要有向量数据库</li>
+<li>向量数据库的市场情况</li>
+<li>向量数据库架构和实现</li>
+<li>还有哪些应用场景</li>
+<li>向量数据库的未来市场和技术展望</li>
+</ol>
+<h2 id="前置准备">前置准备</h2>
+<h3 id="什么是向量">什么是向量</h3>
+<p><strong>类官方解释</strong>：向量是指在数学中具有一定大小和方向的量，文本、图片、音视频等非结构化数据， 通过机器学习/深度学习模型 Embedding 提取出来的“特征” 用数学中的向量来表示<br>
+与之相对应的，在机器学习领域，还有几个重要概念**(仅做对比了解)**<br>
+<img src="https://GeekGhc.github.io/post-images/1736268928247.png" alt="" loading="lazy"></p>
+<h3 id="什么是特征向量">什么是特征向量</h3>
+<p>特征向量是包含事物重要特征的向量<br>
+<strong>例子1</strong><br>
+大家比较熟知的一个特征向量是 RGB（红-绿-蓝）色彩，每种颜色都可以通过对红(R)、绿(G)、蓝(B)三种颜色的比例来得到，这样一个特征向量可以描述为：颜色 = [红，绿，蓝]。对于一个像素点，我们可以用数组 [255, 255, 255] 表示白色，用数组 [0, 0, 0] 表示黑色，这里 [255, 255, 255]、[0, 0, 0] 可以认为是该像素点的特征向量<br>
+<strong>例子2</strong><br>
+如果我们想要区分小狗，很自然想到可以通过体型大小、毛发长度、鼻子长短等特征来区分。如下面这张照片按照体型排序，可以看到体型越大的狗越靠近坐标轴右边，这样就能得到一个体型特征的一维坐标和对应的数值，从 0 到 1 的数字中得到每只狗在坐标系中的位置<br>
+<img src="https://GeekGhc.github.io/post-images/1736268965895.PNG" alt="" loading="lazy"><br>
+然而单靠一个体型大小的特征并不够，像照片中哈士奇、金毛和拉布拉多的体型就非常接近，我们无法区分。所以我们会继续观察其它的特征，例如毛发的长短<br>
+<img src="https://GeekGhc.github.io/post-images/1736268981502.PNG" alt="" loading="lazy"><br>
+这样每只狗对应一个二维坐标点，我们就能轻易的将哈士奇、金毛和拉布拉多区分开来，如果这时仍然无法很好的区分德牧和罗威纳犬。我们就可以继续再从其它的特征区分，比如鼻子的长短，这样就能得到一个三维的坐标系和每只狗在三维坐标系中的位置</p>
+<h3 id="什么是embedding">什么是Embedding</h3>
+<p>通过深度学习神经网络提取非结构化数据里的内容和语义，把图片、视频等变成特征向量，这个过程叫Embedding<br>
+<img src="https://GeekGhc.github.io/post-images/1736269009436.png" alt="" loading="lazy"></p>
+<h3 id="llm输出的向量化是怎样的">LLM输出的向量化是怎样的</h3>
+<p>这里以豆包最新的<code>Doubao-embedding/text-240715</code>向量模型和OpenAI第三代嵌入式向量模型<code>text-embedding-3-small</code>为例：<br>
+<img src="https://GeekGhc.github.io/post-images/1736268772991.png" alt="" loading="lazy"></p>
+<h3 id="相似度计算">相似度计算</h3>
+<table>
+<thead>
+<tr>
+<th>相似性计算方法</th>
+<th>方法说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>内积（IP）</td>
+<td>全称为 Inner Product，是一种计算向量之间相似度的度量算法，它计算两个向量之间的点积（内积），所得值越大越与搜索值相似。</td>
+</tr>
+<tr>
+<td>欧式距离（L2）</td>
+<td>全称为 Euclidean distance，指欧几里得距离，它计算向量之间的直线距离，所得的值越小，越与搜索值相似。L2在低维空间中表现良好，但是在高维空间中，由于维度灾难的影响，L2的效果会逐渐变差。</td>
+</tr>
+<tr>
+<td>余弦相似度（COSINE）</td>
+<td>余弦相似度（Cosine Similarity）算法，是一种常用的文本相似度计算方法。它通过计算两个向量在多维空间中的夹角余弦值来衡量它们的相似程度。所得值越大越与搜索值相似</td>
+</tr>
+</tbody>
+</table>
+<h4 id="内积ip">内积（IP）</h4>
+<p>比较适合处理未归一化的数据或关注数据的大小和方向时<br>
+其中，a = (a1, a2,..., an) 和 b = (b1, b2,..., bn) ，是 n 维空间中的两个点。计算所得值越大，越与搜索值相似</p>
+<p>两个 Embedding 向量间的 IP 距离计算公式：<br>
+<img src="https://GeekGhc.github.io/post-images/1736269059857.png" alt="" loading="lazy"></p>
+<h4 id="余弦相似度cosine">余弦相似度（COSINE）</h4>
+<p>余弦相似度使用两组向量之间的夹角余弦来衡量它们的相似程度。可以将这两组向量想象成从相同起点 ([0,0,...]) 开始但指向不同方向的两条线段</p>
+<p>要计算两组向量 <strong>A = (a(0), a(1),..., a(n-1)) 和 B = (b(0), b(1),..., b(n-1))</strong> 之间的余弦相似度，计算公式：<br>
+<img src="https://GeekGhc.github.io/post-images/1736269076412.png" alt="" loading="lazy"><br>
+余弦相似度始终在区间 [-1, 1] 内。例如，两个成比例的向量的余弦相似度为 1，两个正交向量的相似度为 0，两个相反向量的相似度为 -1。余弦值越大，表示两个向量之间的夹角越小，表明这两个向量彼此更相似。</p>
+<p>反过来：通过将它们的余弦相似度从 1 中减去，也就可以得到两个向量之间的余弦距离</p>
+<h2 id="场景引入">场景引入</h2>
+<h3 id="prompt优化无法解决问题">prompt优化无法解决问题？</h3>
+<p>在LLM的深入使用后，发现在某些场景prompt无论再怎样优化调教，仍然无法很好解决我们的问题，主要表现在</p>
+<ul>
+<li>知识落后：涉及比较新的知识，或者是些特定专业领域的知识，大语言模型没有学习过，无法给到我们想要的答案，比如GPT-3.5的知识库截止日期是2021年9月</li>
+<li>幻觉问题：大模型对于不了解的知识边界，对于欠缺知识的领域仍然尝试回答，容易造成错误回答(主打1个已读乱回)，当然这主要也受引入**“zero-shot”<strong>和本身的</strong>“Decoder-Only”**的Transformer架构<br>
+<img src="https://GeekGhc.github.io/post-images/1736269131331.png" alt="" loading="lazy"><br>
+因此在这个问题背景下，业界提出了RAG(检索增强生成)技术</li>
+</ul>
+<h3 id="检索增强技术rag">检索增强技术(RAG)</h3>
+<blockquote>
+<p>Meta BLog:  <a href="https://ai.meta.com/blog/retrieval-augmented-generation-streamlining-the-creation-of-intelligent-natural-language-processing-models/">Streamlining the creation of intelligent natural language processing models</a><br>
+检索增强生成（RAG）是一种利用附加数据增强 LLM 知识的技术，使其能够在生成响应之前引用训练数据来源之外的权威知识库。相当于给大语言模型装上**“知识外挂”**。而其内部知识的修改方式也很高效，不需要对整个模型进行重新训练<br>
+<strong>业界表现</strong>：RAG 在 <a href="https://ai.google.com/research/NaturalQuestions">Natural Questions(opens in a new tab)</a>、<a href="https://paperswithcode.com/dataset/webquestions">WebQuestions(opens in a new tab)</a> 和 CuratedTrec 等基准测试中表现抢眼。用 MS-MARCO 和 Jeopardy 问题进行测试时，RAG 生成的答案更符合事实、更具体、更多样。FEVER 事实验证使用 RAG 后也得到了更好的结果</p>
+</blockquote>
+<h4 id="核心流程">核心流程</h4>
+<blockquote>
+<p>这里基于LangChain实现一套RAG为例，LangChain是基于LLMs用于构建端到端语言模型应用的框架<br>
+<img src="https://GeekGhc.github.io/post-images/1736269307230.png" alt="" loading="lazy"><br>
+<img src="https://GeekGhc.github.io/post-images/1736269396013.png" alt="" loading="lazy"></p>
+</blockquote>
+<ul>
+<li><strong>加载</strong>：首先我们需要加载数据。这是通过 DocumentLoaders 完成的</li>
+<li><strong>分割</strong>：文本分割器将大文档分成更小的块。这对于索引数据和将其传递到模型都很有用，因为大块更难搜索并且不适合模型的有限上下文窗口</li>
+<li><strong>向量化</strong>：基于分割后的文本进行向量化处理，以便模型更好处理识别和召回</li>
+<li><strong>存储</strong>：我们需要某个地方来存储和索引我们的分割，以便以后可以搜索它们。这通常是使用 VectorStore 和 Embeddings 模型来完成的</li>
+<li><strong>检索</strong>：给定用户输入，使用检索器从存储中检索相关分割</li>
+<li><strong>生成</strong>：ChatModel / LLM 使用包含问题和检索到的数据的提示生成答案</li>
+</ul>
+<h4 id="模块实现">模块实现</h4>
+<blockquote>
+<p>模块实现基于OpenAI最新API，国内大模型流程差不多</p>
+</blockquote>
+<h5 id="数据加载">数据加载</h5>
+<p>基于langchain的Loader加载外部文件，如txt，当然也支持更多文本类型<a href="https://python.langchain.com/v0.2/docs/how_to/#document-loaders">Loader</a>，比如web链接的WebBaseLoader</p>
+<pre><code># 基于TextLoader加载外部文档，如.txt
+from langchain_community.document_loaders import TextLoader
+
+loader = TextLoader(&quot;./data/clue_faq.txt&quot;,encoding=&quot;utf8&quot;)
+faq = loader.load()
+</code></pre>
+<p>其中clue_faq.txt为清洗后的知识文档内容，比如</p>
+<pre><code>...
+Q: 组件类型“智能电话”和“团购留资”是什么
+A: &quot;智能电话&quot;是在留资组件中配置的商家联系电话、通过这种方式获取的线索会归类为智能电话，同样的，“团购留资”是指在团购中配置了“需要顾客留手机号”的订单上获取的客户联系电话
+...
+</code></pre>
+<h5 id="文本分割">文本分割</h5>
+<p>文档内容都比较长，类似ES分词，我们需要对文档进行切分后再向量化，存入向量数据库便于搜索<br>
+这里基于<a href="https://python.langchain.com/v0.1/docs/modules/data_connection/document_transformers/HTML_section_aware_splitter/#2-pipelined-to-another-splitter-with-html-loaded-from-a-html-string-content">RecursiveCharacterTextSplitter</a>进行文本分割</p>
+<h5 id="embedding">Embedding</h5>
+<p>切分文本片段后，即可通过向量模型对文本进行向量化，LLMs基本都会提供对应的向量模型<br>
+<img src="https://GeekGhc.github.io/post-images/1736269356096.png" alt="" loading="lazy"><br>
+这里选用OpenAI最新的<strong>text-embedding-3-small</strong></p>
+<pre><code>from langchain.embeddings.openai import OpenAIEmbeddings
+
+embeddings = OpenAIEmbeddings(model=&quot;text-embedding-3-small&quot;)
+</code></pre>
+<h5 id="数据存储vectordb">数据存储(VectorDB)</h5>
+<p>文档转成向量后，需要作为向量存储至VectorDB，这样后续问题搜索时会将问题向量化后再从数据库中匹配相似向量的文本片段作为回答，以弥补LLM的知识盲区<br>
+这里以Meta提供的相似性搜索库<a href="https://faiss.ai/">FAISS</a>为例：</p>
+<pre><code>from langchain_community.vectorstores.faiss import FAISS
+
+vectors = FAISS.from_documents(documents, embeddings)
+</code></pre>
+<h5 id="数据检索">数据检索</h5>
+<p>现在需要考虑如何将原先的问题与加载后的文档进行串联，这里会构造1个<code>documents_chain</code></p>
+<blockquote>
+<p>关于更多Chain使用 <a href="https://python.langchain.com/v0.1/docs/modules/chains/#lcel-chains">&gt;&gt;</a></p>
+</blockquote>
+<pre><code>from langchain_openai import ChatOpenAI
+from langchain.chains.combine_documents import create_stuff_documents_chain
+
+llm = ChatOpenAI(
+    model=&quot;gpt-4o-mini&quot;,
+    temperature=0.5
+)
+
+prompt_template = ChatPromptTemplate.from_template(&quot;&quot;&quot;
+基于以下相关资料回答我的问题.
+## 相关资料
+{context}
+
+## 我的问题
+问题：{input}
+&quot;&quot;&quot;)
+document_chain = create_stuff_documents_chain(llm, prompt_template)
+</code></pre>
+<p>接下来的问题就是将向量数据库加入到检索流程</p>
+<pre><code>from langchain.chains import create_retrieval_chain
+
+retriever = vectors.as_retriever()
+# 创建新的调用链，为了将向量检索过程加入调用流中
+rag_chain = create_retrieval_chain(retriever, document_chain)
+result = rag_chain.invoke({&quot;input&quot;: &quot;在线索经营中，组件类型“团购留资”是什么.&quot;})
+print(result[&quot;answer&quot;])
+</code></pre>
+<p>最终，来看看加入向量模型后，模型回答后的结果<br>
+<img src="https://GeekGhc.github.io/post-images/1736269440056.png" alt="" loading="lazy"></p>
+<h2 id="业内市场">业内市场</h2>
+<h3 id="市场产品">市场产品</h3>
+<p>随着生成式人工智能（GAI）应用以及大语言模型（LLM）的快速发展，在向量数据库如火如荼的市场中，各个服务商纷纷也推出了各自的解决方案<br>
+数据库排名网站 <a href="https://db-engines.com/en/ranking">DB-Engines</a> 列出了常见的一些向量数据库，包括专用的向量数据库和基于传统数据库的扩展功能<br>
+而目前向量数据库本质上有三种形态：</p>
+<ul>
+<li>第一种是纯单机向量数据库，它不是分布式的(如上面提到的FAISS)</li>
+<li>第二种是在传统数据库上加上一个具备向量检索能力的插件(如postgreSQL、mongoDB等)</li>
+<li>第三种是独立的、专业的企业级向量数据库</li>
+</ul>
+<figure data-type="image" tabindex="1"><img src="https://GeekGhc.github.io/post-images/1736269479357.png" alt="" loading="lazy"></figure>
+<h3 id="各大厂商解决方案">各大厂商解决方案</h3>
+<p>腾讯云向量数据库自 2019 年开始内部研发，在今年不断升级和发展，多项核心性能得到提升，最高支持千亿级向量规模和 500 万 QPS 峰值能力，并与信通院一起联合 50 多家企业共同发布了国内首个向量数据库标准，推进向量数据库及大模型相关产业走向大规模应用。</p>
+<p>阿里妈妈拥有自研的具有大规模、高性能、低成本且易开发优势的向量数据库 Dolphin VectorDB，在妈妈内容风控、营销知识问答、达摩盘人群 AI 圈人和 AI 经营分析师等场景中落地应用</p>
+<p>|字节|<a href="https://www.volcengine.com/docs/84313/1254439">产品概述--向量数据库VikingDB-火山引擎</a>|<br>
+|亚马逊|<a href="https://aws.amazon.com/cn/campaigns/what-is-a-vector-database/">什么是向量数据库_向量数据库解决方案 - 亚马逊云科技</a>|<br>
+|阿里云|<a href="https://www.aliyun.com/product/ai/dashvector?spm=5176.22414175.J_3207526240.207.3b68854b5t02eF">向量检索服务_向量搜索_大模型生成式检索_人工智能-阿里云</a>|<br>
+|腾讯云|<a href="https://cloud.tencent.com/product/vdb?from_column=20065&amp;from=20065">cloud.tencent.com</a>|<br>
+|...|...|</p>
+<h2 id="milvus介绍">Milvus介绍</h2>
+<blockquote>
+<p>目前主流的开源的向量数据库Chroma、Milvus、Qdrant、Weaviate，这里以<a href="https://github.com/milvus-io/milvus">Milvus</a>(star:28.5k)的架构实现为例<br>
+未开源的推荐<a href="https://www.pinecone.io/">Pinecone</a>，主打卖点：支持排名跟踪、复杂搜索、数据去重<br>
+还有更多选型也可参考：<a href="https://juejin.cn/post/7368419638987161600">2024年精选推荐的16个向量数据库:提升你的AI应用性能 - 掘金</a><br>
+<a href="https://milvus.io/">Milvus</a>在机器学习和数据科学领域获得了很高的声誉，在向量索引和查询方面拥有出色的能力。同时也是 <a href="https://lfaidata.foundation/">LF AI &amp; Data 基金会</a> 的毕业项目<br>
+利用功能强大的算法，Milvus提供闪电般的处理和数据检索速度以及GPU支持，即使在处理非常庞大的数据集时也是如此。<br>
+Milvus还可以与PyTorch和TensorFlow等其他流行的框架集成(当然也包括类似langChain这种LLM应用框架)，从而允许将其添加到现有的机器学习工作流中</p>
+</blockquote>
+<h3 id="milvus架构">Milvus架构</h3>
+<p><img src="https://GeekGhc.github.io/post-images/1736269504611.png" alt="" loading="lazy"><br>
+Milvus 是一款云原生向量数据库，采用存储与计算分离的架构设计，所有组件均为无状态组件，极大地增强了系统弹性和灵活性。整个系统架构分为<a href="https://milvus.io/docs/four_layers.md">四个层面</a>：</p>
+<ul>
+<li><strong>接入层（Access Layer）</strong>。系统的门面，由一组无状态 proxy 组成。对外提供用户连接的 endpoint，负责验证客户端请求并合并返回结果</li>
+<li><strong>协调服务（Coordinator Service）</strong>。系统的大脑，负责分配任务给执行节点。协调服务共有四种角色，分别为 root coord、data coord、query coord 和 index coord</li>
+<li><strong>执行节点（Worker Node）</strong>。系统的四肢，负责完成协调服务下发的指令和 proxy 发起的数据操作语言（DML）命令。执行节点分为三种角色，分别为 data node、query node 和 index node</li>
+<li><strong>存储服务 （Storage）</strong>。系统的骨骼，负责 Milvus 数据的持久化，分为元数据存储（meta store）、消息存储（log broker）和对象存储（object storage）三个部分</li>
+</ul>
+<h3 id="操作对象">操作对象</h3>
+<h4 id="database">Database</h4>
+<p>与传统数据库引擎类似，可以在Milvus中创建数据库，并向某些用户分配权限来管理它们。其中一个 Milvus 集群最多支持 64 个数据库</p>
+<pre><code>from pymilvus import connections, db
+
+conn = connections.connect(host=&quot;127.0.0.1&quot;, port=19530)
+
+database = db.create_database(&quot;business_db&quot;)
+</code></pre>
+<h4 id="schema">Schema</h4>
+<p>字段模式是字段的逻辑定义。因此在定义集合模式和管理集合之前需要先给定各字段的逻辑定义<br>
+<img src="https://GeekGhc.github.io/post-images/1736269540779.png" alt="" loading="lazy"></p>
+<pre><code>from pymilvus import FieldSchema
+
+id_field = FieldSchema(name=&quot;id&quot;, dtype=DataType.INT64, is_primary=True, description=&quot;primary id&quot;)
+age_field = FieldSchema(name=&quot;age&quot;, dtype=DataType.INT64, description=&quot;age&quot;)
+embedding_field = FieldSchema(name=&quot;embedding&quot;, dtype=DataType.FLOAT_VECTOR, dim=128, description=&quot;vector&quot;)
+
+position_field = FieldSchema(name=&quot;position&quot;, dtype=DataType.VARCHAR, max_length=256, is_partition_key=True)
+</code></pre>
+<p>定义完成字段模式后，接下来需要定义集合模式collection schema(类似Create Table DML)</p>
+<pre><code>from pymilvus import FieldSchema, CollectionSchema
+
+...
+# 设置collection schema 
+schema = CollectionSchema(fields=[id_field, age_field, embedding_field], auto_id=False, enable_dynamic_field=True, description=&quot;desc of a collection&quot;)
+</code></pre>
+<h4 id="collections">Collections</h4>
+<p>生成的vector会嵌入存储在集合中。集合中的所有vector嵌入共享相同的维度和距离度量，从而用于测量相似性<br>
+在很多情况下大多数开发者没有过多的定制化诉求，只需要一个简单而动态的集合来开始，因此提供两种创建方式</p>
+<ul>
+<li>通过官方包 <strong>MilvusClient</strong> 创建。</li>
+<li>定制设置，也就是基于上面指定schema的方式</li>
+</ul>
+<pre><code>from pymilvus import MilvusClient, DataType
+
+ # 实例化客户端，连接 Milvus 服务
+ client = MilvusClient(
+     uri=&quot;http://localhost:19530&quot;
+ )
+ 
+ # 方式一：快速创建1个collection
+ client.create_collection(
+     collection_name=&quot;demo_v2&quot;,
+     dimension=5
+ )
+ 
+ # 方式二： 定制设置
+ # 1. 创建schema
+ schema = MilvusClient.create_schema(
+    auto_id=False,
+    enable_dynamic_field=True,
+)
+# 2. 定义schema中的字段
+schema.add_field(field_name=&quot;my_id&quot;, datatype=DataType.INT64, is_primary=True)
+schema.add_field(field_name=&quot;my_vector&quot;, datatype=DataType.FLOAT_VECTOR, dim=5)
+# 3. 创建集合
+client.create_collection(
+     collection_name=&quot;consult_faq&quot;,
+     schema=schema,
+     index_params=index_params
+ )
+</code></pre>
+<h4 id="index">Index</h4>
+<p>Milvus 提供多种索引类型来对字段值进行排序，以实现高效的相似性搜索。同时它还提供三种度量类型：<strong>余弦相似度 <strong>(COSINE)、<strong>欧几里得距离</strong> (L2) 和</strong>内积</strong> （IP）来测量向量嵌入之间的距离</p>
+<h5 id="索引类型">索引类型</h5>
+<figure data-type="image" tabindex="2"><img src="https://GeekGhc.github.io/post-images/1736269567619.png" alt="" loading="lazy"></figure>
+<h5 id="如何选型">如何选型</h5>
+<table>
+<thead>
+<tr>
+<th>索引类型</th>
+<th>使用场景</th>
+<th>适用向量规模</th>
+<th>召回率</th>
+<th>检索速度</th>
+<th>写入速度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>FLAT</strong></td>
+<td>暴力检索，召回率100%，但检索效率低。</td>
+<td>10万以内</td>
+<td>最高，可保证100%召回率</td>
+<td>慢</td>
+<td>慢</td>
+</tr>
+<tr>
+<td><strong>HNSW</strong></td>
+<td>基于图算法构建索引，可通过调整检索参数提升召回率。具体信息，请参见 配置索引参数。检索效率高，但数据量大后写入效率会变低</td>
+<td>10万-1亿</td>
+<td>95%+，可根据参数调整</td>
+<td>快</td>
+<td>慢</td>
+</tr>
+<tr>
+<td><strong>IVF系列</strong></td>
+<td>基于聚类算法构建的索引，可通过参数调整召回率，适用于上亿规模的数据集，检索效率高，内存占用低，写入效率高。</td>
+<td>1亿以上</td>
+<td>95%+，可根据参数调整</td>
+<td>快</td>
+<td>快（批量写入后统一构建索引）</td>
+</tr>
+</tbody>
+</table>
+<h5 id="索引使用">索引使用</h5>
+<p>索引参数决定 <strong>Milvus</strong> 如何组织集合中的数据。我们可以通过调整特定字段的 <strong>metric_type</strong> 和 <strong>index_type</strong> 来设置特定字段的索引过程。对于矢量，可以灵活选择<strong>COSINE</strong>、<strong>L2</strong>或<strong>IP</strong>作为<strong>metric_type</strong></p>
+<pre><code># 1. 设置索引的参数
+index_params = MilvusClient.prepare_index_params()
+
+# 创建schema &amp; collection(同Collection)
+schema = MilvusClient.create_schema(
+     auto_id=False,
+     enable_dynamic_field=True,
+)
+schema.add_field(field_name=&quot;my_id&quot;, datatype=DataType.INT64, is_primary=True)
+schema.add_field(field_name=&quot;my_vector&quot;, datatype=DataType.FLOAT_VECTOR, dim=5)
+client.create_collection(
+     collection_name=&quot;consult_faq&quot;,
+     schema=schema,
+     index_params=index_params
+)
+ 
+ # 2. 在向量字段 vector 上面添加一个索引
+index_params.add_index(
+    field_name=&quot;my_vector&quot;,
+    metric_type=&quot;COSINE&quot;,
+    index_type=&quot;IVF_FLAT&quot;,
+    index_name=&quot;vector_index&quot;,
+    params={ &quot;nlist&quot;: 128 }
+)
+# 3. 为集合添加索引(类似向表加索引)
+client.create_index(
+    collection_name=&quot;consult_faq&quot;,
+    index_params=index_params
+)
+# 4. 查看collection索引信息
+ index_info = client.list_indexes(
+     collection_name=&quot;consult_faq&quot;
+ )
+</code></pre>
+<h5 id="变量索引分类">变量索引分类</h5>
+<ul>
+<li><strong>auto-index</strong>： Milvus 根据标量字段的数据类型自动决定索引类型。这适用于不需要控制具体索引类型的情况
+<ul>
+<li>变量字段就是除 vector 字段，id 字段之外的字段。在 Milvus 中，标量索引用于加速特定非向量字段值的元过滤，可以理解为传统的数据库索引</li>
+</ul>
+</li>
+<li><strong>custom-index</strong>： 可以指定明确的索引类型，比如倒排索引。这就提供了对索引的类型的更多选择</li>
+</ul>
+<pre><code># 这里以自定义索引类型为例
+index_params = client.create_index_params() 
+
+#  准备一个 IndexParams 对象  
+index_params.add_index(    
+     field_name=&quot;scalar_1&quot;, # 标量字段名称     
+     index_type=&quot;INVERTED&quot;, # 明确索引类型     
+     index_name=&quot;inverted_index&quot; # 索引的名称 
+)  
+
+client.create_index(   
+    collection_name=&quot;consult_faq&quot;, # 将索引添加到集合中   
+    index_params=index_params 
+ )
+</code></pre>
+<h4 id="partitions">Partitions</h4>
+<p>Milvus中的分区代表集合的子分区。此功能允许将集合的物理存储分为多个部分，通过将焦点缩小到较小的数据子集而不是整个集合，有助于提高查询性能。</p>
+<p>创建集合后，至少会自动创建一个名为**_default<strong>的默认分区。您可以在一个集合中最多创建</strong>4,096**个分区</p>
+<h3 id="向量搜索">向量搜索</h3>
+<blockquote>
+<p>更多向量搜索api，参考官方文档: <a href="https://milvus.io/docs/single-vector-search.md">Search、Query&amp;Get</a><br>
+结合以上操作对象，写入一批量数据后，就可以基于创建好的索引进行向量搜索<br>
+Milvus 支持两种类型的搜索，具体取决于集合中向量字段的数量</p>
+</blockquote>
+<ul>
+<li><strong>单向量搜索</strong>：如果您的集合只有一个向量字段，请使用<a href="https://link.juejin.cn/?target=https%3A%2F%2Fmilvus.io%2Fapi-reference%2Fpymilvus%2Fv2.4.x%2FMilvusClient%2FVector%2Fsearch.md">search()</a>方法查找最相似的实体。此方法将您的查询向量与集合中的现有向量进行比较，并返回最接近匹配的 ID 以及它们之间的距离。或者，它还可以返回结果的向量值和元数据。</li>
+<li><strong>多向量搜索</strong>：对于具有两个或多个向量场的集合，请使用<a href="https://link.juejin.cn/?target=https%3A%2F%2Fmilvus.io%2Fapi-reference%2Fpymilvus%2Fv2.4.x%2FORM%2FCollection%2Fhybrid_search.md">hybrid_search()</a>方法。此方法执行多个近似最近邻 (ANN) 搜索请求，并组合结果以在重新排名后返回最相关的匹配项<br>
+这样可以实现应用场景中最常用的搜索诉求</li>
+<li><strong>基本搜索</strong>：包括单向量搜索、批量向量搜索、分区搜索和指定输出字段搜索</li>
+<li><strong>过滤搜索</strong>： 应用基于标量字段的过滤条件来细化搜索结果</li>
+<li><strong>范围搜索</strong>： 查找距查询向量特定距离范围内的向量</li>
+<li><strong>分组搜索</strong>： 根据特定字段对搜索结果进行分组，以确保结果的多样性</li>
+</ul>
+<pre><code># 分区搜索：指定返回和过滤标量
+res = client.search(    
+        collection_name=&quot;consult_faq&quot;,        # 集合名称
+        data=[[0.02174828545444263, 0.058611125483182924, 0.6168633415965343, -0.7944160935612321, 0.5554828317581426]],    # 关键字的vector，比如&quot;灰色夹克&quot;
+        limit=5,                              # 返回的搜索结果最大数量，top5
+        search_params={&quot;metric_type&quot;: &quot;IP&quot;, &quot;params&quot;: {}},  # 相似性搜索的度量类型：IP(内积)
+        partition_names=[&quot;partition_1&quot;]       # 这里指定搜索的分区以缩小集合分区
+        output_fields=[&quot;name_field&quot;]          # 返回定义的字段
+        filter='color like &quot;gree%&quot;'           # 模糊搜索过滤
+)
+</code></pre>
+<h2 id="应用场景">应用场景</h2>
+<h3 id="模型知识库">模型知识库</h3>
+<p>这个场景其实就是上面「场景引入」的经典应用场景，目前很多LLM的知识库应用无不都是基于VectorDB来实现RAG的，这里推荐几个github比较受欢迎的基于 LLM 大语言模型的开源知识库问答系统</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>项目地址</th>
+<th>star数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dify</td>
+<td><a href="https://github.com/langgenius/dify">https://github.com/langgenius/dify</a> (LLM应用开发平台，类似字节的扣子)</td>
+<td>39.2k</td>
+</tr>
+<tr>
+<td>FastGPT</td>
+<td><a href="https://github.com/labring/FastGPT">https://github.com/labring/FastGPT</a></td>
+<td>15.8k</td>
+</tr>
+<tr>
+<td>MaxKB</td>
+<td><a href="https://github.com/1Panel-dev/MaxKB?tab=readme-ov-file">https://github.com/1Panel-dev/MaxKB?tab=readme-ov-file</a></td>
+<td>8.5k</td>
+</tr>
+</tbody>
+</table>
+<h3 id="推荐系统">推荐系统</h3>
+<p><img src="https://GeekGhc.github.io/post-images/1736269607539.png" alt="" loading="lazy"><br>
+得益于企业级向量数据库的快速发展，在系统推荐场景下主要应有</p>
+<ul>
+<li><strong>搜索场景</strong>：试想下，在抖音搜索“灰色夹克”，得到的搜索结果基本都是与之相关的商品，结合向量的相似性搜索，推荐系统可以更好更准确地做<strong>信息推荐</strong>，这种比较适合推荐系统的冷启动阶段
+<ul>
+<li>大致的实现方式，可以参考我以前实现的demo：<a href="https://colab.research.google.com/drive/1hptMvbIiSJYAGAdct4I2yT-qvOML8YOg#scrollTo=6vW3wjYZUilQ">colab地址</a></li>
+</ul>
+</li>
+<li><strong>用户推荐</strong>：将用户行为特征向量化存储在向量数据库。比如用户经常浏览数码产品，这种行为特征就可以作为特征向量。当发起推荐请求时，系统会基于用户特征进行相似度计算，最终筛选用户可能感兴趣的物品推荐给用户</li>
+</ul>
+<h3 id="文本图像检索">文本图像检索</h3>
+<p>向量数据库可以存储大量的图像向量数据，并通过向量索引技术实现高效相似度计算，返回与检索图像最相似的图像结果<br>
+<img src="https://GeekGhc.github.io/post-images/1736269634895.png" alt="" loading="lazy"></p>
+<h2 id="未来展望">未来展望</h2>
+<p>** 现状 **<br>
+在国内，随着数字化转型的加速和人工智能应用的普及，对于高质量、高效率数据处理工具的需求日益旺盛。众多企业纷纷加大在人工智能领域的投入，加速推动了向量数据库在国内市场的发展。<br>
+<strong>融资规模</strong></p>
+<ul>
+<li>23年4月，向量数据库平台 <strong>Pinecone</strong> 获得 1 亿美元 B 轮融资，估值达到 7.5 亿美元</li>
+<li>继 2023 年 4 月完成 750 万美元种子轮融资后，开源向量数据库公司 <strong>Qdrant</strong> 24年初完成 2800 万美元的 A 轮融资</li>
+<li><strong>Chroma</strong> 在23年4月宣布获得1800万美元的种子轮融资</li>
+</ul>
+<h3 id="市场展望">市场展望</h3>
+<p>东北证券预测，到 2030 年，全球向量数据库市场规模有望达到 <strong>500 亿美元</strong>，国内向量数据库市场规模有望超 <strong>600 亿</strong>人民币<br>
+以 ChatGPT 为代表的生成式人工智能的快速发展，而模型的训练效果与数据源的质量和数量相关性愈发明显，因此数据成为 AIGC 应用产品的核心竞争壁垒之一和兵家必争之地<br>
+而向量数据库作为专门处理高维向量数据的重要工具，使得对于高效处理和存储大规模向量数据的需求急剧增加。各种新兴的应用场景，如<strong>计算机视觉、自然语言处理</strong>等领域，都对向量数据库的性能和功能提出了更高的要求，从而推动了市场规模的持续扩大</p>
+<h3 id="技术展望">技术展望</h3>
+<p>随着AI技术的不断发展和大数据时代的来临，向量数据库将会迎来更多的应用场景和挑战(当然也是机会)，这其中就包括</p>
+<ul>
+<li><strong>扩展性</strong>：大模型的兴起，对嵌入（embedding）和向量化这些能力的需求急剧增加。大模型的普及也让向量数据的规模不断增大，从百万级别的数据体量已经变为千万级别，甚至更大。这就需要数据库能够有效地支持大规模向量数据的存储和检索，这对硬件资源提出了更高的要求，特别是在云上部署时成本可能成为一个重要问题</li>
+<li><strong>成本问题</strong>：在向量搜索中，索引的大小和存储是关键因素，而向量索引的成本通常较高。以前在数据量较小的情况下，可能只需要几台机器就足够了，成本并不是关键问题。但随着数据规模的增大，需要更多的资源来支持，这就涉及到成本的考虑</li>
+<li><strong>易用性问题</strong>：与传统的关系型数据库不同，向量搜索涉及到更多维度的考量，包括性能和召回率等。为了平衡性能和召回率，需要调整各种参数，但这可能对用户来说不太友好。因此，简化参数选择，优化用户体验是一个重要的挑战<br>
+就以上问题，讨论比较多的优化方向</li>
+<li><strong>边缘计算的支持</strong>：随着<a href="https://cloud.baidu.com/product/bec.html">云计算</a>和边缘计算的兴起，向量数据库也将会更加注重分布式处理和边缘计算的支持</li>
+<li><strong>一体化趋势</strong>：特别在“降本增效”的大环境下，目前，出现了单机分布式一体化、在离线一体化、多模态一体化。一体化技术使得数据库具备更强的适应性，并且能极大地降低用户使用和运维管理的复杂度。尤其在多模态技术方向上，通过对非结构数据向量化，也实现了多样性的数据检索管理能力。还有就是通过整合不同的数据库技术，实现一体化管理，也可以提高数据得处理效率</li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/go-118-feature-ying-yong-fen-xiang/" class="post-title gt-a-link">
+                    Go 1.18 Feature应用分享
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/xiang-liang-shu-ju-ku-ai-shi-dai-de-chuang-xin-yin-qing/" class="leancloud_visitors" data-flag-title="向量数据库：AI 时代的创新引擎">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

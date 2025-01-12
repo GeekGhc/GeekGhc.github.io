@@ -1,0 +1,414 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>laravel5.5 之Api Resource | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    laravel5.5 之Api Resource
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-09-10 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/x4piCdT_z/" class="post-tags">
+                            # PHP
+                        </a>
+                    
+                        <a href="https://GeekGhc.github.io/tag/b0tSda50f/" class="post-tags">
+                            # Laravel
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>在laravel5.5中 引入了新的概念就是Api Resource这样我们就可以不用之前的Dingo而自定义返回字段和数据</p>
+<p>在<code>Laravel5.5</code>之前  我们在处理我们的<code>api</code>接口时 会用到dingo来管理我们的后台数据  那么在<strong>5.5</strong>中 引入了新的概念就是<br>
+<code>api resource</code> 正如这个名字一样  我们可以建立<code>api</code>资源管理</p>
+<p>在之前我们也有说过编写后台的<code>api</code>服务  那么在处理数据返回字段时   我们会选择对字段进行映射 这样来选取我们客户端需要的<br>
+数据  这在之前我们是通过一个<code>Transformer</code>这个中间层来进行映射</p>
+<p>当然再此之前我们先创建好<code>User</code> 和 <code>Post</code>这两个<code>Model</code>  并生成对应的数据字段</p>
+<p>在<strong>5.5</strong>中我们可以有更好的资源管理形式  话不都说  新建好必要的项目后 我们去创建用户的<code>api</code>管理</p>
+<pre><code class="language-shell">$ php artisan make:resource User
+</code></pre>
+<p>其中<code>make:resource</code>命令也是<strong>5.5</strong>新增的  这样我们会在<code>app/Http/Resources</code> 增加了一个继承<code>Resource</code>的<code>User Class</code></p>
+<p>在路由中  为了演示  我们可以在路由返回其中的一个用户</p>
+<pre><code class="language-php?start_inline=1">Route::get('user',function(){
+   $user = \App\User::find(2);
+   return new \App\Http\Resources\User($user);
+});
+</code></pre>
+<p>这样的话我们会返回<strong>id</strong>为<strong>2</strong>的这个用户的全部信息  但这并不是我们所需要的  那么我们可以借用<code>api resource</code>进行字段的映射</p>
+<p>在<code>\App\Http\Resources\User</code>里我们去返回一些基本字段</p>
+<pre><code class="language-php?start_inline=1">public function toArray($request)
+{
+    return [
+        'name'=&gt;$this-&gt;name,
+        'email'=&gt;$this-&gt;email
+    ];
+}
+</code></pre>
+<p>这样一来我们再去访问之前的路由返回给我们的也就是筛选之后的字段  当然现在有个问题就是  实际项目中我们可能需要返回其他字段</p>
+<p>比如我们的客户端需要知道是否返回成功的信息  那么我们可以再去重写这个<code>Resource</code>中的<code>with</code>方法</p>
+<pre><code class="language-php?start_inline=1"> public function with($request)
+    {
+       return [
+            'code'=&gt;1,
+           'status'=&gt;'success'
+       ];
+    }
+</code></pre>
+<p>这样的话我们就是增加了返回字段<code>code</code>和<code>status</code>  当然我们在返回数据<code>body</code>部分我们的是放在<code>data</code>中  我们也可以更改这个<code>key</code></p>
+<p>在<code>app/Providers/AppServiceProvider</code>中</p>
+<pre><code class="language-php?start_inline=1">public function boot()
+{
+    Resource::wrap('lists');
+}
+</code></pre>
+<p>这样我们的返回数据字段就是</p>
+<pre><code class="language-php?start_inline=1">{
+    &quot;lists&quot;: {
+        &quot;name&quot;: &quot;Mrs. Orpha Waters MD&quot;,
+        &quot;email&quot;: &quot;jose82@example.net&quot;
+    },
+    &quot;code&quot;: 1,
+    &quot;status&quot;: &quot;success&quot;
+}
+</code></pre>
+<p>如果我们需要返回该用户的帖子  这也很简单 再增加一个<code>posts</code>字段就是了 不够再此之前先关联一下用户和帖子的关系</p>
+<p>当然有一种应用场景就是我们对字段数据的判断  就如文档中所说如果是管理员的话我们就返回特定的字段  反之不然</p>
+<p><code>laravel</code>为我们提供了<code>when</code> 这个 <code>function</code>  具体判断则是</p>
+<pre><code class="language-php?start_inline=1">public function toArray($request)
+{
+    return [
+        'name'=&gt;$this-&gt;name,
+        'email'=&gt;$this-&gt;email,
+        'secret' =&gt; $this-&gt;when($this-&gt;isAdmin(), 'secret-value'),
+    ];
+}
+</code></pre>
+<p>这个时候只有<code>$this-&gt;isAdmin</code>返回为<code>true</code>时  返回字段里才会出现<code>secret</code>这个<code>key</code>  不然的话在返回之前就已经过滤掉了</p>
+<p><code>ok</code> 在很多的场景中  我们需要返回的是一个<code>collection</code>比如一个用户的所有帖子  那么<code>api resource</code>同样为我们提供了对collection<br>
+的处理方式  在终端执行</p>
+<pre><code class="language-shell">$ php artisan make:resource UserCollection
+</code></pre>
+<p>当然这个命名是有讲究的  在生成的类的继承父类就可以看到出来   那么如果我们需要制定一个<code>collection</code>的处理方式在命令中可以加一个<br>
+<code>--collection</code>这个<code>flag</code>  具体可以在终端查看一下</p>
+<pre><code class="language-shell">$  php artisan make:resource -h
+</code></pre>
+<p>生成完毕之后我们会发现这个类是继承<code>ResourceCollection</code>这个父类的  所以同样的我们可以去返回所有的用户信息</p>
+<pre><code class="language-php?start_inline">Route::get('user',function(){
+   $users = \App\User::get();
+   return new \App\Http\Resources\UserCollection($users);
+});
+</code></pre>
+<p>如果需要提供其他字段的也可以在<code>with function</code>增加  当然对于处理分页  其实在<code>collection</code>的分页也提供了非常详细的字段数据</p>
+<pre><code class="language-php?start_inline=1">Route::get('user',function(){
+   $users = \App\User::with('posts')-&gt;paginate(3);
+   return new \App\Http\Resources\UserCollection($users);
+});
+</code></pre>
+<p>从返回的数据我们可以看到新增了<code>links</code>和<code>meta</code>字段里面包含了分页我们可能需要的数据 如上一页下一页</p>
+<p>如果需要对用户的帖子字段进行映射  创建一个<code>Post Resource</code>再进行一次<code>transformer</code>就行</p>
+<p>对于关联数据的返回可以如以前所说采用<code>eager loader</code>来避免N+1的查询  那么在路由方法中我们可以采用<code>with('posts')</code>这样的方式</p>
+<p>当然在<code>Resource</code>里我们还可以采用提供给我们的<code>whenLoaded</code> 这个<code>function</code>  具体表现为</p>
+<pre><code class="language-php?start_inline=1"> public function toArray($request)
+    {
+        return [
+            'name'=&gt;$this-&gt;name,
+            'email'=&gt;$this-&gt;email,
+            'posts'=&gt;Post::collection($this-&gt;whenLoaded('posts'))
+        ];
+    }
+</code></pre>
+<h2 id="相关链接">相关链接</h2>
+<ul>
+<li><a href="https://d.laravel-china.org/docs/5.5/eloquent-resources">Eloquent: API 资源</a></li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/laradocker-zai-docker-zhong-qing-song-yun-xing-ni-de-laravel-xiang-mu/" class="post-title gt-a-link">
+                    LaraDocker 在Docker中轻松运行你的laravel项目
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/laravel55-zhi-api-resource/" class="leancloud_visitors" data-flag-title="laravel5.5 之Api Resource">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

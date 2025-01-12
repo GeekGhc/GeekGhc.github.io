@@ -1,0 +1,500 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Redis分布式集群 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Redis分布式集群
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2019-03-02 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/ZoiasA4ez/" class="post-tags">
+                            # Cluster
+                        </a>
+                    
+                        <a href="https://GeekGhc.github.io/tag/5hUnL9hCn/" class="post-tags">
+                            # 分布式
+                        </a>
+                    
+                        <a href="https://GeekGhc.github.io/tag/Fsi8n7uJf/" class="post-tags">
+                            # Redis
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h2 id="前言">前言</h2>
+<p><code>Redis</code>在<strong>3.0</strong>以后的版本支持了<code>Cluster</code> 那么我们首先会想到<code>Cluster</code>是解决怎样的应用场景</p>
+<p>为了应对大流量访问下提供稳定的业务，集群化是存储的必然形态  之前的单点存储势必会有诸多隐患</p>
+<p>而未来的发展趋势肯定是大数据和云计算的紧密集合 分布式架构也就可以很好的体现他的优势</p>
+<blockquote>
+<p>分布式是以缩短单个任务的执行时间来提升效率的，而集群则是通过提高单位时间内执行的任务数来提升效率</p>
+</blockquote>
+<h2 id="解决方案">解决方案</h2>
+<p>目前的<code>Redis</code>的集群化方案有三种</p>
+<ul>
+<li>Twitter开发的twemproxy</li>
+<li>豌豆荚开发的codis</li>
+<li>redis官方的redis-cluster</li>
+</ul>
+<p><code>redis-cluster</code>是三个里性能最强大的 因为他使用去中心化的思想 使用<code>hash slot</code>方式 将<strong>16348</strong>个<code>hash slot</code> 覆盖到所有节点上</p>
+<p>对于存储的每个<code>key</code>值 使用<code>CRC16(KEY)&amp;16348=slot</code> 得到他对应的<code>hash slot</code> 并在访问<code>key</code>时就去找他的<code>hash slot</code>在哪一个节点上</p>
+<p>然后由当前访问节点从实际被分配了这个<code>hash slot</code>的节点去取数据 节点之间使用轻量协议通信 减少带宽占用 性能很高</p>
+<p>自动实现负载均衡与高可用 自动实现<code>failover</code>  并且支持动态扩展 官方已经玩到可以<strong>1000</strong>个节点 实现的复杂度低  因为他的去中心化思想免去了<code>proxy</code>的消耗 是全新的思路</p>
+<h2 id="基本介绍">基本介绍</h2>
+<p><code>Redis</code> 集群是一个可以在多个 <code>Redis</code> 节点之间进行数据共享的设施<code>installation</code></p>
+<p><code>Redis</code> 集群通过分区<code>partition</code>来提供一定程度的可用性<code>availability</code>： 即使集群中有一部分节点失效或者无法进行通讯， 集群也可以继续处理命令请求。</p>
+<p><code>Redis</code>集群提供了以下两个好处：</p>
+<ul>
+<li>将数据自动切分<code>split</code>到多个节点的能力。</li>
+<li>当集群中的一部分节点失效或者无法进行通讯时， 仍然可以继续处理命令请求的能力。</li>
+</ul>
+<h2 id="集群分区">集群分区</h2>
+<p>常见的分区规则有哈希分区和顺序分区，<code>redis</code>集群使用了哈希分区。<code>RedisCluster</code>采用了哈希分区的'虚拟槽分区'方式(哈希分区节点取余，一致性哈希分区和虚拟槽分区)</p>
+<p><code>RedisCluster</code>采用嘘嘘你槽分区，所有的键根据哈希函数(<code>CRC16[key]&amp;16383</code>)映射到<strong>0-16383</strong>槽内，一共1<strong>6384</strong>个槽位。每个节点维护部分及槽所映射的键值数据</p>
+<p>哈希函数： <code>Hash() = CRC16[key]&amp;16383</code> 按位与</p>
+<p>其中槽与节点的关系如下:</p>
+<figure data-type="image" tabindex="1"><img src="https://GeekGhc.github.io/post-images/1617122282724.png" alt="" loading="lazy"></figure>
+<figure data-type="image" tabindex="2"><img src="https://GeekGhc.github.io/post-images/1617122289441.png" alt="" loading="lazy"></figure>
+<h2 id="环境安装">环境安装</h2>
+<p>本地安装<code>Redis</code>服务  我因为是<code>mac</code>环境  所以直接可以通过<code>homebrew</code>安装</p>
+<pre><code class="language-shell">$ brew install redis
+</code></pre>
+<p>为了搭建  目录这里新建了<strong>6</strong>个节点目录<br>
+<img src="https://GeekGhc.github.io/post-images/1617122306052.png" alt="" loading="lazy"></p>
+<p>将<code>redis</code>安装包 执行<code>bin</code>目录分别<code>copy</code>到每个节点目录</p>
+<p>可以看到<code>redis bin</code>目录下的一些<code>redis</code>执行命令文件</p>
+<figure data-type="image" tabindex="3"><img src="https://GeekGhc.github.io/post-images/1617122321658.png" alt="" loading="lazy"></figure>
+<h2 id="集群搭建">集群搭建</h2>
+<p>将本地<code>redis</code>的<code>redis-trib.rb</code>复制到r<code>edis-cluster</code>目录<br>
+<img src="https://GeekGhc.github.io/post-images/1617122328470.png" alt="" loading="lazy"></p>
+<p>复制<code>redis</code>的配置文件到每个节点  注意本机的<code>conf</code>文件的地址为 <code>/usr/local/etc/redis.conf</code><br>
+<img src="https://GeekGhc.github.io/post-images/1617122335258.png" alt="" loading="lazy"></p>
+<p>完毕之后 集群文件的目录是这样的：<br>
+<img src="https://GeekGhc.github.io/post-images/1617122341504.png" alt="" loading="lazy"></p>
+<p>接下来就是针对每个节点的配置了  这里我们进入节点目录下的配置文件<code>redis.conf</code></p>
+<p>这里我们需要编辑的配置信息如下:</p>
+<pre><code class="language-shell">port 7001 //节点端口
+daemonize yes //配置redis作为守护进程运行，默认情况下，redis不是作为守护进程运行的
+bind 127.0.0.1                       //默认127.0.0.1，需要改为其他节点可访问的地址
+cluster-node-timeout 5000  //集群超时时间
+cluster-enabled yes  //redis 集群
+cluster-config-file nodes-7001.conf  //指定节点配置信息
+appendonly yes   //存储方式
+dir /Users/gehuachun/Develop/redis-cluster/redis01 //指定本地数据库路径
+</code></pre>
+<h3 id="节点启动">节点启动</h3>
+<p>每个节点配置完毕之后开始依次启动每个节点 这里假设启动是<strong>06</strong>这个节点<br>
+<img src="https://GeekGhc.github.io/post-images/1617122365088.png" alt="" loading="lazy"></p>
+<p>启动完毕之后查看<code>redis</code>的服务我们可以看到<br>
+<img src="https://GeekGhc.github.io/post-images/1617122371182.png" alt="" loading="lazy"></p>
+<h3 id="集群创建">集群创建</h3>
+<p>节点启动完毕之后开始创建集群 集群文件目录终端执行</p>
+<pre><code class="language-shell">$ redis-trib.rb create --replicas 1 127.0.0.1:7001 127.0.0.1:7002 127.0.0.1:7003 127.0.0.1:7004 127.0.0.1:7005 127.0.0.1:7006
+</code></pre>
+<blockquote>
+<p>其中--replices 1指定了为每个节点分配一个从节点</p>
+</blockquote>
+<figure data-type="image" tabindex="4"><img src="https://GeekGhc.github.io/post-images/1617122387893.png" alt="" loading="lazy"></figure>
+<p>安装过程如果遇到插件报错 可以尝试：<br>
+<img src="https://GeekGhc.github.io/post-images/1617122394018.png" alt="" loading="lazy"></p>
+<p>那么在创建的过程中你将会看到如下信息：<br>
+<img src="https://GeekGhc.github.io/post-images/1617122401646.png" alt="" loading="lazy"><br>
+最终集群创建成功时 你会看到<br>
+<img src="https://GeekGhc.github.io/post-images/1617122410163.png" alt="" loading="lazy"></p>
+<p>注意看后面的返回信息  这里指示了急群众主从节点的关系信息  比如：<br>
+<img src="https://GeekGhc.github.io/post-images/1617122431079.png" alt="" loading="lazy"></p>
+<p>可以看到<strong>7005</strong>是<strong>7001</strong>这个节点的从节点 因为这在创建集群的<strong>6</strong>个节点所生成的主从关系 当然你也可以单独指定主从节点</p>
+<p>那么创建集群完毕之后再去查看集群节点目录 你会发现多了日志存储文件<br>
+<img src="https://GeekGhc.github.io/post-images/1617122445279.png" alt="" loading="lazy"></p>
+<h4 id="集群连接">集群连接</h4>
+<p>既然集群创建爱好了 我们开始尝试连接  这里我们先从<strong>7001</strong>节点开始并查看集群的信息</p>
+<pre><code class="language-shell">$ redis-cli -c -h 127.0.0.1 -p 7001
+$ cluster nodes //查看集群信息
+</code></pre>
+<figure data-type="image" tabindex="5"><img src="https://GeekGhc.github.io/post-images/1617122453379.png" alt="" loading="lazy"></figure>
+<p>连接上<strong>7001</strong>这个节点 可以测试下与其他节点的通信 即与节点握手<br>
+<img src="https://GeekGhc.github.io/post-images/1617122472208.png" alt="" loading="lazy"></p>
+<p>就像之前说的 我们是可以手动建立主从关系的 我们再查看节点信息时 看好节点的<code>id</code><br>
+<img src="https://GeekGhc.github.io/post-images/1617122483213.png" alt="" loading="lazy"></p>
+<h3 id="槽的重新分配">槽的重新分配</h3>
+<p>集群创建完后 我们可以对所给我们的<code>hash</code>进行重新分配 比如:<br>
+<img src="https://GeekGhc.github.io/post-images/1617122493650.png" alt="" loading="lazy"></p>
+<figure data-type="image" tabindex="6"><img src="https://GeekGhc.github.io/post-images/1617122501184.png" alt="" loading="lazy"></figure>
+<blockquote>
+<p>all 表示节点的槽位全部重新洗牌</p>
+</blockquote>
+<p>分配后的槽  可以看到<strong>7003</strong>这个节点多了<strong>500</strong>个槽   也就是  <code>0-248</code> <code>5461-5711</code> 这之间的<strong>500</strong>个<br>
+<img src="https://GeekGhc.github.io/post-images/1617122522189.png" alt="" loading="lazy"></p>
+<p>集群是为了处理一块业务  比如数据的存储  不过是通过不同的机器</p>
+<p>如果没有重新分配槽 那么我这里新起了集群  最终的槽点的分布式这样的 注意主节点分配的信息<br>
+<img src="https://GeekGhc.github.io/post-images/1617122531071.png" alt="" loading="lazy"></p>
+<p>集群正常启动后，在每个<code>redis.conf</code>里加上</p>
+<pre><code class="language-shell">   masterauth “12345678”
+   requiredpass “12345678”
+</code></pre>
+<p>当主节点下线时，从节点会变成主节点，用户和密码是很有必要的，设置成一致</p>
+<h2 id="集群节点之间的通信">集群节点之间的通信</h2>
+<p>1.节点之间采用<code>Gossip</code>协议进行通信，<code>Gossip</code>协议就是指节点彼此之间不断通信交换信息</p>
+<p>当主从角色变化或新增节点，彼此通过ping/pong进行通信知道全部节点的最新状态并达到集群同步</p>
+<ol>
+<li>Gossip协议</li>
+</ol>
+<p><code>Gossip</code>协议的主要职责就是信息交换，信息交换的载体就是节点之间彼此发送的<code>Gossip</code>消息，常用的<code>Gossip</code>消息有<code>ping</code>消息、<code>pong</code>消息、<code>meet</code>消息、<code>fail</code>消息<br>
+<img src="https://GeekGhc.github.io/post-images/1617122547451.png" alt="" loading="lazy"></p>
+<p><code>meet</code>消息：用于通知新节点加入，消息发送者通知接收者加入到当前集群，<code>meet</code>消息通信完后，接收节点会加入到集群中，并进行周期性<code>ping</code> <code>pong</code>交换</p>
+<p><code>ping</code>消息：集群内交换最频繁的消息，集群内每个节点每秒向其它节点发<code>ping</code>消息，用于检测节点是在在线和状态信息，<code>ping</code>消息发送封装自身节点和其他节点的状态数据；</p>
+<p><code>pong</code>消息，当接收到<code>ping</code> <code>meet</code>消息时，作为响应消息返回给发送方，用来确认正常通信，<code>pong</code>消息也封闭了自身状态数据；</p>
+<p><code>fail</code>消息：当节点判定集群内的另一节点下线时，会向集群内广播一个<code>fail</code>消息，</p>
+<h2 id="集群扩容">集群扩容</h2>
+<p>这也是分布式存储最常见的需求，当我们存储不够用时，要考虑扩容</p>
+<p>启动新节点 这里启动<strong>7007</strong> 和<strong>7008</strong>以备用<br>
+<img src="https://GeekGhc.github.io/post-images/1617122558808.png" alt="" loading="lazy"></p>
+<p>这里新增了两目录<code>redis07</code>和<code>redis08</code> 复制之前的节点配置文件 需要修改的就是<code>port</code>和<code>dir</code>数据存储的路径这两个参数</p>
+<p>集群新增节点<br>
+<img src="https://GeekGhc.github.io/post-images/1617122571180.png" alt="" loading="lazy"></p>
+<p><code>./redis-trib.rb add-node</code> 命令中 <strong>7007</strong>是新增的主节点  <strong>7001</strong>则是集群中已存在的节点</p>
+<p>添加完毕后再查看下集群的节点信息<br>
+<img src="https://GeekGhc.github.io/post-images/1617122578375.png" alt="" loading="lazy"></p>
+<p>发现多了<strong>7007</strong>这个新的主节点</p>
+<p>添加从节点 现在将<strong>7008</strong>添加作为<strong>7007</strong>的从节点 我们需要<strong>7007</strong> 的<code>nodeid</code>  可以通过<code>clutser nodes</code>查看</p>
+<p>可以看到<strong>7c22cf36b86bc9efcd5d4cd8cab300462090b087</strong> 这个是<strong>7007</strong>的节点<code>id  --slave</code>表示添加从节点<br>
+<strong>7008</strong>为需要加入到集群的从节点   <strong>7001</strong>为集群中已经存在的节点</p>
+<p>现在可以再去查看集群各节点信息<br>
+<img src="https://GeekGhc.github.io/post-images/1617122598847.png" alt="" loading="lazy"></p>
+<p><code>OK</code>  添加完毕</p>
+<p>但是还没有结束  新添加的<strong>7007</strong>节点并没有为他分配槽  所以他还算不上主节点</p>
+<p>和上面提过的一样  为<strong>7007</strong>这个节点重新分配节点 <strong>7007</strong>的节点<code>id</code>为<code>7c22cf36b86bc9efcd5d4cd8cab300462090b087</code></p>
+<pre><code class="language-shell">redis-trib.rb reshard 127.0.0.7   //为新主节点重新分配solt
+How many slots do you want to move (from 1 to 16384)? 1000 //设置slot数1000
+What is the receiving node ID? 7c22cf36b86bc9efcd5d4cd8cab300462090b087  //新节点node id
+Source node #1:all //表示全部节点重新洗牌
+</code></pre>
+<p>新增完毕  再次查看集群信息<br>
+<img src="https://GeekGhc.github.io/post-images/1617122609973.png" alt="" loading="lazy"></p>
+<h2 id="删除节点">删除节点</h2>
+<p>删除已经占有<code>hash</code>槽的结点会失败 所以删除前需要把槽位分配出去即可</p>
+<p>指定节点的<code>id</code>即可  比如这里删除<strong>7008</strong></p>
+<pre><code class="language-shell">$ redis-trib.rb del-node 127.0.0.1:7008 2113ab21277cb952d77d269fe69f8a852000d949 
+</code></pre>
+<figure data-type="image" tabindex="7"><img src="https://GeekGhc.github.io/post-images/1617122620513.png" alt="" loading="lazy"></figure>
+<p>查看删除后的集群信息<br>
+<img src="https://GeekGhc.github.io/post-images/1617122630528.png" alt="" loading="lazy"></p>
+<p>此时的节点也算是下线完成</p>
+<h2 id="故障处理">故障处理</h2>
+<p><code>redis</code>集群实现了高可用，当集群内少量节点出现故障时，通过故障转移可以保证集群正常对外提供服务。当集群里某个节点出现了问题，<code>redis</code>集群内的节点通过<code>ping</code> <code>pong</code>消息发现节点是否健康，是否有故障，其实主要环节也包括了 主观下线和客观下线；</p>
+<p>主观下线：指某个节点认为另一个节点不可用，即下线状态，当然这个状态不是最终的故障判定，只能代表这个节点自身的意见，也有可能存在误判<br>
+<img src="https://GeekGhc.github.io/post-images/1617122640915.png" alt="" loading="lazy"></p>
+<p>下线流程:</p>
+<ol>
+<li>节点<code>a</code>发送<code>ping</code>消息给节点<code>b</code> ,如果通信正常将接收到<code>pong</code>消息，节点<code>a</code>更新最近一次与节点<code>b</code>的通信时间；</li>
+</ol>
+<p>2.如果节点<code>a</code>与节点<code>b</code>通信出现问题则断开连接，下次会进行重连，如果一直通信失败，则它们的最后通信时间将无法更新；</p>
+<p>3.节点<code>a</code>内的定时任务检测到与节点<code>b</code>最后通信时间超过<code>cluster_note-timeout</code>时，更新本地对节点<code>b</code>的状态为主观下线<code>(pfail）</code></p>
+<p>客观下线：指真正的下线，集群内多个节点都认为该节点不可用，达成共识，将它下线，如果下线的节点为主节点，还要对它进行故障转移</p>
+<p>假如节点<code>a</code>标记节点<code>b</code>为主观下线，一段时间后节点<code>a</code>通过消息把节点b的状态发到其它节点，当节点<code>c</code>接受到消息并解析出消息体时，会发现节点<code>b</code>的<code>pfail</code>状态时，会触发客观下线流程</p>
+<p>当下线为主节点时，此时<code>redis</code>集群为统计持有槽的主节点投票数是否达到一半，当下线报告统计数大于一半时，被标记为客观下线状态。<br>
+<img src="https://GeekGhc.github.io/post-images/1617122652075.png" alt="" loading="lazy"></p>
+<h2 id="故障恢复">故障恢复</h2>
+<p>故障主节点下线后，如果下线节点的是主节点，则需要在它的从节点中选一个替换它，保证集群的高可用；转移过程如下：<br>
+<img src="https://GeekGhc.github.io/post-images/1617122664292.png" alt="" loading="lazy"></p>
+<p>1.资格检查：检查该从节点是否有资格替换故障主节点，如果此从节点与主节点断开过通信，那么当前从节点不具体故障转移；</p>
+<p>2.准备选举时间：当从节点符合故障转移资格后，更新触发故障选举时间，只有到达该时间后才能执行后续流程；</p>
+<p>3.发起选举：当到达故障选举时间时，进行选举；</p>
+<p>4.选举投票：只有持有槽的主节点才有票，会处理故障选举消息，投票过程其实是一个领导者选举（选举从节点为领导者）的过程，每个主节点只能投一张票给从节点，当从节点收集到足够的选票（大于<code>N/2+1</code>）后，触发替换主节点操作，撤销原故障主节点的槽，委派给自己，并广播自己的委派消息，通知集群内所有节点。</p>
+<h2 id="rediscluster-缺陷">RedisCluster 缺陷</h2>
+<p>1.键的批量操作支持有限，比如<code>mset</code>、<code>mget</code>,如果多个键映射再不同的槽，就不支持了</p>
+<p>2.键的事务支持有限，当多个<code>key</code>分布在不同的节点时无法使用事务，同一个节点时支持事务的</p>
+<p>3.键是数据分区的最小粒度，不能讲一个很大的键值映射到不同的节点</p>
+<p>4.不支持多数据库，只有<code>0</code>,<code>select 0</code></p>
+<p>5.复制结构只支持单层结构，不支持树状结构</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/redis-ji-ben-gao-ji-te-xing-yi-ji-xing-neng-diao-you-zhuan-zai/" class="post-title gt-a-link">
+                    Redis基本高级特性以及性能调优(转载)
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/redis-fen-bu-shi-ji-qun/" class="leancloud_visitors" data-flag-title="Redis分布式集群">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

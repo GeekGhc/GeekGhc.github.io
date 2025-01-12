@@ -1,0 +1,736 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>分布式共识算法 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    分布式共识算法
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2022-01-03 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/suan-fa/" class="post-tags">
+                            # 算法
+                        </a>
+                    
+                        <a href="https://GeekGhc.github.io/tag/5hUnL9hCn/" class="post-tags">
+                            # 分布式
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h2 id="开篇">开篇</h2>
+<p>首先提大分布式系统你的第一印象是什么<br>
+试想一下心目中的分布式系统的特点，大胆总结下：</p>
+<ul>
+<li>系统可用角度：无单点故障，保证系统可用性</li>
+<li>系统性能角度：通过负载均衡，可以充分发挥集群节点的性能</li>
+<li>系统扩展角度：基于集群可扩展能力可以持续扩展横向能力，增加节点来支持更高需求的场景</li>
+</ul>
+<p>这些都可以归纳为分布式系统出现的意义以及解决的问题，反推回来，随着数据规模和服务计算能力需求越来越高，之前的单个节点已经无法满足系统的计算和存储要求，并且随着摩尔定律面对自然法则越来越乏力这些现实的问题。基于这些就不难理解分布式系统出现的意义了</p>
+<p>当然类似人类社会，当团队规模从几十增长至几万时，带来是生产能力的规模提升，同时也要面对这各种协作和沟通的问题。也就上学那会会告诉你1+1=2。所以在整个生产组织的提效上，制度和规则是必须的</p>
+<p>分布式系统也是类似，计算存储能力提升的同时也带了这些问题：</p>
+<ol>
+<li>节点通信延迟：服务连接、请求超时等各种未及时响应的问题</li>
+<li>节点故障/恢复：节点甚至机房宕机导致服务不可用</li>
+<li>网络分区-脑裂：机房网络问题，导致数据不一致</li>
+<li>拜占庭问题：存在恶意节点，恶意行为<br>
+这些问题基于环境是否置信又可以分为两类。1，2，3都是在可置信情况下，4则是在非置信情况下<br>
+而在共识算法的出现完善后都可以得到解决，而在一些其他应用比如区块链的研究，共识算法也是非常重要的基础，在我看来，共识可以理解为两个层面：</li>
+</ol>
+<ul>
+<li>点的层面：也就是多个节点就某个数据达成一致共识</li>
+<li>先的层面：即多个节点对多个数据的顺序达成一致共识<br>
+接下来我们看看在算法的演进过程中又是如何解决上面的问题的</li>
+</ul>
+<h2 id="算法演变">算法演变</h2>
+<h3 id="拜占庭问题">拜占庭问题</h3>
+<p>拜占庭错误是莱斯利·兰伯特在《拜占庭将军问题》中提出的一个错误模型，这个模型的场景是在一个完全不可信的场景，也是在分布式领域中最为复杂以及经典的容错模型了。当然简单解释就是节点存在着恶意行为</p>
+<h4 id="故事背景">故事背景</h4>
+<p>类似投票裁决的场景，在&lt;&lt;鱿鱼游戏&gt;&gt;里男主第一次在进入比赛后进行了一场投票选举：Y or N来决定是否继续游戏，大家私下各自商量着自己的决定，如果有人背叛了同伴，开始从中误导分离这个团队，自己最后临时改变了策略，那么就可能直接影响着最终结果<br>
+我们简化为最小可解释模型就是：二忠一叛问题<br>
+假设三人团队中A，B，C商量这是否继续游戏，按照“少数服从多数”来表决，所以有两人一致就可以了</p>
+<h4 id="算法流程">算法流程</h4>
+<p>假设大家内部意见并不一致，在内部讨论时，我们正常的预期是这样的：<br>
+<img src="https://GeekGhc.github.io/post-images/1654232401274.jpg" alt="" loading="lazy"><br>
+可以看到无论是选择继续游戏还是放弃游戏，结果都是：三人的最终达成一致投票结果是一样的</p>
+<p>那么如果中间(假设是B)有人有起了小心思，就会是接下来这样：<br>
+<img src="https://GeekGhc.github.io/post-images/1654232435795.jpg" alt="" loading="lazy"><br>
+我们从各自视角看下结果<br>
+A: 2Y + 1N<br>
+C: 2N + 1Y<br>
+显然这直接干扰了A，C两位的最终选择，可想而知，结果肯定有个人是被骗了(原地心态爆炸)</p>
+<h4 id="解决方案">解决方案</h4>
+<p>这个问题后来有了两种解决算法，分别是口头版和签名版，目的就是协调整个团队(集群)的一致</p>
+<h4 id="口信消息型">口信消息型</h4>
+<ul>
+<li>3人太少了，再拉一位D入伙，也就是变成了4人的协商</li>
+<li>几人约定，如果没有收到其他人的结果，就执行统一默认的：比如放弃游戏(N)</li>
+<li>最终进行两轮商议投票<br>
+这个方案是兰伯特论文里阐述的：[The Byzantine Generals Problem]https://www.microsoft.com/en-us/research/publication/byzantine-generals-problem/<br>
+最终整体流程是这样的：<br>
+<strong>Round 1</strong></li>
+<li>新入伙的D作为指挥官(proposer)，将作战信息发送发送其余三位</li>
+<li>原本团队的成员A,B,C 将收到的消息作为结果，如果没收到执行默认<br>
+<strong>Round 2</strong></li>
+<li>原本团队成员A,B,C 分别发送消息给其他两位成员(除去新加入的D)</li>
+<li>最终，原本团队按照之前原则“少数服从多数”，执行最终投票结果<br>
+对于一叛问题，在这个方案里，叛徒要么存在原来团伙，要么存在新加入的D，因此两种情况我们分别讨论下：<br>
+<img src="https://GeekGhc.github.io/post-images/1654232545412.jpg" alt="" loading="lazy"><br>
+最终结果(不包含D的投票结果)：<br>
+A：2Y+1N<br>
+C:  2Y+1N<br>
+<img src="https://GeekGhc.github.io/post-images/1654232567679.jpg" alt="" loading="lazy"><br>
+最终结果：<br>
+A,B,C都是：2N+1Y<br>
+如果D给的信号是2Y+1N，则A,B,C的结果就是2Y+1N，也就是说还是会达成一致<br>
+可以看到无论B怎么操作A,C都是达成一致(Y or N)<br>
+方案总结<br>
+可以看到无论叛徒存在哪方都不能使得团队产生分歧，最终都可以达成一致<br>
+当然这个算法是有一定前提的：</li>
+<li>叛徒个数x是已知的</li>
+<li>叛徒为x，则忠诚人数不小于3x+1</li>
+<li>叛徒个数x决定了需要进行多少轮的协商<br>
+显然这个算法存在几点问题：</li>
+</ul>
+<ol>
+<li>需要引入额外人员(节点)参与，不过此我们可以通过签名消息也就是第二种解决方案来解决这个问题</li>
+<li>并且对叛徒(不可信节点)是已知可控的，因此叛徒太多，需要O(n^(x+1))的消息，网络开销太高，因此实际应用中用的是PBFT(下面会介绍)</li>
+<li>达成一致的结果也许并不是想要的，比如真是场景需要就Y达成一致，但最终还是会得到非预期的结果</li>
+</ol>
+<h5 id="签名消息型">签名消息型</h5>
+<p>这个算法也有一定前提：</p>
+<ul>
+<li>每个人的签名无法伪造，而且就算伪造后可以被发现</li>
+<li>每个人都可以验证别人的签名和本人是否匹配<br>
+在这样的前提下，再来分析上面的两种情况<br>
+<img src="https://GeekGhc.github.io/post-images/1654232634538.jpg" alt="" loading="lazy"></li>
+<li>对于A(忠)发起请求，由于B伪造了A的请求，对于C就可以校验后进行忽略，因此最终A,C结论都是Y</li>
+<li>对于B(叛)发起请求，由于A,C接收到的不同指令但指令集合一样，所以可以根据一定规则(排序)进行选取<br>
+介绍了算法流程，那么又是如何实现签名消息的验证即加密解密的呢，毕竟这是这个算法的前提<br>
+具体可以参考https里数字签名、证书的实现 https://www.zhihu.com/question/52493697/answer/1600962734<br>
+总结来说就是使用非对称加密对消息内容进行摘要，其他成员基于已有公钥进行解密比对</li>
+</ul>
+<h3 id="pbft">PBFT</h3>
+<h4 id="场景描述">场景描述</h4>
+<p>实际上上面讨论的拜占庭问题的解决方案都是理论化的基础，也存在诸多问题，核心还是说在叛徒存在的场景下如何就达成一致，但最终是在有叛徒(伪造节点)情况下具体什么结果是无法控制的。<br>
+因此这个算法的真正落地是在PBFT的应用，在区块链(公有链场景)的实际场景就已经有很多的使用<br>
+PBFT也是在口信型和签名型的基础之上进行改进落地的，因此算法的消息也是签名消息</p>
+<h4 id="算法流程-2">算法流程</h4>
+<p>这里我们以基本规模为例，1客户端+1主节点+3备份节点+1问题节点(节点3)<br>
+先看下宏观的基本流程</p>
+<ol>
+<li>客户端发送消息给主节点</li>
+<li>主节点广播请求给其他节点，节点执行pbft的三阶段共识算法</li>
+<li>节点处理三阶段流程后，返回消息给客户端</li>
+<li>客户端收到来自f(问题节点数)+1个节点的相同消息后，代表共识已经成功完成</li>
+</ol>
+<p>核心三阶段<br>
+<img src="https://GeekGhc.github.io/post-images/1654232749789.png" alt="" loading="lazy"><br>
+客户端向主节点发起请求，主节0收到客户端请求，接着向其他节点发送</p>
+<h5 id="pre_prepare阶段">pre_prepare阶段</h5>
+<p>主节点发送消息后，节点1，2，3接收到消息后进入Prepare阶段，并分别广播消息给其他节点</p>
+<h5 id="prepare阶段">prepare阶段</h5>
+<p>进入prepare节点后，当某个节点接收到2f(f为问题节点数)个一致的消息后，会进入提交阶段，而问题节点的表现就是对其他节点的请求无影响</p>
+<h5 id="commit-阶段">Commit 阶段</h5>
+<p>进入提交阶段后吗，各节点分别广播消息给其他节点，相当于说我已经准备开始执行指令了<br>
+最后，当节点收到2f+1的验证通过的消息(包括自己)，这时也就意味着大都数节点已经达成共识，那么就可以执行执行，并最终返回给客户端成功执行消息</p>
+<p>而对于客户端而言，如果收到了f+1个相同的响应消息，说明各个节点已经达成了共识。当然，如果超过超时时间，客户端也可以重新发送请求</p>
+<h3 id="paxos">Paxos</h3>
+<p>解决了置信问题，没人捣乱了，那么接下来大家就可以坐下来商量下如何达成共识了<br>
+<img src="https://GeekGhc.github.io/post-images/1654232810751.png" alt="" loading="lazy"><br>
+这里就不得不提Paxos算法了，现在我们接触到的共识算法都是基于此改进的<br>
+而在Lamport提出的Paoxs提出包含了两种，Basic Paxos &amp; Multi-Paxos</p>
+<ul>
+<li>Basic Paxos 算法：多节点如何就某个值达成共识</li>
+<li>Multi Paxos 思想：执行多个 Basic Paxos ，就一系列的值达成共识<br>
+先来说Basic Paxos描述的是多个成员节点如何基于一个值达成共识，这可以被看作共识算法的最小实现</li>
+</ul>
+<h4 id="场景描述-2">场景描述</h4>
+<p>为了方便理解，所以现在是这么个场景，在一个分布式集群中，集群有A,B,C 3个节点组件，基于集群的变量KV信息的更新需要达成一致<br>
+简单来说就是多节点更新某个Key，其他节点就此Key的Value达成一致</p>
+<h4 id="角色对象">角色对象</h4>
+<p>在几乎所有的共识算法中，我们都会接触到这几类角色，他们存在的意义是一样的，因此需要提前在整个上下文中达成一定共识</p>
+<ul>
+<li>提议者(Proposer):     提议想达成共识的值，在生产场景中可以客户端也可以是接受到客户端请求的节点</li>
+<li>协调者(Coordinator): 转发提议消息以及协调和保存结果确认，通常存在于二阶段提交</li>
+<li>接受者(Acceptor):    对于提议者的提案会参与协商并存储结果值最终更新自身的状态机</li>
+<li>学习者(Learner):       接受最终协商后的结果，在一些算法中也叫做Folllwer，被动接受协商后结果</li>
+</ul>
+<p>为了方便理解和描述，对于提案都有自己的编号以及提案内容，我们以P[n,v]标识一个提案<br>
+n标识提案编号(唯一标识)，通常是生成自增id，v标识提案内容比如{ K:'SEC_KV_AUTH，V:1}</p>
+<h4 id="问题思路">问题思路</h4>
+<p>基于这样场景的需求，核心就是能达成结果一致，是不是可以立马联想到二阶段提交，这也是最简单直接的方式了，事实上Paxos也是这么做的<br>
+但是他们都会存在这样的问题：</p>
+<ul>
+<li>同步阻塞：        prepare阶段在资源预留期间，其他事务是无法修改此资源的，需要等待至事务结束</li>
+<li>协调节点故障：如果prepare阶段结束后，协调节点宕机，那么其他节点资源将会被锁定无法释放</li>
+<li>数据不一致：    还是协调节点故障，只不过是在提交commit部分节点后故障，那么就会存在节点收不到commit命令而和其他节点数据不一致<br>
+基于上面的问题，其实也有很多解决方案，比如三阶段提交或者TCC(Try-Confirm-Cancel)事务模式(事实上，Paxos也是这么做的)，具体可以参照阿里的Seata和公司内部的ByteTx 的TCC事务模式的实现</li>
+</ul>
+<p>和数据库层面的事务操作所不同的是，TCC需要业务实现各自的确认(Confirm)和撤销(Cancel)操作，并且是幂等的，因为请求都会有失败重试</p>
+<h4 id="算法流程-3">算法流程</h4>
+<h6 id="prepare阶段-2">Prepare阶段</h6>
+<p><img src="https://GeekGhc.github.io/post-images/1654232931247.jpg" alt="" loading="lazy"><br>
+基于以上背景，根据时间线准备阶段流程是这样的：</p>
+<ol>
+<li>客户端1提交提案，版本号基于时间递增，假设版本好号为V1</li>
+<li>节点A,B,C是参与协商节点，A,B 收到了客户端1提案消息，分别表示I'm ready，并返回当前接受的最大版本号V1，最终返回[Yes,V1]</li>
+<li>客户端2提交提案，假设版本为V3</li>
+<li>节点A,B收到了客户端2的提案，并且之前提案1还没通过，而且又大于之前的提案版本，因此开始接受客户端2的提案</li>
+<li>节点C第一次收到客户端提案，版本为V3，因此就提案3进行回复并返回当前接受的最大版本号V3</li>
+<li>节点C最后收到了客户端1的提案，但是因为已经接受了提案V3版本号更大的提案，因此不做处理</li>
+</ol>
+<h5 id="accept阶段">Accept阶段</h5>
+<p><img src="https://GeekGhc.github.io/post-images/1654232972238.jpg" alt="" loading="lazy"><br>
+接受阶段是在收到了大都数节点的成功回复后发起的，随着时间演进：</p>
+<ol>
+<li>客户端1收到了A,B的回复[Yes,V1]，多数ready后发起请求[1,data1]</li>
+<li>接收者A,B,C此时接受的最大提案都是V3，因此对于客户端1的请求进行拒绝</li>
+<li>客户端2收到了来自A,B,C的所有回复[Yes,V3]，多数ready后发起请求[3,data3]</li>
+<li>接收者A,B,C根据请求和自己接受的提案版本比对后，通过最终提案[3,data3]</li>
+</ol>
+<h3 id="multi-paxos">Multi-Paxos</h3>
+<h4 id="场景描述-3">场景描述</h4>
+<p>基于二阶段提交达成了单个值的共识，而在实际场景中，面对诸多的数据，我们需要对多个Value达成一致<br>
+所以是不是多次执行Paxos算法即可，在一定数据规模下讲是可以的，需要达成一致的值较多，多次的Paxos算法就会存在问题</p>
+<ul>
+<li>多节点集群下，多节点多提案就会引发冲突，因此提案协商的成功率就会下降</li>
+<li>基于二阶段，本身的通讯次数就会很多，多节点情况下，节点的通讯延时就会被进一步放大</li>
+</ul>
+<h4 id="算法思路">算法思路</h4>
+<p>为了解决多提案者的情况，结合数据库的Master-Slave模式，可以引入领导者节点，由领导者作为提案者<br>
+至于领导者如何选举，这个则需要根据各自服务的需求来实现，因为每个系统对于领导者的判断标准不一样，而选举算法最直接的可以基于Basic Paxos来实现，而如果领导者节点故障，则进行新一轮选举<br>
+基于领导者，就可以对Paxos的二阶段进行优化的，也就是省去了准备阶段。因为不存在了提案冲突这个问题，节点通讯数量也降低了，离目标又进了一步<br>
+至于一致性实现就和Basic Paxos的二阶段的接收阶段就没什么区别了，依旧按照&quot;多数原则&quot;</p>
+<h4 id="算法总结">算法总结</h4>
+<p>Multi-Paox是在之前的基础之上引入了领导者来进行优化，从而实现多次执行Basic Paxos的效果。这个思想在很多的变种算法和场景都有所运用，比如接下来要说的Raft</p>
+<h3 id="zab">ZAB</h3>
+<h4 id="场景描述-4">场景描述</h4>
+<p>在开篇一开始，我们说过共识问题的线的层面就是需要解决如何就多个节点的对多个数据的顺序达成一致，<br>
+很多场景不仅需要对值的一致性进行保证，而对于值的顺序也有一定的要求，比如ZK因为底层作为目录树的设计，目录是有父子关系的也就是说有一定的依赖关系，因此就必须保证一定的顺序性，此时基于Multi-Paxos的算法就无法满足了<br>
+因此zookeeper就是基于ZAB协议实现的(当然了Raft也可以实现)，那么在ZAB又是如何实现执行顺序的</p>
+<h4 id="算法流程-4">算法流程</h4>
+<p>为了说明这个问题，我们模拟这个场景：集群中存在4个节点A，B，C，D，其中A作为领导进行提案X，Y对应的唯一事务标识符为&lt;1,1&gt;&amp;&lt;1,2&gt; ，格式为&lt;epoch,counter&gt;<br>
+其中类似raft中的任期思想&lt;1,2&gt;表示任期1，计数为2<br>
+<img src="https://GeekGhc.github.io/post-images/1654233080630.jpg" alt="" loading="lazy"></p>
+<ol>
+<li>主节点收到客户端请求，生成唯一事务id的消息请求&lt;1,1&gt;:X &amp; &lt;1,2&gt;:Y，并按循序广播给各节点</li>
+<li>因为主节点基于TCP协议顺序发送提案消息，因为Node B,C,D接收到的也是顺序消息</li>
+<li>主节点接收到基于某一提案，比如X的多数节点的成功响应(暂无提案)后开始提交提案X</li>
+<li>因为在同一任期内的提案是递增的，因此提交时会根据事务大小进行提交</li>
+<li>各节点收到提交提案消息，执行成功后返回给LeaderA</li>
+<li>主节点LeaderA收到多数执行成功回复后响应给客户端</li>
+</ol>
+<h4 id="算法总结-2">算法总结</h4>
+<p>ZAB在之前Multi-Paxos的思想上，对提案实现了消息的事务唯一和递增，通过提交提案时比较事务标识符的大小而保证了指令的顺序性，最终实现想要的共识线层面</p>
+<h3 id="raft">Raft</h3>
+<p>作为现在共识算法的首选，相对也最为成熟，如今的云原生的大环境下，很多大型系统都选用了Raft作为核心共识算法，比如tikv、Etcd、Consul等<br>
+因此在掌握了以上的结论后，再分析下Raft的核心实现，会发现很多结论都得到了验证</p>
+<h4 id="领导者选举">领导者选举</h4>
+<p>上面说过领导者选举，完全可以基于Basic Paxos来实现，只是每个系统的定义标准不一样，在Raft的选举过程中，定义了几种状态</p>
+<ul>
+<li>Leader：      处理写请求，管理日志复制和连接其他节点的心跳检测</li>
+<li>Follwer：     接收Leader的消息，必要时需要推荐自己当选Candiator</li>
+<li>Candidate:  当领导者有故障后，发送选举消息，此时相当于选举提案人<br>
+选举的详细过程动画演示  http://thesecretlivesofdata.com/raft/<br>
+<img src="https://GeekGhc.github.io/post-images/1654233133429.jpg" alt="" loading="lazy"><br>
+大致概总结下就是：</li>
+</ul>
+<ol>
+<li>初始状态，所有节点都是Follwer状态，并且每个节点的超时时间是随机的，这里的超时时间简单了说就是等待领导者的心跳请求的超时时间</li>
+<li>节点A超时时间最少，因此最先变为候选人并增加自己的任期编号为1，开始向其他节点发起投票RPC请求，进行Leader选举</li>
+<li>B,C节点接收到任期为1的消息，因为之前没有收到该任期内的消息，因此可以投票给节点A(认为可以理解为二阶段的提案版本)</li>
+<li>A在选举超时时间(相对会比较大)内收到多数投票，则成为Leader，并开始定时发送心跳信息给其他节点(证明自己活着，不要再选举了)，选举结束</li>
+<li>如果网络等问题产生选举超时，重置超时时间，并开始新一轮选举</li>
+<li>基于领导者开始发起指令提案，依据多数原则达成一致后Leader实现指令的共识并提交状态机返回客户端</li>
+<li>其他follower节点根据心跳信息或者日志复制RPC消息应用Leader最新提交的日志项</li>
+</ol>
+<p>当然在选举的过程中，可能会遇见这类问题(这两个问题在动画演示中其中也都解释了)<br>
+<strong>问题1</strong>：目前是一个candidate进行选举，如果有多个，比如2个候选人同时发起投票进行选举<br>
+<img src="https://GeekGhc.github.io/post-images/1654233193088.png" alt="" loading="lazy"><br>
+此时会等待进行下一轮选举，按照超时时间，可能就是节点A发起了下一任期的投票了</p>
+<p><strong>问题2</strong>：遇到网络分区异常，也就是通常说的脑裂问题，会出现多leader情况，如何解决<br>
+<img src="https://GeekGhc.github.io/post-images/1654233233925.png" alt="" loading="lazy"><br>
+如上图所示，CDE和AB被划分在两个网络分区，两个分区分别进行了选举，推选C&amp;B为各自Leader<br>
+<strong>分区故障前</strong><br>
+不过由于AB分区提交的提案无法得到大多数节点响应，因此是无法进行commit的<br>
+CDE分区因为可以得到大多数节点影响，因此可以正常得到正常提交<br>
+<strong>故障恢复后</strong><br>
+节点A,B由于LeaderB，发现比自己Term更高的消息，因此会退出Leader并和节点A同步最新的日志项，最终不同分区节点的Log Entry保持一致</p>
+<p><strong>问题3</strong>：ZAB &amp; Raft都可以实现顺序性，主要区别是什么</p>
+<ul>
+<li>一致性：从系统本身实现角度出发，ZAB实现了最终一致性，Raft读写都从Leader实现强一致性</li>
+<li>事务表示方式：zab用的是epoch和count的组合来唯一表示一个值, 而raft用的是term和index</li>
+<li>Leader选举方式：也就决定了选举方式不一样。Raft基于每个节点设置不同的超时时间来自行发起选举，并且每个节点每任期中只会投票一次。ZAB每个节点在任期内可以发起多次投票，遇到更大的则更新并分发给其他节点。综合来说，Raft的选举效率更高</li>
+<li>超时选举方式：Raft只有follower会检测Leader的心跳超时，超时则触发选举，ZAB中Leader也会检测是否收到半数节点的心跳回复超时并触发选举</li>
+</ul>
+<p><strong>问题4</strong>：想实现这样的领导者模型的算法，需要怎么实现<br>
+根据Raft和ZAB的整体实现，不难得出，这类共识算法的实现条件：<br>
+领导者选举-&gt;指令共识(二阶段提交)-&gt;日志复制应用-&gt;日志恢复</p>
+<h4 id="log-entry复制">Log entry复制</h4>
+<p>集群中选举好了Leader就可以进行正常的协调通信了，而这个过程就可以理解为对日志项的复制和应用到状态机的过程<br>
+<img src="https://GeekGhc.github.io/post-images/1654233318993.png" alt="" loading="lazy"></p>
+<h5 id="日志项内容">日志项内容</h5>
+<ul>
+<li><strong>指令</strong>：         用户指定的数据，也就是需要达成一致的数据，通常由客户端提供</li>
+<li><strong>索引值</strong>：    日志项对应的物理索引值，可以理解为基于索引可以在连续的日志中查找到具体日志内容</li>
+<li><strong>任期编号</strong>： 创建日志的领导者的编号(很关键，用于数据比对同步和数据修复)<br>
+<img src="https://GeekGhc.github.io/post-images/1654233382721.png" alt="" loading="lazy"><br>
+Hashicorp Raft Log Code</li>
+</ul>
+<pre><code>type Log struct {        // Index holds the index of the log entry.
+        Index uint64
+        // Term holds the election term of the log entry.
+        Term uint64
+        // Type holds the type of the log entry.
+        Type LogType
+        // Data holds the log entry's type-specific data.
+        Data []byte
+        // Extensions holds an opaque byte slice of information for middleware. It        Extensions []byte
+        // AppendedAt stores the time the leader first appended this log to it's
+        AppendedAt time.Time
+}
+</code></pre>
+<h5 id="日志复制同步">日志复制同步</h5>
+<p>在Raft中领导者是强制跟随者直接复制自己的日志项用来处理不一致的日志。这也是强领导者模型的优势<br>
+当领导者和跟随者日志产生diff时 ，根据日志项的任期和索引来进行一致性检查，并通过日志复制RPC<br>
+复制并更新不一致的日志项，这里不做详细展开</p>
+<h3 id="quorum-nwr">Quorum NWR</h3>
+<h5 id="场景描述-5">场景描述</h5>
+<p>理解了Raft算法的整个过程，其实已经能够满足绝大多数的应用场景了，而在一些场景我们其实更想自定义的实现，而Quorum 机制是分布式场景中常用的，用来保证数据安全，并且在分布式环境中实现最终一致性的投票算法。在一些企业级应用的InfluxDB、Cassandra都有运用此类算法</p>
+<h5 id="算法流程-5">算法流程</h5>
+<p>首先需要明白NWR的三要素</p>
+<ul>
+<li>N：副本数，也就是一份数据集有多少副本，这些副本会分布在不同的节点</li>
+<li>W：写一致性级别，表示写入W个副本才能算是完成写操作</li>
+<li>R：读一致性级别， 表示读取一个数据对象需要读取R个副本并返回最新的那份数据<br>
+<img src="https://GeekGhc.github.io/post-images/1654233489154.jpg" alt="" loading="lazy"><br>
+以读取Data2数据为例，此时副本数N=3，如果需要实现强一致性，则设置W=2&amp;R=2即可<br>
+此时满足W(2)+R(2)&gt;N(3)<br>
+因此如果W+R&lt;=N，可以推出，整个系统可以保证最终一致性，即可能返回旧数据<br>
+整体和抽屉原理一样，还是比较容易理解的</li>
+</ul>
+<p>而在实际的生产环境中，一致性级别通常也会被定义为诸如all、one、quorum(大多数)这些级别来分别应对不同的数据需求场景</p>
+<h3 id="timeline">TimeLine</h3>
+<p>1987年 ACM论文提出Gossip protocol ，用于分布式数据库系统中各个副本节点同步数据<br>
+1989年 莱斯利·兰伯特 提出Paxos，使其获得2013年图灵奖<br>
+1999年 Miguel Castro和Barbara Liskov在发表的论文[2]中首次提出PBFT算法<br>
+2006年 Paxos算法在Google的研发团队才在生产环境中落地，但初期算法实现并并未成熟<br>
+2007年  ZAB随着zooKeeper的开发而应运而生<br>
+2013年  斯坦福大学迭戈·安加罗（Diego Ongaro）和约翰·奥斯特霍德（John Ousterhout）深入研究Paxos协议后提出了 Raft</p>
+<h2 id="维度总结">维度总结</h2>
+<p>经过上面算法的慢慢演进，最终我们根据拜占庭容错、一致性、性能、系统可用性总结如下</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">拜占庭容错</th>
+<th style="text-align:center">一致性</th>
+<th style="text-align:center">性能</th>
+<th style="text-align:center">系统可用性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">2PC</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">强一致性</td>
+<td style="text-align:center">低</td>
+<td style="text-align:center">低</td>
+</tr>
+<tr>
+<td style="text-align:center">TCC</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">最终一致性</td>
+<td style="text-align:center">低</td>
+<td style="text-align:center">低</td>
+</tr>
+<tr>
+<td style="text-align:center">Paxos</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">强一致性</td>
+<td style="text-align:center">中</td>
+<td style="text-align:center">中</td>
+</tr>
+<tr>
+<td style="text-align:center">PBEF</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">-</td>
+<td style="text-align:center">低</td>
+<td style="text-align:center">中</td>
+</tr>
+<tr>
+<td style="text-align:center">ZAB</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">最终一致性</td>
+<td style="text-align:center">中</td>
+<td style="text-align:center">中</td>
+</tr>
+<tr>
+<td style="text-align:center">Raft</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">强一致性</td>
+<td style="text-align:center">中</td>
+<td style="text-align:center">中</td>
+</tr>
+<tr>
+<td style="text-align:center">Quorum NWR</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">强一致性</td>
+<td style="text-align:center">中</td>
+<td style="text-align:center">中</td>
+</tr>
+</tbody>
+</table>
+<h2 id="场景实践">场景实践</h2>
+<h3 id="生产实践">生产实践</h3>
+<h4 id="etcd-原生化">Etcd 原生化</h4>
+<p>Etcd 本身作为云原生最热门存储的基础，应用场景十分广泛，包括服务发现、分布式锁、配置存储和分布式协调。而在Raft在Etcd中的作用也举足轻重，我觉得可以一起看下内部是如何结合使用的<br>
+<strong>整体架构</strong><br>
+<img src="https://GeekGhc.github.io/post-images/1654233587876.png" alt="" loading="lazy"><br>
+在etcd的架构设计中，etcd基于raft算法实现了节点间的<strong>数据复制</strong>、<strong>数据一致</strong>从而实现服务的高可用</p>
+<h5 id="指令执行">指令执行</h5>
+<p>首先我们先看下在etcd中一条KV写请求的执行过程</p>
+<ol>
+<li>client端通过负载均衡算法选择一个etcd节点并发起grpc调用</li>
+<li>调用过程中会经过一系列的拦截器进行请求过滤</li>
+<li>经过Quota配额模块，根据请求QPS、当前db限额、存储容量决定是否超限<br>
+1. 超限后集群产生告警并禁止继续写入(默认db配额2G，禁止请求写入日志并同步其余节点)</li>
+<li>请求通过后，进入KVServer核心处理层，此时作为内部raft层的客户端向raft层提交提案</li>
+<li>发起提案前会经过鉴权等检查并生成提案id</li>
+<li>提案内容就是本次请求需要执行的指令，比如&quot;put key value&quot;</li>
+<li>发起请求后等待raft层消息结果通知</li>
+<li>raft层内部经过RaftHttp网络模块进行指令转发，多数节点通过后，提交日志状态</li>
+<li>指令包含了任期编号、索引信息、提案内容、日志类型等</li>
+<li>半数节点通过(持久化)后，通过channel返回可执行提案</li>
+<li>etcdserver从channel读取提案内容，传递给Apply模块进行提案内容执行</li>
+<li>Apply模块基于MVCC模块执提案内容并更新最终状态机<br>
+经过上面的流程，可以看到etcd内部是如何基于raft实现数据写入的，那么又是如何保证数据一致的</li>
+</ol>
+<h5 id="服务可用性保证">服务可用性保证</h5>
+<p><strong>机制一：领导者选举</strong><br>
+Leader节点crash后，Follower节点因为收不到心跳信息，开始发起投票，进行新Leader选举<br>
+为避免同时竞选，引入随机的等待发起选举时间<br>
+Crash的Leader节点启动后，再次成为Follower节点并同步Leader最新日志<br>
+<strong>机制二：日志复制规则</strong><br>
+Leader收到提案消息为此生成日志条目，然后遍历Follower列表和日志的应用进度信息，并为每个Follower生成追加类型的RPC消息，消息中包含Follower需要复制的日志条目<br>
+同时，日志的复制还遵循以下规则：</p>
+<ul>
+<li>如果日志在某个任期中已经被提交(提交后可能还未通知Follower)，这个条目不会删除并且会应用到新Leader</li>
+<li>追加日志中包含应用的前日志条目信息来进行一致性检查，直到匹配到一致日志条目才会追加<br>
+<strong>机制三：选举规则保证安全</strong><br>
+如果Leader Crash后，剩余Follower并不是都可能成为新Leader，选举投票规则还会基于</li>
+<li>收到投票请求的前后顺序</li>
+<li>发起投票的节点应用的日志数据是否是最新的</li>
+<li>发起投票的节点应用的任期是否是最大的，每个节点在每个任期只能有一个投票权</li>
+<li>最终投票需要半数以上节点支持<br>
+基于Raft的这些特性和实现机制最终保证了etcd服务的数据一致性和服务高可用</li>
+</ul>
+<h4 id="代码实践">代码实践</h4>
+<p><strong>Raft实现</strong><br>
+[Hashicorp Raft] https://github.com/hashicorp/raft</p>
+<h2 id="相关资料">相关资料</h2>
+<p><strong>相关论文</strong><br>
+[paxos]              https://lamport.azurewebsites.net/pubs/lamport-paxos.pdf<br>
+[simple paxos] https://lamport.azurewebsites.net/pubs/paxos-simple.pdf<br>
+[pbft]                 https://pmg.csail.mit.edu/papers/osdi99.pdf<br>
+[raft]                  https://raft.github.io/raft.pdf<br>
+[ZAB]                http://www.cs.cornell.edu/courses/cs6452/2012sp/papers/zab-ieee.pdf<br>
+<strong>文章系列</strong><br>
+https://www.microsoft.com/en-us/research/publication/byzantine-generals-problem/<br>
+https://time.geekbang.org/column/intro/100046101?tab=catalog<br>
+https://tech.bytedance.net/articles/3786?from=net_app_search#heading4<br>
+https://www.zhihu.com/question/52493697/answer/1600962734<br>
+[Seata XA]https://developer.aliyun.com/article/783796?utm_content=g_1000267062<br>
+[raft和pbft算法]https://zhuanlan.zhihu.com/p/35847127</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/go-bing-fa-shi-jian-channel/" class="post-title gt-a-link">
+                    Go并发实践-Channel
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/fen-bu-shi-gong-shi-suan-fa/" class="leancloud_visitors" data-flag-title="分布式共识算法">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

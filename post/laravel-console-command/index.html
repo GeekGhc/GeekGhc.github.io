@@ -1,0 +1,419 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Laravel console command | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Laravel console command
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2016-12-23 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/b0tSda50f/" class="post-tags">
+                            # Laravel
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>Laravel 为我们提供了不同的命令行创建方式，这样一来，我们可以向定义路由一样创建自定义的命令行 这在我们项目发布的初始化的时候 非常的方便和必要</p>
+<h2 id="开始">开始</h2>
+<p>在**laravel(5.3)**项目里<code>routes</code>文件夹下包含了需要的路由的定义 当然还有就是定义我们的<code>command</code> 也就是<code>console.php</code>这里面的定义和路由的<br>
+定义其实还是非常的象的</p>
+<p>在<code>console.php</code>里我们是可以看到:</p>
+<pre><code class="language-php?start_inline=1">Artisan::command('inspire', function () {
+    $this-&gt;comment(Inspiring::quote());
+})-&gt;describe('Display an inspiring quote');
+</code></pre>
+<p>这里就是定义了一个<code>inspire</code> 命令 我们可以去命令行去执行:</p>
+<pre><code class="language-shell">$ php artisan inspire
+</code></pre>
+<p>这里其实就会随机返回给我们一句名言警句</p>
+<p>在这里去我们就可以自定义一个简单的命令 我们去简单声明一下</p>
+<pre><code class="language-php?start_inline=1">Artisan::command('hello', function () {
+    $this-&gt;comment(&quot;Hello!!&quot;);
+});
+</code></pre>
+<p>现在再去命令行执行</p>
+<pre><code class="language-shell">$ php artisan 
+</code></pre>
+<p>那么我们就会看到有<code>php artisan hello</code>这个命令了</p>
+<p>我们而是可以是去传递参数的 比方说是这样:</p>
+<pre><code class="language-php?start_inline=1">Artisan::command('hello {name}', function () {
+    $this-&gt;comment(&quot;Hello &quot;.$this-&gt;argument('name'));
+})-&gt;describe('Say Hello to somebody');
+</code></pre>
+<p>如果想去为这条命令生成一个说明的话可以直接在后面加上<code>describe</code>(就像之前的那样)</p>
+<p>和很多的命令一样 如果对命令的参数或其他有疑问的话 就可以借助help这个tag去查看</p>
+<pre><code class="language-shell">$ php artisan help hello
+</code></pre>
+<h2 id="自定义-artisan-命令">自定义 <strong>Artisan</strong> 命令</h2>
+<p>之前基本熟悉了<code>artisan</code> 命令的作用 那么现在我们可以自己去自定义一个命令来实现更多的业务需求</p>
+<p>我们在命令行执行:</p>
+<pre><code class="language-shell">$ php artisan make:command InstallProject 
+</code></pre>
+<blockquote>
+<p>特别的在<strong>5.1</strong>之前的版本是执行<code>php artisan make:cnsole xxxx</code></p>
+</blockquote>
+<p>生成的文件就在<code>App\Console\Command</code>下</p>
+<p>其中我们需要注意的是</p>
+<pre><code class="language-php?start_inline=1">protected $signature = 'command:name';
+</code></pre>
+<p>定义了我们需要在命令行输入的命令 举个例子来说如果是一个Blog项目 那么我们就可以这样去定义</p>
+<pre><code class="language-php?start_inline=1">protected $signature = 'blog:install';
+</code></pre>
+<p>定义完命令之后 下面的<code>handle function</code>就负责我们最后的输出</p>
+<p>这里先做一个小的测试 就是去打印一些信息提示:</p>
+<pre><code class="language-php?start_inline=1">public function handle()
+{
+    $this-&gt;info(&quot;This is test data&quot;);
+}
+</code></pre>
+<p>会后我们会需要去<code>Kernel</code>文件去注册我们刚定义好的<code>command</code></p>
+<pre><code class="language-php?start_inline=1">protected $commands = [
+    \App\Console\Commands\InstallProject::class
+];
+</code></pre>
+<p>写好之后再去执行:</p>
+<pre><code class="language-shell">$ php artisan 
+</code></pre>
+<p>就会看到我们刚定义好的命令了</p>
+<p>我们可以去执行一下这个命令是可以看到打印出来的数据的</p>
+<pre><code class="language-shell">$ php artisan blog:install
+</code></pre>
+<p>和之前在路由里面去定义我们的命令一样 我们同样可以去传递参数</p>
+<pre><code class="language-php?start_inline=1">protected $signature = 'blog:install {name}';
+</code></pre>
+<p>在去修改一下<code>handle</code>方法</p>
+<pre><code class="language-php?start_inline=1">public function handle()
+{
+    $this-&gt;info(&quot;This is test data and name is &quot;.$this-&gt;argument('name'));
+}
+</code></pre>
+<p>如果需要可选参数的话就和路由的要求一样 只需要在<code>name</code>去声明</p>
+<pre><code class="language-php?start_inline">protected $signature = 'blog:install {name?}';
+</code></pre>
+<h2 id="实际项目应用">实际项目应用</h2>
+<p>1.更多的时候我们可能需要在项目初始化时需要用户手动去提交一些信息 比如用户名 邮箱等等<br>
+这样的应用场景的话我们就需要一种交互式输入 先来一个简单的栗子 😄</p>
+<pre><code class="language-php?start_inline">public function handle()
+{
+    $name = $this-&gt;ask('请输入你的名字?');
+    $email = $this-&gt;ask('请输入你的邮箱?');
+    $data = [
+        'name'     =&gt; $name,
+        'email'    =&gt; $email,
+    ];
+    $this-&gt;register($data);
+}
+</code></pre>
+<p>然后就可以去定义这个<code>register function</code></p>
+<pre><code class="language-php?start_inline=1">public function register($data)
+{
+    $this-&gt;info($data['name']);
+}
+</code></pre>
+<p>这样的话就可以拿到用户输入的数据的话 这样看的话好像用处不到 其实在拿到这组数据之后我们就可以进行验证 并去创建一个用户数据</p>
+<p>特别是对一个后台 这样去创建一个管理员还是有必要的</p>
+<p>其实这样的交互式输入还有很多 比如给用户的选择 具体的看下文档就明白了</p>
+<p>2.调用其他命令<br>
+其实这个实现起来也很容易 也就是去调用<code>call</code>这个方法</p>
+<pre><code class="language-php?start_inline=1">public function handle()
+{
+     $this-&gt;call('key:generate');
+     $this-&gt;call('migrate');
+     $this-&gt;info('数据表创建成功');
+}
+</code></pre>
+<blockquote>
+<p>当然前提是数据库是对应的你对应的数据库 如果在<code>homestead</code>下开发 这些也就不用管他了</p>
+</blockquote>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/vuejs-chu-li-hou-duan-laravel-api/" class="post-title gt-a-link">
+                    VueJs处理后端Laravel Api
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/laravel-console-command/" class="leancloud_visitors" data-flag-title="Laravel console command">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

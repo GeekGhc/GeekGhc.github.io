@@ -1,0 +1,493 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Mint-UI结合laravel实现内容加载更多 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Mint-UI结合laravel实现内容加载更多
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-07-01 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/gUJF87bmf/" class="post-tags">
+                            # JavaScript
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>很多时候我们会遇到就是点击或者当页面滑到底部加载数据  因为一次性加载数据不仅对内存响应造成一定的影响 当然这样的加载更多的方式给用户的体验也会比较好</p>
+<h2 id="简介">简介</h2>
+<p>我们经常会遇到这样的一个场景就是对于一些消息和列表的显示 因为数据太多如果一次性显示出来的话无论是对内存还网站的响应时间</p>
+<p>都会造成一定的影响 所以很多时候我们的解决方案是一次性加载固定条数的数据显示 可以给用户一个加载更多的链接或者当用户滑动到页面</p>
+<p>底部时继续加载  这样的话一个页面不会充斥太多内容 用户的体验也会不错</p>
+<p>那么对于实现这样的按需加载  我在最近处理的一个消息显示时就以Mint-UI结合laravel来实现了数据的按需加载  最后的实现效果就是</p>
+<p>当页面滑动到底部指定距离时再去加载数据</p>
+<h2 id="下载第三方包">下载第三方包</h2>
+<p>1.下载第三方依赖包(Vue 2.0)</p>
+<pre><code class="language-shell">$ npm install mint-ui -S
+</code></pre>
+<p>2.引用组件<br>
+在<code>resource/assets/js/app.js</code>里引用</p>
+<pre><code class="language-php">//引入mint-ui
+import MintUI from 'mint-ui'
+import 'mint-ui/lib/style.css'
+Vue.use(MintUI);
+</code></pre>
+<p>3.引入<code>axios</code>以实现<code>api</code>请求</p>
+<pre><code class="language-shell">$ npm install --save axios vue-axios
+</code></pre>
+<p>然后注入<code>axios</code>依赖包</p>
+<pre><code class="language-php">import axios from 'axios'
+import VueAxios from 'vue-axios'
+
+Vue.use(VueAxios, axios)
+</code></pre>
+<h2 id="在vue组件里使用">在Vue组件里使用</h2>
+<p>对于现实消息我这里以一个评论展示为例  所以在<code>resource/assets/js/components</code>目录下新建Comment.Vue文件</p>
+<p>这里当然根据每个人需要的而现实消息来定 当然在实现下拉加载时 我们需要用到的是<code>Mint-UI</code>的<a href="http://mint-ui.github.io/docs/#/en2/infinite-scroll">InfiniteScroll</a></p>
+<p>按着官方给出的demo实例我们在组件的Vue文件中引入进来</p>
+<pre><code class="language-php?start_inline=1">import { InfiniteScroll } from 'mint-ui';
+</code></pre>
+<p>其中在列表显示时我们要去定义他们的父标签  在这个父标签中我们有几个方法需要声明</p>
+<ul>
+<li>v-infinite-scroll 记载时会触发的方法</li>
+<li>infinite-scroll-disabled 记录是否要触发加载函数</li>
+<li>infinite-scroll-distance 指定多少距离触发加载方法</li>
+</ul>
+<p>这里我先给出我项目里的评论的展示组件<code>Commetn.Vue</code></p>
+<pre><code class="language-php"> &lt;div class=&quot;comments-list&quot;&gt;
+        &lt;ul class=&quot;lists&quot;
+            v-infinite-scroll=&quot;loadMore&quot;
+            infinite-scroll-disabled=&quot;loading&quot;
+            infinite-scroll-distance=&quot;10&quot;
+            v-if=&quot;comments&quot;&gt;
+            &lt;li class=&quot;item&quot;
+                v-for=&quot;comment in comments&quot;&gt;
+                &lt;div class=&quot;user-avatar&quot;&gt;
+                    &lt;img :src=&quot;comment.head&quot;&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;comment-info&quot;&gt;
+                    &lt;div class=&quot;head-info&quot;&gt;
+                        &lt;span class=&quot;name&quot;&gt;{{comment.nickname}}&lt;/span&gt;
+                        &lt;span class=&quot;post-time&quot;&gt;{{comment.release_time}}&lt;/span&gt;
+                    &lt;/div&gt;
+                    &lt;div class=&quot;content-title&quot;&gt;
+                        &lt;p&gt;{{comment.title}}&lt;/p&gt;
+                    &lt;/div&gt;
+                    &lt;div class=&quot;content-text&quot;&gt;
+                        &lt;p v-html=&quot;comment.content&quot;&gt;&lt;/p&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/li&gt;
+        &lt;/ul&gt;
+        &lt;div class=&quot;loading-div&quot; v-if=&quot;is_loading&quot;&gt;
+            &lt;div class=&quot;loading&quot;&gt;
+                &lt;div class=&quot;loader&quot; title=&quot;5&quot;&gt;
+                    &lt;svg version=&quot;1.1&quot; id=&quot;Layer_1&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; x=&quot;0px&quot; y=&quot;0px&quot;
+                         width=&quot;24px&quot; height=&quot;30px&quot; viewBox=&quot;0 0 24 30&quot; style=&quot;enable-background:new 0 0 50 50;&quot; xml:space=&quot;preserve&quot;&gt;
+                        &lt;rect x=&quot;0&quot; y=&quot;13&quot; width=&quot;4&quot; height=&quot;5&quot; fill=&quot;#333&quot;&gt;
+                            &lt;animate attributeName=&quot;height&quot; attributeType=&quot;XML&quot;
+                                     values=&quot;5;21;5&quot;
+                                     begin=&quot;0s&quot; dur=&quot;0.6s&quot; repeatCount=&quot;indefinite&quot; /&gt;
+                            &lt;animate attributeName=&quot;y&quot; attributeType=&quot;XML&quot;
+                                     values=&quot;13; 5; 13&quot;
+                                     begin=&quot;0s&quot; dur=&quot;0.6s&quot; repeatCount=&quot;indefinite&quot; /&gt;
+                        &lt;/rect&gt;
+                        &lt;rect x=&quot;10&quot; y=&quot;13&quot; width=&quot;4&quot; height=&quot;5&quot; fill=&quot;#333&quot;&gt;
+                            &lt;animate attributeName=&quot;height&quot; attributeType=&quot;XML&quot;
+                                     values=&quot;5;21;5&quot;
+                                     begin=&quot;0.15s&quot; dur=&quot;0.6s&quot; repeatCount=&quot;indefinite&quot; /&gt;
+                            &lt;animate attributeName=&quot;y&quot; attributeType=&quot;XML&quot;
+                                     values=&quot;13; 5; 13&quot;
+                                     begin=&quot;0.15s&quot; dur=&quot;0.6s&quot; repeatCount=&quot;indefinite&quot; /&gt;
+                        &lt;/rect&gt;
+                        &lt;rect x=&quot;20&quot; y=&quot;13&quot; width=&quot;4&quot; height=&quot;5&quot; fill=&quot;#333&quot;&gt;
+                            &lt;animate attributeName=&quot;height&quot; attributeType=&quot;XML&quot;
+                                     values=&quot;5;21;5&quot;
+                                     begin=&quot;0.3s&quot; dur=&quot;0.6s&quot; repeatCount=&quot;indefinite&quot; /&gt;
+                            &lt;animate attributeName=&quot;y&quot; attributeType=&quot;XML&quot;
+                                     values=&quot;13; 5; 13&quot;
+                                     begin=&quot;0.3s&quot; dur=&quot;0.6s&quot; repeatCount=&quot;indefinite&quot; /&gt;
+                        &lt;/rect&gt;
+                    &lt;/svg&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;loading-text&quot;&gt;加载中。。。&lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+ &lt;/div&gt;
+</code></pre>
+<p>还有其相应的加载方法</p>
+<pre><code class="language-php">&lt;script&gt;
+    import { InfiniteScroll } from 'mint-ui';
+    export default{
+        props:['post_num'],
+        data(){
+            return{
+                comments:[],
+                is_loading:true,
+                count:1,
+                is_finished:false
+            }
+        },
+        components:{
+
+        },
+        created(){
+            this.initData()
+        },
+        methods:{
+            loadMore() {
+                this.is_loading = true
+                if(!this.is_finished){//如果还有数据可以加载
+                    setTimeout(() =&gt; {
+                        Vue.axios.get('/api/postl?bookNum='+this.post_num+'&amp;&amp;count='+this.count).then(response =&gt; {
+                              if(response.data.code){
+                                 if(response.data.comments.length){
+                                     let last = response.data.comments.length
+                                     for(let i = 0;i&lt;last;i++){
+                                         this.comments.push(response.data.comments[i])
+                                     }
+                                     console.log(this.comments.length+&quot; newData = &quot;+this.count)
+                                     this.count++
+                                 }else{
+                                     this.is_finished = true
+                                 }
+                              }else{
+                                 console.log(&quot;error....&quot;)
+                              }
+                        })
+
+                    }, 1000);
+                }else{
+                    this.is_loading = false
+                }
+            },
+            initData(){
+                Vue.axios.get('/api/post?postNum='+this.post_num).then(response =&gt; {
+                      if(response.data.code){
+                          this.comments = response.data.comments
+                          console.log(this.comments.length+&quot; data = &quot;+response.data.code)
+                      }else{
+                         console.log(&quot;error....&quot;)
+                      }
+                })
+            }
+        }
+    }
+&lt;/script&gt;
+</code></pre>
+<p>这里的<code>loadMore</code>方法只是在1秒后触发加载数据 写完之后去<code>app.js</code>注册一下这个<code>component</code></p>
+<pre><code class="language-php">Vue.component('post-comment', require('./components/Comment.vue'));
+</code></pre>
+<p>所以这时候在需要的视图文件里给出</p>
+<pre><code>&lt;post-comment post_num=&quot;{{$post-&gt;post_num}}&quot;&gt;&lt;/post-comment&gt;
+</code></pre>
+<h2 id="完善api请求">完善api请求</h2>
+<p>在此之前我们已经写好了<code>Vue</code>组件 当然我们在触发的加载函数里去请求的后端请求我们可以在<code>api.php</code>里去完成</p>
+<p>具体的<code>api</code>请求因业务需求不同而不同  这里就不再累赘</p>
+<p>写完这些我们需要将之前的组件打包  这里因为我用的是<strong>5.4</strong>版本  <code>Laravel</code>以<code>webpack</code>替代了原先的<code>gulp</code></p>
+<p>所以在<code>webpack.mix.js</code>文件里声明</p>
+<pre><code class="language-php">mix.browserSync('my-domain.dev');
+
+mix.js('resources/assets/js/app.js', 'public/js')
+   .sass('resources/assets/sass/app.scss', 'public/css')
+    .version();
+</code></pre>
+<p>还是执行<code>npm run dev</code>  打包之后在视图的文件里引如打包后的文件</p>
+<pre><code class="language-php">&lt;script src=&quot;{{mix('js/app.js')}}&quot;&gt;&lt;/script&gt;
+</code></pre>
+<h2 id="相关网址">相关网址</h2>
+<ul>
+<li><a href="http://mint-ui.github.io/#!/zh-cn">Mint-UI</a></li>
+<li><a href="https://github.com/imcvampire/vue-axios">Vuw-axios</a></li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/php-zhong-de-zheng-ze-biao-da-shi/" class="post-title gt-a-link">
+                    PHP中的正则表达式
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/mint-ui-jie-he-laravel-shi-xian-nei-rong-jia-zai-geng-duo/" class="leancloud_visitors" data-flag-title="Mint-UI结合laravel实现内容加载更多">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

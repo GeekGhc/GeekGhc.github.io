@@ -1,0 +1,846 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>源码分析之-Laravel路由 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    源码分析之-Laravel路由
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2018-12-10 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/tbfpiaKJ1/" class="post-tags">
+                            # 源码
+                        </a>
+                    
+                        <a href="https://GeekGhc.github.io/tag/b0tSda50f/" class="post-tags">
+                            # Laravel
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>首先这里以<code>laravel5.5</code>版本为例  初始化新的项目</p>
+<p>路由是外界访问<code>laravel</code>应用程序的通道 通过指定<code>URI</code>和<code>HTTP</code>请求方法 那么就可以访问项目应用程序的处理方法或者闭包。现在我们可以去研究下在<code>Laravel</code>中是如何处理这些请求 并重新解析到对应的方法体。</p>
+<p>以一个我们通常的访问形式说起</p>
+<pre><code class="language-php">Route::get('/user', 'UsersController@index');
+</code></pre>
+<p>通过这个路由 客户端通过<code>get</code>的<code>http</code>请求方法 请求<code>'/user'</code>这样的URI时  <code>laravel</code>会将请求重定向到<code>User</code>控制器的<code>index</code>方法  最后由该方法返回结果给客户端</p>
+<p>首先我们分析下<code>Route</code>这个类 是通过<code>laravel</code>的门面来实现 通过一种简单的方式来绑定访问到容器里的服务<code>router</code>。 其实这里就可以理解为通过<code>Route::get</code>就可以访问到<code>router</code>这个服务的方法 所以说上面的路由等价于:</p>
+<pre><code class="language-php">app()-&gt;make('router')-&gt;get('user','UserController@index');
+</code></pre>
+<p>其中<code>router</code>这个服务是在实例化应用程序时在构造方法里通过注册<code>RoutingServiceProvider</code>绑定到服务容器的</p>
+<p>服务的初始化在<code>bootstrap/app/php</code>中时 初始化了一个<code>Application</code>类</p>
+<pre><code class="language-php">$app = new Illuminate\Foundation\Application(
+    realpath(__DIR__.'/../')
+);
+</code></pre>
+<p>在这个<code>Application</code>的初始化函数中我们可以看到服务的注册</p>
+<pre><code class="language-php">public function __construct($basePath = null)
+{
+    if ($basePath) {
+        $this-&gt;setBasePath($basePath);
+    }
+
+    $this-&gt;registerBaseBindings();
+
+    $this-&gt;registerBaseServiceProviders();
+
+    $this-&gt;registerCoreContainerAliases();
+}
+</code></pre>
+<p>在注册基础服务提供者时也就是<code>registerBaseServiceProviders</code>我们看到这个方法里注册一些相关服务</p>
+<pre><code class="language-php">//注册基础的服务提供器
+protected function registerBaseServiceProviders()
+{
+    $this-&gt;register(new EventServiceProvider($this));
+
+    $this-&gt;register(new LogServiceProvider($this));
+
+    $this-&gt;register(new RoutingServiceProvider($this));
+}
+</code></pre>
+<p>其中我们就可以看到注册了<code>RoutingServiceProvider</code> 那么在这个类中通过<code>registerRouter</code>绑定到服务容器的</p>
+<pre><code class="language-php">protected function registerRouter()
+{
+    $this-&gt;app-&gt;singleton('router', function ($app) {
+        return new Router($app['events'], $app);
+    });
+}
+</code></pre>
+<p>所以说<code>Route</code>的最终的方法斗都是现在<code>\Illuminate\Routing\Router</code>这个类里 在这里类里可以看到一些路由的注册、寻址、调度的方法。</p>
+<p>因为路由整个实现的过程无非就是围绕着注册、寻址、调度这样的流程  所以现在可以根据这个过程看下其中的具体实现</p>
+<h3 id="路由加载">路由加载</h3>
+<p>注册路由前需要先加载路由文件 而这里的文件加载是在 <code>App\Providers\RouteServiceProvider</code> 这个服务提供者的<code>boot</code>方法去加载的</p>
+<pre><code class="language-php">class RouteServiceProvider extends ServiceProvider
+{
+    public function boot()
+    {
+        parent::boot();
+    }
+
+    public function map()
+    {
+        $this-&gt;mapApiRoutes();
+
+        $this-&gt;mapWebRoutes();
+    }
+
+    protected function mapWebRoutes()
+    {
+        Route::middleware('web')
+             -&gt;namespace($this-&gt;namespace)
+             -&gt;group(base_path('routes/web.php'));
+    }
+
+    protected function mapApiRoutes()
+    {
+        Route::prefix('api')
+             -&gt;middleware('api')
+             -&gt;namespace($this-&gt;namespace)
+             -&gt;group(base_path('routes/api.php'));
+    }
+}
+</code></pre>
+<pre><code class="language-php">namespace Illuminate\Foundation\Support\Providers;
+
+class RouteServiceProvider extends ServiceProvider
+{
+
+    public function boot()
+    {
+        $this-&gt;setRootControllerNamespace();
+
+        if ($this-&gt;app-&gt;routesAreCached()) {
+            $this-&gt;loadCachedRoutes();
+        } else {
+            $this-&gt;loadRoutes();
+
+            $this-&gt;app-&gt;booted(function () {
+                $this-&gt;app['router']-&gt;getRoutes()-&gt;refreshNameLookups();
+                $this-&gt;app['router']-&gt;getRoutes()-&gt;refreshActionLookups();
+            });
+        }
+    }
+
+    protected function loadCachedRoutes()
+    {
+        $this-&gt;app-&gt;booted(function () {
+            require $this-&gt;app-&gt;getCachedRoutesPath();
+        });
+    }
+
+    protected function loadRoutes()
+    {
+        if (method_exists($this, 'map')) {
+            $this-&gt;app-&gt;call([$this, 'map']);
+        }
+    }
+}
+
+class Application extends Container implements ApplicationContract, HttpKernelInterface
+{
+    public function routesAreCached()
+    {
+        return $this['files']-&gt;exists($this-&gt;getCachedRoutesPath());
+    }
+
+    public function getCachedRoutesPath()
+    {
+        return $this-&gt;bootstrapPath().'/cache/routes.php';
+    }
+}
+</code></pre>
+<p>和很多框架的加载方式一样  <code>laravel</code>先去寻找路由的缓存文件，没有缓存文件再去加载路由。其中缓存文件一般存在<code>bootstrap/cache/routes.php</code></p>
+<p>另外我们知道<code>artisan</code>有个<code>commond</code>就是<code>php artisan route:cache</code>和<code>php artisan route:clear</code>就是针对路由缓存文件的</p>
+<blockquote>
+<p>如果路由是闭包方法是不能进行路由缓存的  可以改为控制路由和资源路由</p>
+</blockquote>
+<p>可以看到<code>boot</code>方法里 通过<code>loadRoutes</code>会通过魔术方法调用<code>map</code>方法来加载文件里的路由，<code>map</code>方法在<code>App\Providers\RouteServiceProvider</code>类中定义的  而这个类就是继承自<code>Illuminate\Foundation\Support\Providers\RouteServiceProvider</code></p>
+<p>通过<code>map</code>方法<code>laravel</code>将路由分成两组  分别对应<code>web</code>服务的路由  和做后端<code>api</code>服务的路由  这两个路由文件的位置就是在项目的<code>routes</code>目录下的<code>web.php</code>  <code>api.php</code></p>
+<p>在<strong>5.5</strong>版本之前 可以查看<strong>5.2</strong>版本 可以看到路由文件其实是存放在<code>app/Http/routes.php</code>   这样的改动无非更方便了我们去管理我们的路由文件</p>
+<p>既然加载了路由文件 那儿么接下来就是开始了路由的注册</p>
+<h3 id="路由注册">路由注册</h3>
+<p>我们通常且统一的方式是通过<code>Route</code>这个<code>facade</code>调用其中的静态方法去实现各种<code>http</code>请求方法的处理  当然也可以使用上面提到过的那种方法 那么这样的调用实际调用的就是 <code>Illuminate\Routing\Router</code> 里的方法  因为<code>Route</code>这个<code>facade</code>这个是绑定到这个类的  之前也讲过</p>
+<p>我们举例几个实现方法来说就是</p>
+<pre><code class="language-php">public function get($uri, $action = null)
+{
+    return $this-&gt;addRoute(['GET', 'HEAD'], $uri, $action);
+}
+
+public function post($uri, $action = null)
+{
+    return $this-&gt;addRoute('POST', $uri, $action);
+}
+public function put($uri, $action = null)
+{
+    return $this-&gt;addRoute('PUT', $uri, $action);
+}
+</code></pre>
+<p>可以看到的是路由的注册都是通过addRoute这个方法去进行注册的</p>
+<pre><code class="language-php">protected function addRoute($methods, $uri, $action)
+{
+    return $this-&gt;routes-&gt;add($this-&gt;createRoute($methods, $uri, $action));
+}
+</code></pre>
+<p>而这个<code>addRoute</code>方法则是会将路由注册到<code>RouteCollection</code> 当然之前会调用路由的创建方法<code>createRoute</code></p>
+<pre><code class="language-php">protected function createRoute($methods, $uri, $action)
+{
+    if ($this-&gt;actionReferencesController($action)) {
+        $action = $this-&gt;convertToControllerAction($action);
+    }
+
+    $route = $this-&gt;newRoute(
+        $methods, $this-&gt;prefix($uri), $action
+    );
+    if ($this-&gt;hasGroupStack()) {
+        $this-&gt;mergeGroupAttributesIntoRoute($route);
+    }
+
+    $this-&gt;addWhereClausesToRoute($route);
+
+    return $route;
+}
+
+</code></pre>
+<p>而这个创建路由的方法接收三个参数 分别是路由的请求方法 <code>uri</code>以及执行体  这执行可以使未解析的资源路径 也可以是一个闭包方法</p>
+<p>其中我们最常见的解析到对应的控制器的方法是由<code>($this-&gt;actionReferencesController($action)</code>进行解析转换的  这里会判断不是一个闭包<code>(Closure)</code> 也就是如果是<code>string</code>类型的话</p>
+<p>值得注意的是  这里的<code>action</code> 我们在路由注册时会以数组 字符串以及闭包的形式传递 那么如果是数组也就是比如<code>['uses' =&gt; 'HomeController@index, 'middleware' =&gt; 'auth']</code>这样的形式的 以及字符串类型的也就是比如<code>HomController@index</code>这种形式的都会通过<code>convertToControllerAction</code>这个方法进行解析成action数组  最后的保存形式就是</p>
+<pre><code class="language-php">[
+    'uses' =&gt; 'App\Http\Controllers\HomeController@index',
+    'controller' =&gt; 'App\Http\Controllers\HomeController@index'
+]
+</code></pre>
+<p>经过转换解析之后  会补充控制器的完整的命名空间 构建完<code>action</code>数组之后那么之后就是创建路由了</p>
+<p>创建路由会由之前的指定的<code>http</code>方法<code>uri</code>字符串以及转换后的<code>action</code>数组作为参数进行创建 <code>\Illuminate\Routing\Route</code>类的实例:</p>
+<pre><code class="language-php">$route = $this-&gt;newRoute(
+            $methods, $this-&gt;prefix($uri), $action
+        );
+
+protected function newRoute($methods, $uri, $action)
+{
+    return (new Route($methods, $uri, $action))
+                -&gt;setRouter($this)
+                -&gt;setContainer($this-&gt;container);
+}
+</code></pre>
+<p>路由创建完成后再添加到之前所说的<code>RouteCollection</code>中去:</p>
+<pre><code class="language-php">protected function addRoute($methods, $uri, $action)
+{
+    return $this-&gt;routes-&gt;add($this-&gt;createRoute($methods, $uri, $action));
+}
+</code></pre>
+<p>这里的<code>$this-&gt;routes</code>就是类在初始化时的<code>RouteCollection</code>对象</p>
+<pre><code class="language-php">public function __construct(Dispatcher $events, Container $container = null)
+{
+    $this-&gt;events = $events;
+    $this-&gt;routes = new RouteCollection;
+    $this-&gt;container = $container ?: new Container;
+}
+</code></pre>
+<p>而新添加的路由 也就是一个<code>Route</code>对象会更新<code>RouteCollection</code>中的<code>routes</code>、<code>allRoutes</code>、<code>nameList</code>和<code>actionList</code>属性</p>
+<pre><code class="language-php">class RouteCollection implements Countable, IteratorAggregate
+{
+    public function add(Route $route)
+    {
+        $this-&gt;addToCollections($route);
+
+        $this-&gt;addLookups($route);
+
+        return $route;
+    }
+
+    protected function addToCollections($route)
+    {
+        $domainAndUri = $route-&gt;getDomain().$route-&gt;uri();
+
+        foreach ($route-&gt;methods() as $method) {
+            $this-&gt;routes[$method][$domainAndUri] = $route;
+        }
+
+        $this-&gt;allRoutes[$method.$domainAndUri] = $route;
+    }
+
+    protected function addLookups($route)
+    {
+        $action = $route-&gt;getAction();
+
+        if (isset($action['as'])) {
+            //如果时命名路由，将route对象映射到以路由名为key的数组值中方便查找
+            $this-&gt;nameList[$action['as']] = $route;
+        }
+
+        if (isset($action['controller'])) {
+            $this-&gt;addToActionList($action, $route);
+        }
+    }
+    protected function addToActionList($action, $route)
+    {
+        $this-&gt;actionList[trim($action['controller'], '\\')] = $route;
+    }
+
+}
+</code></pre>
+<p>既然更新了<code>RouteCollection</code>这四个属性 下面就看下这个属性的作用</p>
+<p>routes中存放了HTTP请求方法与路由对象的映射,就像这样:</p>
+<pre><code class="language-php">[
+    'GET' =&gt; [
+        $routeUri1 =&gt; $routeObj1
+        ...
+    ]
+    ...
+]
+</code></pre>
+<p><code>allRoutes</code>属性里存放的内容时将<code>routes</code>属性里的二维数组变成一维数组后的内容:</p>
+<pre><code class="language-php">[
+    'GET' . $routeUri1 =&gt; $routeObj1
+    'GET' . $routeUri2 =&gt; $routeObj2
+    ...
+]
+</code></pre>
+<p><code>nameList</code>是路由名称与路由对象的一个映射表</p>
+<pre><code class="language-php">[
+    $routeName1 =&gt; $routeObj1
+    ...
+]
+</code></pre>
+<p><code>actionList</code>是路由控制器方法字符串与路由对象的映射表</p>
+<pre><code class="language-php">[
+    'App\Http\Controllers\ControllerOne@ActionOne' =&gt; $routeObj1
+]
+</code></pre>
+<p>这样一来就可以完成了一个路由的注册</p>
+<h3 id="路由寻址">路由寻址</h3>
+<p>首先我们可以预先了解一个概念就是 我们知道<code>laravel</code>在请求路由到最终的返回之间有一层中间件 <code>HTTP</code>请求是在经过<code>Pipeline</code>通道上的中间件的前置操作后到达目的地:</p>
+<pre><code class="language-php">//Illuminate\Foundation\Http\Kernel
+class Kernel implements KernelContract
+{
+    protected function sendRequestThroughRouter($request)
+    {
+        $this-&gt;app-&gt;instance('request', $request);
+
+        Facade::clearResolvedInstance('request');
+
+        $this-&gt;bootstrap();
+
+        return (new Pipeline($this-&gt;app))
+                    -&gt;send($request)
+                    -&gt;through($this-&gt;app-&gt;shouldSkipMiddleware() ? [] : $this-&gt;middleware)
+                    -&gt;then($this-&gt;dispatchToRouter());
+    }
+
+    protected function dispatchToRouter()
+    {
+        return function ($request) {
+            $this-&gt;app-&gt;instance('request', $request);
+
+            return $this-&gt;router-&gt;dispatch($request);
+        };
+    }
+
+}
+</code></pre>
+<p>上面的代码可以看出<code>Pipeline</code>的<code>destination</code>就是<code>dispatchToRouter</code>函数返回的闭包:</p>
+<p>也就是最终的目的地址是这样的一个闭包:</p>
+<pre><code class="language-php">$destination = function ($request) {
+    $this-&gt;app-&gt;instance('request', $request);
+    return $this-&gt;router-&gt;dispatch($request);
+};
+</code></pre>
+<p>在闭包里调用了<code>router</code>的<code>dispatch</code>方法，路由寻址就发生在<code>dispatch</code>的一开始的<code>findRoute</code>里：</p>
+<pre><code class="language-php">class Router implements RegistrarContract, BindingRegistrar
+{   
+    public function dispatch(Request $request)
+    {
+        $this-&gt;currentRequest = $request;
+
+        return $this-&gt;dispatchToRoute($request);
+    }
+
+    public function dispatchToRoute(Request $request)
+    {
+        return $this-&gt;runRoute($request, $this-&gt;findRoute($request));
+    }
+
+    protected function findRoute($request)
+    {
+        $this-&gt;current = $route = $this-&gt;routes-&gt;match($request);
+
+        $this-&gt;container-&gt;instance(Route::class, $route);
+
+        return $route;
+    }
+}
+</code></pre>
+<p>寻找路由的任务由 <code>RouteCollection</code> 负责，这个函数负责匹配路由，并且把 <code>request</code> 的 <code>url</code> 参数绑定到路由中：</p>
+<pre><code class="language-php">class RouteCollection implements Countable, IteratorAggregate
+{
+    public function match(Request $request)
+    {
+        $routes = $this-&gt;get($request-&gt;getMethod());
+
+        $route = $this-&gt;matchAgainstRoutes($routes, $request);
+
+        if (! is_null($route)) {
+            //找到匹配的路由后，将URI里的路径参数绑定赋值给路由(如果有的话)
+            return $route-&gt;bind($request);
+        }
+
+        $others = $this-&gt;checkForAlternateVerbs($request);
+
+        if (count($others) &gt; 0) {
+            return $this-&gt;getRouteForMethods($request, $others);
+        }
+
+        throw new NotFoundHttpException;
+    }
+
+    protected function matchAgainstRoutes(array $routes, $request, $includingMethod = true)
+    {
+        return Arr::first($routes, function ($value) use ($request, $includingMethod) {
+            return $value-&gt;matches($request, $includingMethod);
+        });
+    }
+}
+
+class Route
+{
+    public function matches(Request $request, $includingMethod = true)
+    {
+        $this-&gt;compileRoute();
+
+        foreach ($this-&gt;getValidators() as $validator) {
+            if (! $includingMethod &amp;&amp; $validator instanceof MethodValidator) {
+                continue;
+            }
+
+            if (! $validator-&gt;matches($this, $request)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+</code></pre>
+<p><code>$routes = $this-&gt;get($request-&gt;getMethod());</code>会先加载注册路由阶段在<code>RouteCollection</code>里生成的<code>routes</code>属性里的值，<code>routes</code>中存放了<code>HTTP</code>请求方法与路由对象的映射。</p>
+<p>然后依次调用这堆路由里路由对象的<code>matches</code>方法， <code>matches</code>方法, <code>matches</code>方法里会对<code>HTTP</code>请求对象进行一些验证，验证对应的<code>Validator</code>是：<code>UriValidator</code>、<code>MethodValidator</code>、<code>SchemeValidator</code>、<code>HostValidator</code>。<br>
+在验证之前在<code>$this-&gt;compileRoute()</code>里会将路由的规则转换成正则表达式。</p>
+<p><code>UriValidator</code>主要是看请求对象的<code>URI</code>是否与路由的正则规则匹配能匹配上:</p>
+<pre><code class="language-php">class UriValidator implements ValidatorInterface
+{
+    public function matches(Route $route, Request $request)
+    {
+        $path = $request-&gt;path() == '/' ? '/' : '/'.$request-&gt;path();
+
+        return preg_match($route-&gt;getCompiled()-&gt;getRegex(), rawurldecode($path));
+    }
+}
+</code></pre>
+<p><code>MethodValidator</code>验证请求方法, <code>SchemeValidator</code>验证协议是否正确<code>(http|https)</code>, <code>HostValidator</code>验证域名, 如果路由中不设置<code>host</code>属性，那么这个验证不会进行</p>
+<p>一旦某个路由通过了全部的认证就将会被返回，接下来就要将请求对象<code>URI</code>里的路径参数绑定复制给路由参数:</p>
+<h3 id="路由参数绑定">路由参数绑定</h3>
+<pre><code class="language-php">class Route
+{
+    public function bind(Request $request)
+    {
+        $this-&gt;compileRoute();
+
+        $this-&gt;parameters = (new RouteParameterBinder($this))
+                        -&gt;parameters($request);
+
+        return $this;
+    }
+}
+
+class RouteParameterBinder
+{
+    public function parameters($request)
+    {
+        $parameters = $this-&gt;bindPathParameters($request);
+
+        if (! is_null($this-&gt;route-&gt;compiled-&gt;getHostRegex())) {
+            $parameters = $this-&gt;bindHostParameters(
+                $request, $parameters
+            );
+        }
+
+        return $this-&gt;replaceDefaults($parameters);
+    }
+
+    protected function bindPathParameters($request)
+    {
+            preg_match($this-&gt;route-&gt;compiled-&gt;getRegex(), '/'.$request-&gt;decodedPath(), $matches);
+
+            return $this-&gt;matchToKeys(array_slice($matches, 1));
+    }
+
+    protected function matchToKeys(array $matches)
+    {
+        if (empty($parameterNames = $this-&gt;route-&gt;parameterNames())) {
+            return [];
+        }
+
+        $parameters = array_intersect_key($matches, array_flip($parameterNames));
+
+        return array_filter($parameters, function ($value) {
+            return is_string($value) &amp;&amp; strlen($value) &gt; 0;
+        });
+    }
+}
+</code></pre>
+<p>赋值路由参数完成后路由寻址的过程就结束了，结下来就该运行通过匹配路由中对应的控制器方法返回响应对象了</p>
+<pre><code class="language-php">namespace Illuminate\Routing;
+class Router implements RegistrarContract, BindingRegistrar
+{   
+    public function dispatch(Request $request)
+    {
+        $this-&gt;currentRequest = $request;
+
+        return $this-&gt;dispatchToRoute($request);
+    }
+
+    public function dispatchToRoute(Request $request)
+    {
+        return $this-&gt;runRoute($request, $this-&gt;findRoute($request));
+    }
+
+    protected function runRoute(Request $request, Route $route)
+    {
+        $request-&gt;setRouteResolver(function () use ($route) {
+            return $route;
+        });
+
+        $this-&gt;events-&gt;dispatch(new Events\RouteMatched($route, $request));
+
+        return $this-&gt;prepareResponse($request,
+            $this-&gt;runRouteWithinStack($route, $request)
+        );
+    }
+
+    protected function runRouteWithinStack(Route $route, Request $request)
+    {
+        $shouldSkipMiddleware = $this-&gt;container-&gt;bound('middleware.disable') &amp;&amp;
+                            $this-&gt;container-&gt;make('middleware.disable') === true;
+    //收集路由和控制器里应用的中间件
+        $middleware = $shouldSkipMiddleware ? [] : $this-&gt;gatherRouteMiddleware($route);
+
+        return (new Pipeline($this-&gt;container))
+                    -&gt;send($request)
+                    -&gt;through($middleware)
+                    -&gt;then(function ($request) use ($route) {
+                        return $this-&gt;prepareResponse(
+                            $request, $route-&gt;run()
+                        );
+                    });
+
+    }
+}
+
+namespace Illuminate\Routing;
+class Route
+{
+    public function run()
+    {
+        $this-&gt;container = $this-&gt;container ?: new Container;
+        try {
+            if ($this-&gt;isControllerAction()) {
+                return $this-&gt;runController();
+            }
+            return $this-&gt;runCallable();
+        } catch (HttpResponseException $e) {
+            return $e-&gt;getResponse();
+        }
+    }
+}
+</code></pre>
+<p>最终会执行路由的<code>run</code>方法 当然也会判断是一个闭包还是一个控制器方法进行调用 最后将结果封装成<code>Response</code>  返回给客户端  当然这里只是简单的介绍了路由所经过的中间层 也就是中间件的执行逻辑  这个需要再去详细研究。</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/mysql-zui-jia-shi-jian-fen-qu-biao-ji-ben-lei-xing-zhuan-zai/" class="post-title gt-a-link">
+                    MySQL · 最佳实践 · 分区表基本类型(转载)
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/yuan-ma-fen-xi-zhi-laravel-lu-you/" class="leancloud_visitors" data-flag-title="源码分析之-Laravel路由">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

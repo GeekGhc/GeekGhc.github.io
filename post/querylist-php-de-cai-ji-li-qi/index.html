@@ -1,0 +1,424 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>QueryList-PHP的采集利器 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    QueryList-PHP的采集利器
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-10-12 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/x4piCdT_z/" class="post-tags">
+                            # PHP
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>在php中做数据采集比起采用正则进行匹配获取 我们也会有其他的解决方案 比如说今天要说的基于PHPQuery的PHP采集利器QueryList</p>
+<h2 id="简介">简介</h2>
+<p>在面对数据采集的需求时   我们自然会想到采用爬虫这类的工具 在<code>php</code>中我们同样是以爬虫采集数据的形式  在<code>PHP</code>中我们需要知道和了解的</p>
+<p>就是要说的<code>QueryList</code> 这是一套基于<code>PHPQuery</code>的数据采集方案 其使用习惯和我们使用<code>jquery</code>操作<code>dom</code>元素的选择器一样  十分直观</p>
+<h2 id="数据采集">数据采集</h2>
+<p>一开始我们就说过<code>queryList</code>获取元素和<code>jquery</code>的选择器差不多  所以说如果我们想要获取一些基本元素  诸如一个页面的图片 指定区域的文本文件等等</p>
+<p>当然在采集数据数据之前我们要明白所给我们的采集规则是这样的:</p>
+<p>//采集规则</p>
+<pre><code class="language-php?start_inline=1">$rules = array(
+   '规则名' =&gt; array('jQuery选择器','要采集的属性'[,&quot;标签过滤列表&quot;][,&quot;回调函数&quot;]),
+   '规则名2' =&gt; array('jQuery选择器','要采集的属性'[,&quot;标签过滤列表&quot;][,&quot;回调函数&quot;]),
+    ..........
+);
+//注:方括号括起来的参数可选
+</code></pre>
+<p>所对应的具体规则参数直接参照文档就好了  <a href="https://doc.querylist.cc/site/index/doc/13">https://doc.querylist.cc/site/index/doc/13</a></p>
+<p>既然有了这些规则参数  那么我们就可以通过规则去采集一个页面的数据了</p>
+<p>这时我们假设去采集下<a href="https://laravel-china.org/topics">laravel-china</a>的页面部分数据</p>
+<pre><code class="language-php?start_inline=1"> $ql = QueryList::get('https://laravel-china.org/topics')-&gt;rules([
+            'img'=&gt;array('.media-object.avatar','src'),
+            'title'=&gt;array('.media-heading&gt;a','text')
+        ]);
+        $data = $ql-&gt;query(function($item){
+            return $item;
+        })-&gt;getData();
+        print_r($data-&gt;all());
+</code></pre>
+<p>这样就可以分别获取对应的<code>href</code>和<code>text</code>属性  在定义规则执行完<code>query</code>自后才可以通过<code>getData</code>获取数据 并在这里的回调函数自定义自己的返回形式</p>
+<p>最后这样是以一个二维数据的形式返回的</p>
+<p>当然这个会有个证书的问题 因此我们可以直接获取页面的内容</p>
+<pre><code class="language-php?start_inline=1">$html = file_get_contents('https://laravel-china.org/topics');
+        $ql = QueryList::html($html)-&gt;rules([
+            'img'=&gt;array('.mddia-object.avatar','src'),
+            'title'=&gt;array('.media-heading&gt;a','text')
+        ]);
+</code></pre>
+<p>得到数据数组后我们最好相应的释放资源</p>
+<pre><code class="language-php?start_inline=1">$ql-&gt;destruct();
+</code></pre>
+<h2 id="api用法">Api用法</h2>
+<p>就如之前多说  我们可以像<code>jquery</code>操作<code>dom</code>一样  我们可以直接使用<code>find</code>查找我们需要的元素</p>
+<pre><code class="language-php?start_inline=1">//获取页面中所有图片地址
+$data = $ql-&gt;find('img')-&gt;attrs('src');
+print_r($data-&gt;all());
+</code></pre>
+<p>这样我们其实和再去定义规则筛选的结果是一样的  只不过这样的方式更为简单方便</p>
+<p>除了<code>find</code>还有一些其他的常用的<code>Api</code>用法其实和我们平时写<code>js</code>时差不多  如获取文本 获取<code>html</code>文本 获取孩子节点等</p>
+<p>具体的用法和举例文档上也写的很清楚了 <a href="https://doc.querylist.cc/site/index/doc/20">https://doc.querylist.cc/site/index/doc/20</a></p>
+<p>还有一些高级的用法  如绑定自定义参数  这样我们可以使用自定义的方法 如文档介绍的一种就是</p>
+<pre><code class="language-php?start_inline=1">$ql = QueryList::getInstance();
+//注册一个myHttp方法到QueryList对象
+$ql-&gt;bind('myHttp',function ($url){
+    $html = file_get_contents($url);
+    $this-&gt;setHtml($html);
+    return $this;
+});
+//然后就可以通过注册的名字来调用
+$data = $ql-&gt;myHttp('https://toutiao.io')-&gt;find('h3 a')-&gt;texts();
+print_r($data-&gt;all());
+</code></pre>
+<p>扩展的作用就是定义自己的需求  这样就达到了功能扩展的目的  如我们需要对一个页面上的图片进行二次处理 这样我们就可以通过<code>bind</code>自定义的方法实现</p>
+<p>还有一个需要注意的就是在使用插件时  我们需要使用<code>use</code>这个关键字  具体的用法下面在说到插件就知道了</p>
+<h2 id="http请求">http请求</h2>
+<p>在<code>queryList</code>也是可以进行<code>http</code>请求的  那么这样一来我们就可以进行模拟登陆 请求获取等操作</p>
+<p>在<code>get</code>请求中我们可以进行携带<code>cookie</code>进行<code>get</code>请求 这样我们就可以请求到一个登陆后的页面</p>
+<p>拿文档所说的一个微博实例来说就是为了获取登陆后的页面内容 我们就可以在拿到登录后的cookie尽情get请求</p>
+<pre><code class="language-php?start_inline=1">$ql = QueryList::get('http://weibo.com',[],[
+    'headers' =&gt; [
+        //填写从浏览器获取到的cookie
+        'Cookie' =&gt; 'SINAGLOBAL=546064; wb_cmtLike_2112031=1; wvr=6;....'
+    ]
+]);
+//echo $ql-&gt;getHtml();
+echo $ql-&gt;find('title')-&gt;text();
+//输出: 我的首页 微博-随时随地发现新鲜事
+</code></pre>
+<p>同样的<code>post</code>的用法其实差不多  就如我们在模拟一些网站的登录请求</p>
+<h2 id="插件使用">插件使用</h2>
+<p>最后他为我们提供了几个常见的功能插件 如<code>url</code>的转换插件</p>
+<pre><code class="language-php?start_inline=1">$ql = QueryList::getInstance();
+$ql-&gt;use(AbsoluteUrl::class);
+//或者自定义函数名
+$ql-&gt;use(AbsoluteUrl::class,'absoluteUrl','absoluteUrlHelper');
+</code></pre>
+<p>这里的<code>use</code>就是引入我们的<code>url</code>插件  这样的话我们就可以转换一个也页面的所有url</p>
+<pre><code class="language-php?start_inline=1">$data = $ql-&gt;get('https://toutiao.io/')
+    -&gt;absoluteUrl('https://toutiao.io/')
+    -&gt;find('a')-&gt;attrs('href');
+print_r($data);
+</code></pre>
+<p>还有一些基于百度和谷歌的搜索插件  也是非常实用的</p>
+<p>当然所有的插件都需要<code>compoer</code>进来  这样我们才可以使用<code>use</code>进行声明使用</p>
+<h2 id="实际应用场景">实际应用场景</h2>
+<p>最后举个我们平时项目中需要用到的一个应用场景吧  我们在发布文章时 可能我们会提供给作者一个抓取链接发布文章</p>
+<p>当用户发现一个是非精彩的文章 但又省去粘贴复制这样的操作时  我们就可以利用<code>queryList</code>进行数据采集</p>
+<p>通过用户提供的<code>url</code>我们可以采集页面上的文章标题 作者 文章的主体内容这些有用信息  具体的操作就是拿到这些元素的规则这样我们就会很方便了</p>
+<p>这里我以微信公众号的文章为例  我们在通过<code>url</code>抓取到页面的文章内容  具体的代码如下</p>
+<pre><code class="language-php?start_inline=1">$url = &quot;http://mp.weixin.qq.com/s/r5MGWqaTEiYHi9c3fEIDhQ&quot;;
+    $html = file_get_contents($url);  //获取文章源码并保存到参数中
+    $html = str_replace(&quot;&lt;!--headTrap&lt;body&gt;&lt;/body&gt;&lt;head&gt;&lt;/head&gt;&lt;html&gt;&lt;/html&gt;--&gt;&quot;, &quot;&quot;, $html);
+    $data = QueryList::html($html)-&gt;rules([
+        'title' =&gt; ['#activity-name', 'text'],
+        'author' =&gt; ['#post-user', 'text'],
+        'content' =&gt; ['#js_content', 'html']])-&gt;query(function($item){
+                        $item['content'] = &quot;文章内容 :&quot;.$item['content'];
+                        return $item;
+    })-&gt;getData();
+    dd($data);
+</code></pre>
+<p>如果是获取第一篇文章的标题其实很简单  这样的在<code>laravel</code>其实返回的是一个<code>collection</code> 所以我们可以这样</p>
+<pre><code class="language-php?start_inline=1">dd($data[0]['title']);
+</code></pre>
+<p>至于其他的以此类推就是了</p>
+<h2 id="相关链接">相关链接</h2>
+<ul>
+<li><a href="https://doc.querylist.cc/site/index/doc/1">QueryList 中文文档</a></li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/laravel55-zhi-api-resource/" class="post-title gt-a-link">
+                    laravel5.5 之Api Resource
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/querylist-php-de-cai-ji-li-qi/" class="leancloud_visitors" data-flag-title="QueryList-PHP的采集利器">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

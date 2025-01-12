@@ -1,0 +1,474 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Laravel Passport 之API授权 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Laravel Passport 之API授权
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-08-01 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/b0tSda50f/" class="post-tags">
+                            # Laravel
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>我们常常会遇到多账号系统的认证这样的一个应用场景 那么在Laravel中 我们常常会用Passport获取Token来进行密码验证</p>
+<p>在<code>Laravel5.3</code>时<code>Taylor</code>就发布了<code>passport</code>的<code>package</code> 用于开发 <code>OAuth</code> 服务端 可以作为<code>Auth</code>验证</p>
+<p>其实为什么最近又在整理这个呢  因为我做安卓也有近两个月的时间  期间也接触了不少的客户端的开发 此时我发现再去</p>
+<p>研究下<code>laravel</code>的<code>passport</code>的<code>API</code>认证真的会深有体会  之前在写服务端的API只是集成了<code>Dingo</code>和<code>jwt</code>认证  而对于与多账号系统的认证体会不深</p>
+<p>所以这几天想写点下来  也会自己以写安卓客户端做更好的服务和认证</p>
+<p>这里新建一个项目 以<strong>5.3</strong>为例</p>
+<p>新建完项目之后 开始引入我们的 <a href="https://github.com/laravel/passport">passport</a> 现在的话应该已经是3.1的版本</p>
+<p>可以在<code>composer.json</code>里添加:</p>
+<pre><code class="language-php?start_inline=1"> &quot;laravel/passport&quot;: &quot;^3.0&quot;
+</code></pre>
+<p>在终端执行:</p>
+<pre><code class="language-shell">$ composer update
+</code></pre>
+<p>在 <code>app/config/app.php</code> 添加服务:</p>
+<pre><code class="language-php?start_inline=1"> Laravel\Passport\PassportServiceProvider::class,
+</code></pre>
+<p>当然还需要安装项目依赖(也可以适应<code>yarn</code>):</p>
+<pre><code class="language-shell">$ npm install
+</code></pre>
+<p><code>Passport</code> 使用服务提供者注册内部的数据库迁移脚本目录，所以上一步完成后，你需要更新你的数据库结构。</p>
+<p><code>Passport</code> 的迁移脚本会自动创建应用程序需要的客户端数据表和令牌数据表:</p>
+<pre><code class="language-shell">$ php artisam migrate
+</code></pre>
+<p>接下来我们需要运行<code>passport:install</code> 命令来创建生成安全访问令牌时用到的加密密钥</p>
+<p>当然这条命令也会创建「私人访问」客户端和「密码授权」客户端(这些解释文档上解释的也很清楚)</p>
+<pre><code class="language-shell">$ php artisan passport:install
+</code></pre>
+<p>具体表现在<code>oauth_clients</code> 这张表会新增两条数据</p>
+<p>执行完毕后在<code>User Model</code>了添加<code>HasApiTokens</code> 这个 <code>Trait</code> 这会为我们提供一些辅助函数</p>
+<pre><code class="language-php?start_inline=1">class User extends Authenticatable
+{
+    use HasApiTokens,Notifiable;
+}
+</code></pre>
+<p>接着我们在 <code>AuthServiceProvider</code> 服务中添加路由方法(函数会注册一些发放令牌等一些必要的路由)</p>
+<pre><code class="language-php?start_inline=1">public function boot()
+{
+    $this-&gt;registerPolicies();
+
+    Passport::routes();
+}
+</code></pre>
+<blockquote>
+<p>需要的话可以执行<code>php artisan route:list</code>这些路由在之后也会用到</p>
+</blockquote>
+<p>最后还得需要在<code>config/auth.php</code>中将<code>api</code>的驱动配置为<code>passport</code> 这样的话我们的<code>api</code>请求时会使用<br>
+<code>Passport</code>的<code>TokenGuard</code></p>
+<pre><code class="language-php?start_inline=1">'guards' =&gt; [
+    'web' =&gt; [
+        'driver' =&gt; 'session',
+        'provider' =&gt; 'users',
+    ],
+
+    'api' =&gt; [
+        'driver' =&gt; 'passport',
+        'provider' =&gt; 'users',
+    ],
+]
+</code></pre>
+<p>我们可以注册一个用户接下来  可以使用<code>Laravel</code>自带的 <code>auth</code>登录注册</p>
+<pre><code class="language-shell">$ php artisan make:auth
+</code></pre>
+<p>这样访问首页 去注册一个账号</p>
+<p>为了使用这些<code>api</code> 我们可能需要一些前端代码  当然在<code>passport</code>中也预定了一些<code>vue</code>组件 我们如果嫌麻烦直接使用他所提供的</p>
+<pre><code class="language-shell">$ php artisan vendor:publish --tag=passport-components
+</code></pre>
+<p>使用这些组件时 我们需要去注册这些组件 在<code>app.js</code>中添加给我们的组件</p>
+<pre><code class="language-php?start_inline=1">Vue.component(
+    'passport-clients',
+    require('./components/passport/Clients.vue')
+);
+
+Vue.component(
+    'passport-authorized-clients',
+    require('./components/passport/AuthorizedClients.vue')
+);
+
+Vue.component(
+    'passport-personal-access-tokens',
+    require('./components/passport/PersonalAccessTokens.vue')
+);
+</code></pre>
+<p>接下来就是去模板中使用客户端的访问和私人令牌</p>
+<pre><code class="language-php?start_inline=1">&lt;passport-clients&gt;&lt;/passport-clients&gt;
+&lt;passport-authorized-clients&gt;&lt;/passport-authorized-clients&gt;
+&lt;passport-personal-access-tokens&gt;&lt;/passport-personal-access-tokens&gt;
+</code></pre>
+<p>我们会看到创建客户端和 <code>assess token</code><br>
+<img src="https://GeekGhc.github.io/post-images/1616821354277.png" alt="" loading="lazy"></p>
+<p>我们可以去创建一个客户端  因为我们的数据要为很多的客户端服务  如果一个客户端需要访问我们的数据我们就可以为他创建一个客户端</p>
+<p>其实这样的应用场景可以想象的就是 当我们比如安卓的<code>app</code>需要使用服务端的数据  可能多个<code>app</code>会使用到同一组数据</p>
+<p>那么为了辨识  我们就需要为每个客户端创建一个<code>client</code> 并提供一个回调地址</p>
+<p>如果做过第三方授权的就知道了  无论我们是做分享还是授权登陆  我们需要为我们这个客户端提供<code>appID</code>,回调地址</p>
+<p>所以这里我们可以先去创建一个客户端</p>
+<p>应户名就为<code>codespace</code> 回调<code>url</code>为:<code>http://laravel-passport.dev/callback</code></p>
+<p>创建完成之后就会给出我们的<code>clientId</code>和<code>clientSecret</code>这些是不是很熟悉  其实我们的服务端为我们生成的也就是客户端所需要的这些<code>id</code>和<code>secret</code></p>
+<p>而这个在数据库中的表现就是<code>oauth_clients</code>表中  生成了对应的客户端数据(也就是我们刚刚所创建的)</p>
+<p>接下来就是模拟客户端去发起请求 这里我新建了另一个项目<code>passport-client</code></p>
+<p>进入刚创建的项目 因为之前我们已经创建了一个客户端 那么开发者会使用此客户端的 ID 和密钥向你的应用程序请求一个授权码和访问令牌。</p>
+<p>首先,接入应用会将用户重定向到你应用程序的 <code>/oauth/authorize</code> 路由上 在刚创建项目的路由添加</p>
+<pre><code class="language-php?start_inline">Route::get('/redirect', function () {
+    $query = http_build_query([
+        'client_id' =&gt; 'client-id',
+        'redirect_uri' =&gt; 'http://example.com/callback',
+        'response_type' =&gt; 'code',
+        'scope' =&gt; '',
+    ]);
+
+    return redirect('http://your-app.com/oauth/authorize?'.$query);
+});
+</code></pre>
+<p>正如我们所看到的当客户端接受到授权请求你时 会显示默认页面 用户可以取消或者允许 用户确认之后才能重定向到指定的<br>
+<code>resirect_uri</code>这和我们平时手机<code>app</code>授权登录是一样的流程  只有用户允许授权了  才会跳转到相应页面</p>
+<p>当用户允许操作之后会跳转到对应的<code>redirect_uri</code>那么我们定义的是一个<code>callback</code></p>
+<p>所以我们会增加一个路由</p>
+<pre><code class="language-php?start_inline=1">Route::get('callback','OAuthController@oauth');
+</code></pre>
+<p>当然我们还是要去实现这样的回调方法</p>
+<pre><code class="language-php?start_inline=1">public function oauth(Request $request)
+{
+    $http = new GuzzleHttp\Client;
+
+    $response = $http-&gt;post('http://your-app.com/oauth/token', [
+        'form_params' =&gt; [
+            'grant_type' =&gt; 'authorization_code',
+            'client_id' =&gt; 'client-id',
+            'client_secret' =&gt; 'client-secret',
+            'redirect_uri' =&gt; 'http://example.com/callback',
+            'code' =&gt; $request-&gt;code,
+        ],
+    ]);
+
+    return json_decode((string) $response-&gt;getBody(), true);
+}
+</code></pre>
+<p>相关代码对照着文档看应该没什么问题</p>
+<p>值得注意的是上面的客户端和服务端的访问地址根据每个人所定义的地址 在这里我们需要修改的是我们客户端</p>
+<p>拿到的<code>client_id</code>和<code>client_secret</code>这是我们开发者在开发客户端都可以拿得到的 填写上我们之前创建客户端所生成的值就行</p>
+<p>既然有了这些信息  客户端就可以发起请求  我们访问<code>oauth</code>这个路由  这样应该会跳转到服务端的授权页面<br>
+<img src="https://GeekGhc.github.io/post-images/1616821365762.png" alt="" loading="lazy"></p>
+<p>这个过程和我们平时的无论是web端还是移动端的授权是一样的  也就是不同的客户端拿到指定的客户端<code>key</code>之后访问到的服务端的内容</p>
+<p>这个时候我们点击授权的话就会跳转到<code>callback</code>这个<code>url</code>这里 也就相当于一个回调地址</p>
+<p>我们已经在<code>callback</code>写了我们客户端的处理内容 如果执行到的话我们应该会得到一个<code>access_token</code></p>
+<p>当然授权之后我们也可以拿到一个<code>refresh_token</code></p>
+<p>我们有了这个<code>access_token</code> 就可以去请求我们的<code>api</code>数据了  还记得一开始我们就修改了我们<code>api</code>的<code>driver</code>为<strong>passport</strong></p>
+<p>所以我们理所当然的得用这个<code>access_token</code>去请求我们需要的数据</p>
+<p>其中在<code>api.php</code>这个路由文件中已经默认为我们创建了一个关于用户的<code>api</code> 简单来说就去拿到我们之前注册的用户数据好了</p>
+<p>所以在用<code>postman</code>去访问这个<code>http:///your-server.com/api/user</code>时 一开始是访问不到的<br>
+<img src="https://GeekGhc.github.io/post-images/1616821375599.png" alt="" loading="lazy"></p>
+<p>只有经过之前的授权认证 拿到我们的额<code>access_token</code> 这个时候加上这个参数再去访问这个<code>url</code>时我们就可以成功访问到了用户数据</p>
+<h2 id="总结">总结</h2>
+<p>其实整个的过程就是我们所熟悉的<code>oauth</code>认证过程 服务端创建一个客户端数据  这也就是对应着我们去一些开发平台盛情得到我们的<br>
+<code>ID</code>和<code>key</code>等相关信息  这样服务端会存储这个客户端的信息</p>
+<p>我们在不同的客户端当然对应着不同的客户端<code>id</code>  我们在客户端如<code>app</code>或者网站去发起客户端的请求</p>
+<p>当然这些请求会附带上我们申请得到的<code>ID</code>和<code>key</code>这样服务端平台校验正确后会返回一个授权页面 这时候用户可以选择授权或者取消</p>
+<p>试想一下我们平时在网站或者<code>app</code>利用第三方登录时的场景就知道了  当用户给予授权之后</p>
+<p>会执行到客户端的回调地址 在这个回调函数中我们会处理自己的逻辑 比如存储用户的基本信息等</p>
+<p>当然也会拿到服务端给我们的<code>access_token</code>和<code>refresh_token</code>这也就是我们平常所说的令牌</p>
+<p>拿到令牌之后我们就可以对服务端的一些数据进行操作 比如获取一个用户的信息 用户的相关资料等</p>
+<p>如果没有这个<code>token</code>的话是无法访问的 因为我们之前配置的就是<code>api</code>的<code>driver</code>为我们的<code>passport </code></p>
+<p>所以相应的访问数据我们是需要拿到这个<code>token</code>的</p>
+<h2 id="相关链接">相关链接</h2>
+<ul>
+<li><a href="https://github.com/laravel/passport">Laravel Passport GitHub地址</a></li>
+<li><a href="https://laravel.com/docs/master/passport">Laravel Passport 官方文档</a></li>
+<li><a href="http://d.laravel-china.org/docs/5.3/passport">Laravel Passport 中文文档</a></li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/laravel55-xin-te-xing-zhi-bladeif-zi-ding-yi-zhi-ling/" class="post-title gt-a-link">
+                    Laravel5.5新特性之Blade::if 自定义指令
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/laravel-passport-zhi-api-shou-quan/" class="leancloud_visitors" data-flag-title="Laravel Passport 之API授权">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

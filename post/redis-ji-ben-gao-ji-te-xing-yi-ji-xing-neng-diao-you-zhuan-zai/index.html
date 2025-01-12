@@ -1,0 +1,752 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Redis基本高级特性以及性能调优(转载) | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Redis基本高级特性以及性能调优(转载)
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2019-02-12 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/Fsi8n7uJf/" class="post-tags">
+                            # Redis
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h3 id="概述">概述</h3>
+<p><code>Redis</code>是一个开源的，基于内存的结构化数据存储媒介，可以作为数据库、缓存服务或消息服务使用。</p>
+<p><code>Redis</code>支持多种数据结构，包括字符串、哈希表、链表、集合、有序集合、位图、<code>Hyperloglogs</code>等。</p>
+<p><code>Redis</code>具备<code>LRU</code>淘汰、事务实现、以及不同级别的硬盘持久化等能力，并且支持副本集和通过<code>Redis</code> <code>Sentinel</code>实现的高可用方案，同时还支持通过<code>Redis</code> <code>Cluster</code>实现的数据自动分片能力。</p>
+<p><code>Redis</code>的主要功能都基于单线程模型实现，也就是说<code>Redis</code>使用一个线程来服务所有的客户端请求，同时<code>Redis</code>采用了非阻塞式<code>IO</code>，并精细地优化各种命令的算法时间复杂度，这些信息意味着：</p>
+<p><code>Redis</code>是线程安全的（因为只有一个线程），其所有操作都是原子的，不会因并发产生数据异常<br>
+<code>Redis</code>的速度非常快（因为使用非阻塞式<code>IO</code>，且大部分命令的算法时间复杂度都是<code>O(1)</code>)</p>
+<p>使用高耗时的<code>Redis</code>命令是很危险的，会占用唯一的一个线程的大量处理时间，导致所有的请求都被拖慢。（例如时间复杂度为<code>O(N)</code>的<code>KEYS</code>命令，严格禁止在生产环境中使用</p>
+<p><code>Redis</code>的数据结构和相关常用命令<br>
+完整的<code>Redis</code>命令集，或了解某个命令的详细使用方法，请参考官方文档：<a href="https://redis.io/commands">https://redis.io/commands</a></p>
+<h3 id="key">Key</h3>
+<p><code>Redis</code>采用<code>Key-Value</code>型的基本数据结构，任何二进制序列都可以作为<code>Redis</code>的<code>Key</code>使用（例如普通的字符串或一张<code>JPEG</code>图片）</p>
+<p>关于<code>Key</code>的一些注意事项：</p>
+<p>不要使用过长的<code>Key</code>。例如使用一个<strong>1024</strong>字节的<code>key</code>就不是一个好主意，不仅会消耗更多的内存，还会导致查找的效率降低</p>
+<p><code>Key</code>短到缺失了可读性也是不好的，例如<code>u1000flw</code>比起<code>user:1000:followers</code>来说，节省了寥寥的存储空间，却引发了可读性和可维护性上的麻烦</p>
+<p>最好使用统一的规范来设计<code>Key</code>，比如<code>”object-type:id:attr”</code>，以这一规范设计出的<code>Key</code>可能是<code>”user:1000″或”comment:1234:reply-to”</code></p>
+<p><code>Redis</code>允许的最大<code>Key</code>长度是<code>512MB</code>（对<code>Value</code>的长度限制也是<code>512MB</code>）</p>
+<h3 id="string">String</h3>
+<p><code>String</code>是<code>Redis</code>的基础数据类型，<code>Redis</code>没有<code>Int</code>、<code>Float</code>、<code>Boolean</code>等数据类型的概念，所有的基本类型在<code>Redis</code>中都以<code>String</code>体现。</p>
+<p>与<code>String</code>相关的常用命令：</p>
+<ul>
+<li><code>SET</code>：为一个<code>key</code>设置<code>value</code>，可以配合<code>EX/PX</code>参数指定<code>key</code>的有效期，通过<code>NX/XX</code>参数针对<code>key</code>是否存在的情况进行区别操作，时间复杂度<code>O(1)</code></li>
+<li><code>GET</code>：获取某个<code>key</code>对应的<code>value</code>，时间复杂度<code>O(1)</code></li>
+<li><code>GETSET</code>：为一个<code>key</code>设置<code>value</code>，并返回该<code>key</code>的原<code>value</code>，时间复杂度<code>O(1)</code></li>
+<li><code>MSET</code>：为多个<code>key</code>设置<code>value</code>，时间复杂度<code>O(N)</code></li>
+<li><code>MSETNX</code>：同<code>MSET</code>，如果指定的<code>key</code>中有任意一个已存在，则不进行任何操作，时间复杂度<code>O(N)</code></li>
+<li><code>MGET</code>：获取多个<code>key</code>对应的<code>value</code>，时间复杂度<code>O(N)</code></li>
+</ul>
+<p>上文提到过，<code>Redis</code>的基本数据类型只有<code>String</code>，但<code>Redis</code>可以把<code>String</code>作为整型或浮点型数字来使用，主要体现在<code>INCR</code>、<code>DECR</code>类的命令上：</p>
+<ul>
+<li><code>INCR</code>：将<code>key</code>对应的<code>value</code>值自增<strong>1</strong>，并返回自增后的值。只对可以转换为整型的<code>String</code>数据起作用。时间复杂度<code>O(1)</code></li>
+<li><code>INCRBY</code>：将<code>key</code>对应的<code>value</code>值自增指定的整型数值，并返回自增后的值。只对可以转换为整型的<code>String</code>数据起作用。时间复杂度<code>O(1)</code></li>
+<li><code>DECR/DECRBY</code>：同<code>INCR/INCRBY</code>，自增改为自减。</li>
+<li><code>INCR/DECR</code>系列命令要求操作的<code>value</code>类型为<code>String</code>，并可以转换为<strong>64</strong>位带符号的整型数字，否则会返回错误。</li>
+</ul>
+<p>也就是说，进行<code>INCR/DECR</code>系列命令的<code>value</code>，必须在<code>[-2^63 ~ 2^63 – 1]</code>范围内。</p>
+<p>前文提到过，<code>Redis</code>采用单线程模型，天然是线程安全的，这使得<code>INCR/DECR</code>命令可以非常便利的实现高并发场景下的精确控制。</p>
+<h4 id="例1库存控制">例1：库存控制</h4>
+<p>在高并发场景下实现库存余量的精准校验，确保不出现超卖的情况。<br>
+设置库存总量：</p>
+<pre><code>SET inv:remain &quot;100&quot;
+库存扣减+余量校验：
+`DECR inv:remain`
+</code></pre>
+<p>当<code>DECR</code>命令返回值大于等于<strong>0</strong>时，说明库存余量校验通过，如果返回小于<strong>0</strong>的值，则说明库存已耗尽。</p>
+<p>假设同时有<strong>300</strong>个并发请求进行库存扣减，<code>Redis</code>能够确保这<strong>300</strong>个请求分别得到<strong>99</strong>到**-200**的返回值，每个请求得到的返回值都是唯一的，绝对不会找出现两个请求得到一样的返回值的情况。</p>
+<h4 id="例2自增序列生成">例2：自增序列生成</h4>
+<p>实现类似于<code>RDBMS</code>的<code>Sequence</code>功能，生成一系列唯一的序列号<br>
+设置序列起始值：</p>
+<pre><code>SET sequence &quot;10000&quot;
+获取一个序列值：
+INCR sequence
+</code></pre>
+<p>直接将返回值作为序列使用即可。<br>
+获取一批（如<strong>100</strong>个）序列值：</p>
+<pre><code>INCRBY sequence 100
+</code></pre>
+<p>假设返回值为<code>N</code>，那么<code>[N – 99 ~ N]</code>的数值都是可用的序列值。</p>
+<p>当多个客户端同时向<code>Redis</code>申请自增序列时，<code>Redis</code>能够确保每个客户端得到的序列值或序列范围都是全局唯一的，绝对不会出现不同客户端得到了重复的序列值的情况。</p>
+<h3 id="list">List</h3>
+<p><code>Redis</code>的<code>List</code>是链表型的数据结构，可以使用<code>LPUSH/RPUSH/LPOP/RPOP</code>等命令在<code>List</code>的两端执行插入元素和弹出元素的操作。虽然<code>List</code>也支持在特定<code>index</code>上插入和读取元素的功能，但其时间复杂度较高<code>（O(N)</code>，应小心使用。</p>
+<p>与<code>List</code>相关的常用命令：</p>
+<ul>
+<li><code>LPUSH</code>：向指定<code>List</code>的左侧（即头部）插入<strong>1</strong>个或多个元素，返回插入后的<code>List</code>长度。时间复杂度<code>O(N)</code>，<code>N</code>为插入元素的数量</li>
+<li><code>RPUSH</code>：同<code>LPUSH</code>，向指定<code>List</code>的右侧（即尾部）插入<strong>1</strong>或多个元素</li>
+<li><code>LPOP</code>：从指定<code>List</code>的左侧（即头部）移除一个元素并返回，时间复杂度<code>O(1)</code></li>
+<li><code>RPOP</code>：同<code>LPOP</code>，从指定<code>List</code>的右侧（即尾部）移除<strong>1</strong>个元素并返回</li>
+<li><code>LPUSHX/RPUSHX</code>：与<code>LPUSH/RPUSH</code>类似，区别在于，<code>LPUSHX/RPUSHX</code>操作的<code>key</code>如果不存在，则不会进行任何操作</li>
+<li><code>LLEN</code>：返回指定<code>List</code>的长度，时间复杂度<code>O(1)</code></li>
+<li><code>LRANGE</code>：返回指定<code>List</code>中指定范围的元素（双端包含，即<code>LRANGE key 0 10</code>会返回<code>11</code>个元素），时间复杂度<code>O(N)</code>。应尽可能控制一次获取的元素数量，一次获取过大范围的<code>List</code>元素会导致延迟，同时对长度不可预知的<code>List</code>，避免使用<code>LRANGE key 0 -1</code>这样的完整遍历操作。</li>
+</ul>
+<p>应谨慎使用的<code>List</code>相关命令：</p>
+<ul>
+<li><code>LINDEX</code>：返回指定<code>List</code>指定<code>index</code>上的元素，如果<code>index</code>越界，返回<code>nil</code>。<code>index</code>数值是回环的，即<code>-1</code>代表<code>List</code>最后一个位置，<code>-2</code>代表List倒数第二个位置。时间复杂度<code>O(N)</code></li>
+<li><code>LSET</code>：将指定<code>List</code>指定<code>index</code>上的元素设置为<code>value</code>，如果<code>index</code>越界则返回错误，时间复杂度<code>O(N)</code>，如果操作的是头/尾部的元素，则时间复杂度为<code>O(1)</code></li>
+<li><code>LINSERT</code>：向指定<code>List</code>中指定元素之前/之后插入一个新元素，并返回操作后的<code>List</code>长度。如果指定的元素不存在，返回<code>-1</code>。如果指定<code>key</code>不存在，不会进行任何操作，时间复杂度<code>O(N)</code></li>
+</ul>
+<p>由于<code>Redis</code>的<code>List</code>是链表结构的，上述的三个命令的算法效率较低，需要对<code>List</code>进行遍历，命令的耗时无法预估，在<code>List</code>长度大的情况下耗时会明显增加，应谨慎使用。</p>
+<p>换句话说，<code>Redis</code>的<code>List</code>实际是设计来用于实现队列，而不是用于实现类似<code>ArrayList</code>这样的列表的。如果你不是想要实现一个双端出入的队列，那么请尽量不要使用<code>Redis</code>的<code>List</code>数据结构。</p>
+<p>为了更好支持队列的特性，<code>Redis</code>还提供了一系列阻塞式的操作命令，如<code>BLPOP/BRPOP</code>等，能够实现类似于<code>BlockingQueue</code>的能力，即在<code>List</code>为空时，阻塞该连接，直到<code>List</code>中有对象可以出队时再返回。针对阻塞类的命令，此处不做详细探讨，请参考官方文档（https://redis.io/topics/data-types-intro） 中<code>”Blocking operations on lists”</code>一节。</p>
+<h3 id="hash">Hash</h3>
+<p><code>Hash</code>即哈希表，<code>Redis</code>的<code>Hash</code>和传统的哈希表一样，是一种<code>field-value</code>型的数据结构，可以理解成将<code>HashMap</code>搬入<code>Redis</code>。</p>
+<p><code>Hash</code>非常适合用于表现对象类型的数据，用<code>Hash</code>中的<code>field</code>对应对象的<code>field</code>即可。<br>
+<code>Hash</code>的优点</p>
+<p>可以实现二元查找，如”查找<code>ID</code>为<strong>1000</strong>的用户的年龄”</p>
+<p>比起将整个对象序列化后作为<code>String</code>存储的方法，<code>Hash</code>能够有效地减少网络传输的消耗<br>
+当使用<code>Hash</code>维护一个集合时，提供了比<code>List</code>效率高得多的随机访问命令</p>
+<p>与<code>Hash</code>相关的常用命令</p>
+<ul>
+<li><code>HSET</code>：将<code>key</code>对应的<code>Has</code>h中的<code>field</code>设置为<code>value</code>。如果该<code>Hash</code>不存在，会自动创建一个。时间复杂度<code>O(1)</code></li>
+<li><code>HGET</code>：返回指定<code>Hash</code>中f<code>ield</code>字段的值，时间复杂度<code>O(1)</code></li>
+<li><code>HMSET/HMGET</code>：同<code>HSET</code>和<code>HGET</code>，可以批量操作同一个<code>key</code>下的多个<code>field</code>，时间复杂度：<code>O(N)</code>，<code>N</code>为一次操作的<code>field</code>数量</li>
+<li><code>HSETNX</code>：同<code>HSET</code>，但如<code>field</code>已经存在，<code>HSETNX</code>不会进行任何操作，时间复杂度<code>O(1)</code></li>
+<li><code>HEXISTS</code>：判断指定<code>Hash</code>中<code>field</code>是否存在，存在返回<strong>1</strong>，不存在返回<strong>0</strong>，时间复杂度<code>O(1)</code></li>
+<li><code>HDEL</code>：删除指定<code>Hash</code>中的<code>field</code>（<code>1</code>个或多个），时间复杂度：<code>O(N)</code>，<code>N</code>为操作的<code>field</code>数量</li>
+<li><code>HINCRBY</code>：同<code>INCRBY</code>命令，对指定<code>Hash</code>中的一个<code>field</code>进行<code>INCRBY</code>，时间复杂度<code>O(1)</code></li>
+</ul>
+<p>应谨慎使用的<code>Hash</code>相关命令：</p>
+<ul>
+<li><code>HGETALL</code>：返回指定<code>Hash</code>中所有的<code>field-value</code>对。返回结果为数组，数组中<code>field</code>和<code>value</code>交替出现。时间复杂度<code>O(N)</code></li>
+<li><code>HKEYS/HVALS</code>：返回指定Hash中所有的<code>field/value</code>，时间复杂度<code>O(N)</code></li>
+</ul>
+<p>上述三个命令都会对<code>Hash</code>进行完整遍历，<code>Hash</code>中的<code>field</code>数量与命令的耗时线性相关，对于尺寸不可预知的<code>Hash</code>，应严格避免使用上面三个命令，而改为使用HSCAN命令进行游标式的遍历，具体请见<br>
+<a href="https://redis.io/commands/scan">https://redis.io/commands/scan</a></p>
+<h3 id="set">Set</h3>
+<p><code>Redis Set</code>是无序的，不可重复的<code>String</code>集合。</p>
+<p>与<code>Set</code>相关的常用命令</p>
+<ul>
+<li><code>SADD</code>：向指定<code>Set</code>中添加<strong>1</strong>个或多个<code>member</code>，如果指定<code>Set</code>不存在，会自动创建一个。时间复杂度<code>O(N)</code>，<code>N</code>为添加的<code>member</code>个数</li>
+<li><code>SREM</code>：从指定<code>Set</code>中移除<strong>1</strong>个或多个<code>member</code>，时间复杂度<code>O(N)</code>，<code>N</code>为移除的<code>member</code>个数</li>
+<li><code>SRANDMEMBER</code>：从指定<code>Set</code>中随机返回<strong>1</strong>个或多个<code>member</code>，时间复杂度<code>O(N)</code>，<code>N</code>为返回的<code>member</code>个数</li>
+<li><code>SPOP</code>：从指定<code>Set</code>中随机移除并返回<code>count个member</code>，时间复杂度<code>O(N)</code>，<code>N</code>为移除的<code>member</code>个数</li>
+<li><code>SCARD</code>：返回指定<code>Set</code>中的<code>member</code>个数，时间复杂度<code>O(1)</code></li>
+<li><code>SISMEMBER</code>：判断指定的<code>value</code>是否存在于指定<code>Set</code>中，时间复杂度<code>O(1)</code></li>
+<li><code>SMOVE</code>：将指定<code>member</code>从一个<code>Set</code>移至另一个<code>Set</code></li>
+</ul>
+<p>慎用的<code>Set</code>相关命令：</p>
+<ul>
+<li><code>SMEMBERS</code>：返回指定<code>Hash</code>中所有的<code>member</code>，时间复杂度<code>O(N)</code></li>
+<li><code>SUNION/SUNIONSTORE</code>：计算多个<code>Set</code>的并集并返回/存储至另一个<code>Set</code>中，时间复杂度<code>O(N)</code>，<code>N</code>为参与计算的所有集合的总<code>member</code>数</li>
+<li><code>SINTER/SINTERSTORE</code>：计算多个<code>Set</code>的交集并返回/存储至另一个<code>Set</code>中，时间复杂度<code>O(N)</code>，<code>N</code>为参与计算的所有集合的总<code>member</code>数</li>
+<li><code>SDIFF/SDIFFSTORE</code>：计算<strong>1</strong>个<code>Set</code>与<strong>1</strong>或多个<code>Set</code>的差集并返回/存储至另一个<code>Set</code>中，时间复杂度<code>O(N)</code>，<code>N</code>为参与计算的所有集合的总<code>member</code>数</li>
+</ul>
+<p>上述几个命令涉及的计算量大，应谨慎使用，特别是在参与计算的<code>Set</code>尺寸不可知的情况下，应严格避免使用。</p>
+<p>可以考虑通过<code>SSCAN</code>命令遍历获取相关<code>Set</code>的全部<code>member</code>（具体请见 <a href="https://redis.io/commands/scan">https://redis.io/commands/scan</a> ）如果需要做并集/交集/差集计算，可以在客户端进行，或在不服务实时查询请求的<code>Slave上</code>进行。</p>
+<h3 id="sorted-set">Sorted Set</h3>
+<p><code>Redis Sorted Set</code>是有序的、不可重复的<code>String</code>集合。<code>Sorted Set</code>中的每个元素都需要指派一个分数(<code>score</code>)，<code>Sorted Set</code>会根据<code>score</code>对元素进行升序排序。如果多个<code>member</code>拥有相同的<code>score</code>，则以字典序进行升序排序。</p>
+<p><code>Sorted Set</code>非常适合用于实现排名。<br>
+<code>Sorted Set</code>的主要命令：</p>
+<ul>
+<li><code>ZADD</code>：向指定<code>Sorted Set</code>中添加<strong>1</strong>个或多个<code>member</code>，时间复杂度<code>O(Mlog(N))</code>，<code>M</code>为添加的<code>member</code>数量，<code>N</code>为<code>Sorted Set</code>中的<code>member</code>数量</li>
+<li><code>ZREM</code>：从指定<code>Sorted Set</code>中删除<strong>1</strong>个或多个<code>member</code>，时间复杂度<code>O(Mlog(N))</code>，<code>M</code>为删除的<code>member</code>数量，<code>N</code>为<code>Sorted Set</code>中的<code>member</code>数量</li>
+<li><code>ZCOUNT</code>：返回指定<code>Sorted Set</code>中指定<code>score</code>范围内的<code>member</code>数量，时间复杂度：<code>O(log(N))</code></li>
+<li><code>ZCARD</code>：返回指定<code>Sorted Set</code>中的<code>member</code>数量，时间复杂度<code>O(1)</code></li>
+<li><code>ZSCORE</code>：返回指定<code>Sorted Set</code>中指定<code>member</code>的<code>score</code>，时间复杂度<code>O(1)</code></li>
+<li><code>ZRANK/ZREVRANK</code>：返回指定<code>member</code>在<code>Sorted Set</code>中的排名，<code>ZRANK</code>返回按升序排序的排名，<code>ZREVRANK</code>则返回按降序排序的排名。时间复杂度<code>O(log(N))</code></li>
+<li><code>ZINCRBY</code>：同<code>INCRBY</code>，对指定<code>Sorted Set</code>中的指定<code>member</code>的<code>score</code>进行自增，时间复杂度<code>O(log(N))</code></li>
+</ul>
+<p>慎用的<code>Sorted Set</code>相关命令：</p>
+<ul>
+<li><code>ZRANGE/ZREVRANGE</code>：返回指定<code>Sorted Set</code>中指定排名范围内的所有<code>member</code>，<code>ZRANGE</code>为按<code>score</code>升序排序，<code>ZREVRANGE</code>为按<code>score</code>降序排序，时间复杂度<code>O(log(N)+M)</code>，<code>M</code>为本次返回的<code>member</code>数</li>
+<li><code>ZRANGEBYSCORE/ZREVRANGEBYSCORE</code>：返回指定<code>Sorted Set</code>中指定<code>score</code>范围内的所有<code>member</code>，返回结果以升序/降序排序，<code>min</code>和<code>max</code>可以指定为<code>-inf</code>和<code>+inf</code>，代表返回所有的<code>member</code>。时间复杂度<code>O(log(N)+M)</code></li>
+<li><code>ZREMRANGEBYRANK/ZREMRANGEBYSCORE</code>：移除<code>Sorted Set</code>中指定排名范围/指定<code>score</code>范围内的所有<code>member</code>。时间复杂度<code>O(log(N)+M)</code></li>
+</ul>
+<p>上述几个命令，应尽量避免传递<code>[0 -1]</code>或<code>[-inf +inf]</code>这样的参数，来对<code>Sorted Set</code>做一次性的完整遍历，特别是在<code>Sorted Set</code>的尺寸不可预知的情况下。</p>
+<p>可以通过<code>ZSCAN</code>命令来进行游标式的遍历（具体请见 <a href="https://redis.io/commands/scan">https://redis.io/commands/scan</a> ），或通过<code>LIMIT</code>参数来限制返回<code>member</code>的数量（适用于<code>ZRANGEBYSCORE</code>和<code>ZREVRANGEBYSCORE</code>命令），以实现游标式的遍历。</p>
+<p><code>Bitmap</code>和<code>HyperLogLog</code></p>
+<p><code>Redis</code>的这两种数据结构相较之前的并不常用，在本文中只做简要介绍，如想要详细了解这两种数据结构与其相关的命令，请参考官方文档 <a href="https://redis.io/topics/data-types-intro">https://redis.io/topics/data-types-intro</a> 中的相关章节</p>
+<p><code>Bitmap</code>在<code>Redis</code>中不是一种实际的数据类型，而是一种将<code>String</code>作为<code>Bitmap</code>使用的方法。可以理解为将<code>String</code>转换为<code>bit</code>数组。使用<code>Bitmap</code>来存储<code>true/false</code>类型的简单数据极为节省空间。</p>
+<p><code>HyperLogLogs</code>是一种主要用于数量统计的数据结构，它和<code>Set</code>类似，维护一个不可重复的<code>String</code>集合，但是<code>HyperLogLogs</code>并不维护具体的<code>member</code>内容，只维护<code>member</code>的个数。</p>
+<p>也就是说，<code>HyperLogLogs</code>只能用于计算一个集合中不重复的元素数量，所以它比<code>Set</code>要节省很多内存空间。</p>
+<h4 id="其他常用命令">其他常用命令</h4>
+<ul>
+<li><code>EXISTS</code>：判断指定的<code>key</code>是否存在，返回1代表存在，<strong>0</strong>代表不存在，时间复杂度<code>O(1)</code></li>
+<li><code>DEL</code>：删除指定的<code>key</code>及其对应的<code>value</code>，时间复杂度<code>O(N)</code>，<code>N</code>为删除的<code>key</code>数量</li>
+<li><code>EXPIRE/PEXPIRE</code>：为一个<code>key</code>设置有效期，单位为秒或毫秒，时间复杂度<code>O(1)</code></li>
+<li><code>TTL/PTTL</code>：返回一个<code>key</code>剩余的有效时间，单位为秒或毫秒，时间复杂度<code>O(1)</code></li>
+<li><code>RENAME/RENAMENX</code>：将<code>key</code>重命名为<code>newkey</code>。使用<code>RENAME</code>时，如果<code>newkey</code>已经存在，其值会被覆盖；使用<code>RENAMENX</code>时，如果<code>newkey</code>已经存在，则不会进行任何操作，时间复杂度<code>O(1)</code></li>
+<li><code>TYPE</code>：返回指定<code>key</code>的类型，<code>string</code>, <code>list</code>, <code>set</code>, <code>zset</code>, <code>hash</code>。时间复杂度<code>O(1)</code></li>
+<li><code>CONFIG GET</code>：获得<code>Redis</code>某配置项的当前值，可以使用<code>*</code>通配符，时间复杂度<code>O(1)</code></li>
+<li><code>CONFIG SET</code>：为<code>Redis</code>某个配置项设置新值，时间复杂度<code>O(1)</code></li>
+<li><code>CONFIG REWRITE</code>：让<code>Redis</code>重新加载<code>redis.conf</code>中的配置</li>
+</ul>
+<h4 id="数据持久化">数据持久化</h4>
+<p><code>Redis</code>提供了将数据定期自动持久化至硬盘的能力，包括<code>RDB</code>和<code>AOF</code>两种方案，两种方案分别有其长处和短板，可以配合起来同时运行，确保数据的稳定性。</p>
+<h3 id="必须使用数据持久化吗">必须使用数据持久化吗？</h3>
+<p><code>Redis</code>的数据持久化机制是可以关闭的。如果你只把<code>Redis</code>作为缓存服务使用，<code>Redis</code>中存储的所有数据都不是该数据的主体而仅仅是同步过来的备份，那么可以关闭<code>Redis</code>的数据持久化机制。</p>
+<p>但通常来说，仍然建议至少开启<code>RDB</code>方式的数据持久化，因为：</p>
+<p><code>RDB</code>方式的持久化几乎不损耗<code>Redis</code>本身的性能，在进行<code>RDB</code>持久化时，<code>Redis</code>主进程唯一需要做的事情就是<code>fork</code>出一个子进程，所有持久化工作都由子进程完成</p>
+<p><code>Redis</code>无论因为什么原因<code>crash</code>掉之后，重启时能够自动恢复到上一次<code>RDB</code>快照中记录的数据。这省去了手工从其他数据源（如<code>DB</code>）同步数据的过程，而且要比其他任何的数据恢复方式都要快<br>
+现在硬盘那么大，真的不缺那一点地方</p>
+<h5 id="rdb">RDB</h5>
+<p>采用<code>RDB</code>持久方式，</p>
+<p><code>Redis</code>会定期保存数据快照至一个<code>rbd</code>文件中，并在启动时自动加载<code>rdb</code>文件，恢复之前保存的数据。可以在配置文件中配置<code>Redis</code>进行快照保存的时机：</p>
+<pre><code>$ save [seconds] [changes]
+</code></pre>
+<p>意为在<code>[seconds]</code>秒内如果发生了<code>[changes]</code>次数据修改，则进行一次<code>RDB</code>快照保存，例如</p>
+<pre><code>save 60 100
+</code></pre>
+<p>会让<code>Redis</code>每<strong>60</strong>秒检查一次数据变更情况，如果发生了<strong>100</strong>次或以上的数据变更，则进行<code>RDB</code>快照保存。</p>
+<p>可以配置多条<code>save</code>指令，让<code>Redis</code>执行多级的快照保存策略。<br>
+<code>Redis</code>默认开启<code>RDB</code>快照，默认的<code>RDB</code>策略如下:</p>
+<pre><code>save 900 1
+save 300 10
+save 60 10000
+</code></pre>
+<p>也可以通过<code>BGSAVE</code>命令手工触发<code>RDB</code>快照保存。</p>
+<h3 id="rdb的优点">RDB的优点：</h3>
+<p>对性能影响最小。如前文所述，<code>Redis</code>在保存<code>RDB</code>快照时会<code>fork</code>出子进程进行，几乎不影响<code>Redis</code>处理客户端请求的效率。</p>
+<p>每次快照会生成一个完整的数据快照文件，所以可以辅以其他手段保存多个时间点的快照（例如把每天<strong>0</strong>点的快照备份至其他存储媒介中），作为非常可靠的灾难恢复手段。</p>
+<p>使用<code>RDB</code>文件进行数据恢复比使用<code>AOF</code>要快很多。</p>
+<h4 id="rdb的缺点">RDB的缺点：</h4>
+<p>快照是定期生成的，所以在<code>Redis crash</code>时或多或少会丢失一部分数据。</p>
+<p>如果数据集非常大且<code>CPU</code>不够强（比如单核<code>CPU</code>），<code>Redis</code>在<code>fork</code>子进程时可能会消耗相对较长的时间（长至1秒），影响这期间的客户端请求。</p>
+<h3 id="aof">AOF</h3>
+<p>采用<code>AOF</code>持久方式时，<code>Redis</code>会把每一个写请求都记录在一个日志文件里。在<code>Redis</code>重启时，会把<code>AOF</code>文件中记录的所有写操作顺序执行一遍，确保数据恢复到最新。</p>
+<p><code>AOF</code>默认是关闭的，如要开启，进行如下配置：</p>
+<pre><code>appendonly yes
+</code></pre>
+<p><code>AOF</code>提供了三种<code>fsync</code>配置，<code>always/everysec/no</code>，</p>
+<p>通过配置项<code>[appendfsync]</code>指定</p>
+<ul>
+<li><code>appendfsync no</code>：不进行<code>fsync</code>，将<code>flush</code>文件的时机交给<code>OS</code>决定，速度最快</li>
+<li><code>appendfsync always</code>：每写入一条日志就进行一次<code>fsync</code>操作，数据安全性最高，但速度最慢</li>
+<li><code>appendfsync everysec</code>：折中的做法，交由后台线程每秒<code>fsync</code>一次</li>
+</ul>
+<p>随着<code>AOF</code>不断地记录写操作日志，必定会出现一些无用的日志，例如某个时间点执行了命令<code>SET key1</code>“abc”，在之后某个时间点又执行了<code>SET key1 </code>“bcd”，那么第一条命令很显然是没有用的。</p>
+<p>大量的无用日志会让<code>AOF</code>文件过大，也会让数据恢复的时间过长。<br>
+所以<code>Redis</code>提供了<code>AOF rewrite</code>功能，可以重写<code>AOF</code>文件，只保留能够把数据恢复到最新状态的最小写操作集。</p>
+<p><code>AOF rewrite</code>可以通过<code>BGREWRITEAOF</code>命令触发，也可以配置<code>Redis</code>定期自动进行：</p>
+<pre><code>auto-aof-rewrite-percentage 100
+auto-aof-rewrite-min-size 64mb
+</code></pre>
+<p>上面两行配置的含义是，<code>Redis</code>在每次<code>AOF</code> <code>rewrite</code>时，会记录完成<code>rewrite</code>后的<code>AOF</code>日志大小，当<code>AOF</code>日志大小在该基础上增长了<strong>100%<strong>后，自动进行<code>AOF rewrite</code>。同时如果增长的大小没有达到</strong>64mb</strong>，则不会进行<code>rewrite</code>。</p>
+<h4 id="aof的优点">AOF的优点：</h4>
+<p>最安全，在启用<code>appendfsync always</code>时，任何已写入的数据都不会丢失，使用在启用<code>appendfsync everysec</code>也至多只会丢失<strong>1</strong>秒的数据。</p>
+<p><code>AOF</code>文件在发生断电等问题时也不会损坏，即使出现了某条日志只写入了一半的情况，也可以使用<code>redis-check-aof</code>工具轻松修复。<br>
+<code>AOF</code>文件易读，可修改，在进行了某些错误的数据清除操作后，只要<code>AOF</code>文件没有<code>rewrite</code>，就可以把<code>AOF</code>文件备份出来，把错误的命令删除，然后恢复数据。</p>
+<p><code>AOF</code>的缺点：</p>
+<ul>
+<li><code>AOF</code>文件通常比<code>RDB</code>文件更大</li>
+<li>性能消耗比<code>RDB</code>高</li>
+<li>数据恢复速度比<code>RDB</code>慢</li>
+<li>内存管理与数据淘汰机制</li>
+<li>最大内存设置</li>
+</ul>
+<p>默认情况下，在<strong>32</strong>位<code>OS</code>中，<code>Redis</code>最大使用<code>3GB</code>的内存，在<strong>64</strong>位<code>OS</code>中则没有限制。</p>
+<p>在使用<code>Redis</code>时，应该对数据占用的最大空间有一个基本准确的预估，并为<code>Redis</code>设定最大使用的内存。否则在<strong>64</strong>位<code>OS</code>中<code>Redis</code>会无限制地占用内存（当物理内存被占满后会使用<code>swap</code>空间），容易引发各种各样的问题。</p>
+<p>通过如下配置控制<code>Redis</code>使用的最大内存：</p>
+<pre><code>maxmemory 100mb
+</code></pre>
+<p>在内存占用达到了<code>maxmemory</code>后，再向<code>Redis</code>写入数据时，<code>Redis</code>会：</p>
+<p>根据配置的数据淘汰策略尝试淘汰数据，释放空间<br>
+如果没有数据可以淘汰，或者没有配置数据淘汰策略，那么<code>Redis</code>会对所有写请求返回错误，但读请求仍然可以正常执行</p>
+<p>在为<code>Redis</code>设置<code>maxmemory</code>时，需要注意：</p>
+<p>如果采用了<code>Redis</code>的主从同步，主节点向从节点同步数据时，会占用掉一部分内存空间，如果<code>maxmemory</code>过于接近主机的可用内存，导致数据同步时内存不足。</p>
+<p>所以设置的<code>maxmemory</code>不要过于接近主机可用的内存，留出一部分预留用作主从同步。</p>
+<h4 id="数据淘汰机制">数据淘汰机制</h4>
+<p><code>Redis</code>提供了<strong>5</strong>种数据淘汰策略：</p>
+<ul>
+<li><code>volatile-lru</code>：使用LRU算法进行数据淘汰（淘汰上次使用时间最早的，且使用次数最少的<code>key</code>），只淘汰设定了有效期的<code>key</code></li>
+<li><code>allkeys-lru</code>：使用<code>LRU</code>算法进行数据淘汰，所有的<code>key</code>都可以被淘汰</li>
+<li><code>volatile-random</code>：随机淘汰数据，只淘汰设定了有效期的<code>key</code></li>
+<li><code>allkeys-random</code>：随机淘汰数据，所有的<code>key</code>都可以被淘汰</li>
+<li><code>volatile-ttl</code>：淘汰剩余有效期最短的<code>key</code></li>
+</ul>
+<p>最好为<code>Redis</code>指定一种有效的数据淘汰策略以配合<code>maxmemory</code>设置，避免在内存使用满后发生写入失败的情况。</p>
+<p>一般来说，推荐使用的策略是<code>volatile-lru</code>，并辨识<code>Redis</code>中保存的数据的重要性。</p>
+<p>对于那些重要的，绝对不能丢弃的数据（如配置类数据等），应不设置有效期，这样<code>Redis</code>就永远不会淘汰这些数据。</p>
+<p>对于那些相对不是那么重要的，并且能够热加载的数据（比如缓存最近登录的用户信息，当在<code>Redis</code>中找不到时，程序会去<code>DB</code>中读取），可以设置上有效期，这样在内存不够时<code>Redis</code>就会淘汰这部分数据。</p>
+<h4 id="配置方法">配置方法：</h4>
+<p><code>maxmemory-policy volatile-lru</code> #默认是<code>noeviction</code>，即不进行数据淘汰</p>
+<h4 id="pipelining">Pipelining</h4>
+<p><code>Redis</code>提供许多批量操作的命令，如<code>MSET/MGET/HMSET/HMGET</code>等等，这些命令存在的意义是减少维护网络连接和传输数据所消耗的资源和时间。</p>
+<p>例如连续使用<strong>5</strong>次<code>SET</code>命令设置<strong>5</strong>个不同的<code>key</code>，比起使用一次<code>MSET</code>命令设置<strong>5</strong>个不同的<code>key</code>，效果是一样的，但前者会消耗更多的<code>RTT(Round Trip Time)</code>时长，永远应优先使用后者。</p>
+<p>然而，如果客户端要连续执行的多次操作无法通过<code>Redis</code>命令组合在一起，例如：</p>
+<pre><code>SET a &quot;abc&quot;
+INCR b
+HSET c name &quot;hi&quot;
+</code></pre>
+<p>此时便可以使用<code>Redis</code>提供的<code>pipelining</code>功能来实现在一次交互中执行多条命令。</p>
+<p>使用<code>pipelining</code>时，只需要从客户端一次向<code>Redis</code>发送多条命令（以<code>rn</code>）分隔，<code>Redis</code>就会依次执行这些命令，并且把每个命令的返回按顺序组装在一起一次返回，比如：</p>
+<pre><code>$ (printf &quot;PINGrnPINGrnPINGrn&quot;; sleep 1) | nc localhost 6379
++PONG
++PONG
++PONG
+</code></pre>
+<p>大部分的<code>Redis</code>客户端都对<code>Pipelining</code>提供支持，所以开发者通常并不需要自己手工拼装命令列表。</p>
+<h4 id="pipelining的局限性">Pipelining的局限性</h4>
+<p><code>Pipelining</code>只能用于执行连续且无相关性的命令，当某个命令的生成需要依赖于前一个命令的返回时，就无法使用<code>Pipelining</code>了。</p>
+<p>通过<code>Scripting</code>功能，可以规避这一局限性</p>
+<h4 id="事务与scripting">事务与Scripting</h4>
+<p><code>Pipelining</code>能够让<code>Redis</code>在一次交互中处理多条命令，然而在一些场景下，我们可能需要在此基础上确保这一组命令是连续执行的。</p>
+<p>比如获取当前累计的PV数并将其清<strong>0</strong></p>
+<pre><code> &gt;GET vCount
+12384
+&gt; SET vCount 0
+OK
+</code></pre>
+<p>如果在<code>GET</code>和<code>SET</code>命令之间插进来一个<code>INCR vCount</code>，就会使客户端拿到的<code>vCount</code>不准确。</p>
+<p><code>Redis</code>的事务可以确保复数命令执行时的原子性。也就是说<code>Redis</code>能够保证：一个事务中的一组命令是绝对连续执行的，在这些命令执行完成之前，绝对不会有来自于其他连接的其他命令插进去执行。</p>
+<p>通过<code>MULTI</code>和<code>EXEC</code>命令来把这两个命令加入一个事务中：</p>
+<pre><code>MULTI
+OK
+GET vCount
+QUEUED
+SET vCount 0
+QUEUED
+EXEC
+1) 12384
+2) OK
+</code></pre>
+<p><code>Redis</code>在接收到<code>MULTI</code>命令后便会开启一个事务，这之后的所有读写命令都会保存在队列中但并不执行，直到接收到<code>EXEC</code>命令后，<code>Redis</code>会把队列中的所有命令连续顺序执行，并以数组形式返回每个命令的返回结果。</p>
+<p>可以使用<code>DISCARD</code>命令放弃当前的事务，将保存的命令队列清空。</p>
+<p>需要注意的是，<code>Redis</code>事务不支持回滚：</p>
+<p>如果一个事务中的命令出现了语法错误，大部分客户端驱动会返回错误，<strong>2.6.5</strong>版本以上的<code>Redis</code>也会在执行<code>EXEC</code>时检查队列中的命令是否存在语法错误，如果存在，则会自动放弃事务并返回错误。</p>
+<p>但如果一个事务中的命令有非语法类的错误（比如对<code>String</code>执行<code>HSET</code>操作），无论客户端驱动还是<code>Redis</code>都无法在真正执行这条命令之前发现，所以事务中的所有命令仍然会被依次执行。</p>
+<p>在这种情况下，会出现一个事务中部分命令成功部分命令失败的情况，然而与<code>RDBMS</code>不同，<code>Redis</code>不提供事务回滚的功能，所以只能通过其他方法进行数据的回滚。</p>
+<p>通过事务实现<code>CAS</code><br>
+<code>Redis</code>提供了<code>WATCH</code>命令与事务搭配使用，实现<code>CAS</code>乐观锁的机制。</p>
+<p>假设要实现将某个商品的状态改为已售：</p>
+<pre><code>if(exec(HGET stock:1001 state) == &quot;in stock&quot;)
+    exec(HSET stock:1001 state &quot;sold&quot;);
+</code></pre>
+<p>这一伪代码执行时，无法确保并发安全性，有可能多个客户端都获取到了<code>”in stock”</code>的状态，导致一个库存被售卖多次。</p>
+<p>使用<code>WATCH</code>命令和事务可以解决这一问题：</p>
+<pre><code>exec(WATCH stock:1001);
+if(exec(HGET stock:1001 state) == &quot;in stock&quot;) {
+    exec(MULTI);
+    exec(HSET stock:1001 state &quot;sold&quot;);
+    exec(EXEC);
+}
+</code></pre>
+<p><code>WATCH</code>的机制是：在事务<code>EXEC</code>命令执行时，<code>Redis</code>会检查被<code>WATCH</code>的<code>key</code>，只有被<code>WATCH</code>的<code>key</code>从<code>WATCH</code>起始时至今没有发生过变更，<code>EXEC</code>才会被执行。</p>
+<p>如果<code>WATCH</code>的<code>key</code>在<code>WATCH</code>命令到<code>EXEC</code>命令之间发生过变化，则<code>EXEC</code>命令会返回失败。</p>
+<h4 id="scripting">Scripting</h4>
+<p>通过<code>EVAL</code>与<code>EVALSHA</code>命令，可以让<code>Redis</code>执行<code>LUA</code>脚本。这就类似于<code>RDBMS</code>的存储过程一样，可以把客户端与<code>Redis</code>之间密集的读/写交互放在服务端进行，避免过多的数据交互，提升性能。</p>
+<p><code>Scripting</code>功能是作为事务功能的替代者诞生的，事务提供的所有能力<code>Scripting</code>都可以做到。<code>Redis</code>官方推荐使用<code>LUA Script</code>来代替事务，前者的效率和便利性都超过了事务。</p>
+<p>关于<code>Scripting</code>的具体使用，本文不做详细介绍，请参考官方文档<br>
+<a href="https://redis.io/commands/eval">https://redis.io/commands/eval</a></p>
+<h4 id="redis性能调优">Redis性能调优</h4>
+<p>尽管<code>Redis</code>是一个非常快速的内存数据存储媒介，也并不代表<code>Redis</code>不会产生性能问题。</p>
+<p>前文中提到过，<code>Redis</code>采用单线程模型，所有的命令都是由一个线程串行执行的，所以当某个命令执行耗时较长时，会拖慢其后的所有命令，这使得<code>Redis</code>对每个任务的执行效率更加敏感。</p>
+<p>针对<code>Redis</code>的性能优化，主要从下面几个层面入手：</p>
+<ul>
+<li>最初的也是最重要的，确保没有让<code>Redis</code>执行耗时长的命令</li>
+<li>使用<code>pipelining</code>将连续执行的命令组合执行</li>
+<li>操作系统的<code>Transparent huge pages</code>功能必须关闭：</li>
+<li><code>echo never &gt; /sys/kernel/mm/transparent_hugepage/enabled</code><br>
+如果在虚拟机中运行<code>Redis</code>，可能天然就有虚拟机环境带来的固有延迟。<br>
+可以通过<code>./redis-cli –intrinsic-latency </code>100命令查看固有延迟。同时如果对<code>Redis</code>的性能有较高要求的话，应尽可能在物理机上直接部署<code>Redis</code>。</li>
+<li>检查数据持久化策略</li>
+<li>考虑引入读写分离机制</li>
+</ul>
+<h4 id="长耗时命令">长耗时命令</h4>
+<p><code>Redis</code>绝大多数读写命令的时间复杂度都在<code>O(1)</code>到<code>O(N)</code>之间，在文本和官方文档中均对每个命令的时间复杂度有说明。</p>
+<p>通常来说，<code>O(1)</code>的命令是安全的，<code>O(N)</code>命令在使用时需要注意，如果<code>N</code>的数量级不可预知，则应避免使用。</p>
+<p>例如对一个<code>field</code>数未知的<code>Hash</code>数据执行<code>HGETALL/HKEYS/HVALS</code>命令，通常来说这些命令执行的很快，但如果这个<code>Hash</code>中的<code>field</code>数量极多，耗时就会成倍增长。</p>
+<p>又如使用<code>SUNION</code>对两个<code>Set</code>执行<code>Union</code>操作，或使用<code>SORT</code>对<code>List/Set</code>执行排序操作等时，都应该严加注意。</p>
+<p>避免在使用这些<code>O(N)</code>命令时发生问题主要有几个办法：</p>
+<ul>
+<li>不要把<code>List</code>当做列表使用，仅当做队列来使用</li>
+<li>通过机制严格控制<code>Hash</code>、<code>Set</code>、<code>Sorted Set</code>的大小</li>
+<li>可能的话，将排序、并集、交集等操作放在客户端执行</li>
+<li>绝对禁止使用<code>KEYS</code>命令</li>
+<li>避免一次性遍历集合类型的所有成员，而应使用<code>SCAN</code>类的命令进行分批的，游标式的遍历</li>
+<li><code>Redis</code>提供了<code>SCAN</code>命令，可以对<code>Redis</code>中存储的所有<code>key</code>进行游标式的遍历，避免使用<code>KEYS</code>命令带来的性能问题。同时还有<code>SSCAN/HSCAN/ZSCAN</code>等命令，分别用于对<code>Set/Hash/Sorted Set</code>中的元素进行游标式遍历。<code>SCAN</code>类命令的使用请参考官方文档：<a href="https://redis.io/commands/scan">https://redis.io/commands/scan</a></li>
+</ul>
+<p><code>Redis</code>提供了<code>Slow Log</code>功能，可以自动记录耗时较长的命令。相关的配置参数有两个：</p>
+<ul>
+<li><code>slowlog-log-slower-than</code> <code>xxxms</code>  #执行时间慢于xxx毫秒的命令计入<code>Slow Log</code></li>
+<li><code>slowlog-max-len</code> <code>xxx</code>  <code>#Slow Log的</code>长度，即最大纪录多少条<code>Slow Log</code></li>
+<li>使用<code>SLOWLOG GET [number]</code>命令，可以输出最近进入<code>Slow Log</code>的<code>number</code>条命令。</li>
+<li>使用<code>SLOWLOG RESET</code>命令，可以重置<code>Slow Log</code></li>
+</ul>
+<h4 id="网络引发的延迟">网络引发的延迟</h4>
+<ul>
+<li>尽可能使用长连接或连接池，避免频繁创建销毁连接</li>
+<li>客户端进行的批量数据操作，应使用<code>Pipeline</code>特性在一次交互中完成。具体请参照本文的<code>Pipelining</code>章节</li>
+</ul>
+<h4 id="数据持久化引发的延迟">数据持久化引发的延迟</h4>
+<p><code>Redis</code>的数据持久化工作本身就会带来延迟，需要根据数据的安全级别和性能要求制定合理的持久化策略：</p>
+<h5 id="aof-fsync">AOF + fsync</h5>
+<p><code>always</code>的设置虽然能够绝对确保数据安全，但每个操作都会触发一次<code>fsync</code>，会对<code>Redis</code>的性能有比较明显的影响</p>
+<p><code>AOF</code> + <code>fsync every second</code>是比较好的折中方案，每秒<code>fsync</code>一次<br>
+<code>AOF</code> + <code>fsync never</code>会提供<code>AOF</code>持久化方案下的最优性能</p>
+<p>使用<code>RDB</code>持久化通常会提供比使用<code>AOF</code>更高的性能，但需要注意<code>RDB</code>的策略配置<br>
+每一次<code>RDB</code>快照和<code>AOF Rewrite</code>都需要<code>Redis</code>主进程进行<code>fork</code>操作。<code>fork</code>操作本身可能会产生较高的耗时，与<code>CPU</code>和<code>Redis</code>占用的内存大小有关。</p>
+<p>根据具体的情况合理配置<code>RDB</code>快照和<code>AOF Rewrite</code>时机，避免过于频繁的<code>fork</code>带来的延迟<br>
+<code>Redis</code>在<code>fork</code>子进程时需要将内存分页表拷贝至子进程，以占用了<strong>24GB</strong>内存的<code>Redis</code>实例为例，共需要拷贝<strong>24GB / 4kB * 8 = 48MB</strong>的数据。在使用单<code>Xeon 2.27Ghz</code>的物理机上，这一<code>fork</code>操作耗时<strong>216ms</strong>。</p>
+<p>可以通过<code>INFO</code>命令返回的<code>latest_fork_usec</code>字段查看上一次<code>fork</code>操作的耗时（微秒）</p>
+<h4 id="swap引发的延迟">Swap引发的延迟</h4>
+<p>当<code>Linux</code>将<code>Redis</code>所用的内存分页移至<code>swap</code>空间时，将会阻塞<code>Redis</code>进程，导致<code>Redis</code>出现不正常的延迟。<code>Swap</code>通常在物理内存不足或一些进程在进行大量<code>I/O</code>操作时发生，应尽可能避免上述两种情况的出现。</p>
+<p><code>/proc//smaps</code>文件中会保存进程的<code>swap</code>记录，通过查看这个文件，能够判断<code>Redis</code>的延迟是否由<code>Swap</code>产生。如果这个文件中记录了较大的<code>Swap size</code>，则说明延迟很有可能是<code>Swap</code>造成的。</p>
+<h4 id="数据淘汰引发的延迟">数据淘汰引发的延迟</h4>
+<p>当同一秒内有大量<code>key</code>过期时，也会引发<code>Redis</code>的延迟。在使用时应尽量将<code>key</code>的失效时间错开。</p>
+<h4 id="引入读写分离机制">引入读写分离机制</h4>
+<p><code>Redis</code>的主从复制能力可以实现一主多从的多节点架构，在这一架构下，主节点接收所有写请求，并将数据同步给多个从节点。</p>
+<p>在这一基础上，我们可以让从节点提供对实时性要求不高的读请求服务，以减小主节点的压力。</p>
+<p>尤其是针对一些使用了长耗时命令的统计类任务，完全可以指定在一个或多个从节点上执行，避免这些长耗时命令影响其他请求的响应。</p>
+<h4 id="主从复制与集群分片">主从复制与集群分片</h4>
+<h5 id="主从复制">主从复制</h5>
+<p><code>Redis</code>支持一主多从的主从复制架构。一个<code>Master</code>实例负责处理所有的写请求，<code>Master</code>将写操作同步至所有<code>Slave</code>。</p>
+<p>借助<code>Redis</code>的主从复制，可以实现读写分离和高可用：</p>
+<p>实时性要求不是特别高的读请求，可以在<code>Slave</code>上完成，提升效率。特别是一些周期性执行的统计任务，这些任务可能需要执行一些长耗时的<code>Redis</code>命令，可以专门规划出1个或几个Slave用于服务这些统计任务</p>
+<p>借助<code>Redis Sentinel</code>可以实现高可用，当<code>Master crash</code>后，<code>Redis Sentinel</code>能够自动将一个<code>Slave</code>晋升为<code>Master</code>，继续提供服务</p>
+<p>启用主从复制非常简单，只需要配置多个<code>Redis</code>实例，在作为<code>Slave</code>的<code>Redis</code>实例中配置：</p>
+<pre><code>slaveof 192.168.1.1 6379 #指定Master的IP和端口
+</code></pre>
+<p>当<code>Slave</code>启动后，会从<code>Master</code>进行一次冷启动数据同步，由<code>Master</code>触发<code>BGSAVE</code>生成<code>RDB</code>文件推送给<code>Slave</code>进行导入，导入完成后<code>Master</code>再将增量数据通过<code>Redis Protocol</code>同步给<code>Slave</code>。</p>
+<p>之后主从之间的数据便一直以<code>Redis Protocol</code>进行同步</p>
+<h4 id="使用sentinel做自动failover">使用Sentinel做自动failover</h4>
+<p><code>Redis</code>的主从复制功能本身只是做数据同步，并不提供监控和自动<code>failover</code>能力，要通过主从复制功能来实现Redis的高可用，还需要引入一个组件：<code>Redis Sentinel</code></p>
+<p><code>Redis Sentinel</code>是<code>Redis</code>官方开发的监控组件，可以监控<code>Redis</code>实例的状态，通过<code>Master</code>节点自动发现<code>Slave</code>节点，并在监测到<code>Master</code>节点失效时选举出一个新的<code>Master</code>，并向所有<code>Redis</code>实例推送新的主从配置。</p>
+<p><code>Redis Sentinel</code>需要至少部署3个实例才能形成选举关系。</p>
+<h4 id="关键配置">关键配置：</h4>
+<p>另外需要注意的是，<code>Redis Sentinel</code>实现的自动<code>failover</code>不是在同一个<code>IP</code>和端口上完成的，也就是说自动<code>failover</code>产生的新<code>Master</code>提供服务的<code>IP</code>和端口与之前的<code>Master</code>是不一样的，所以要实现<code>HA</code>，还要求客户端必须支持<code>Sentinel</code>，能够与<code>Sentinel</code>交互获得新<code>Master</code>的信息才行。</p>
+<h4 id="集群分片">集群分片</h4>
+<p>为何要做集群分片：</p>
+<ul>
+<li><code>Redis</code>中存储的数据量大，一台主机的物理内存已经无法容纳</li>
+<li><code>Redis</code>的写请求并发量大，一个<code>Redis</code>实例以无法承载</li>
+</ul>
+<p>当上述两个问题出现时，就必须要对<code>Redis</code>进行分片了。</p>
+<p><code>Redis</code>的分片方案有很多种，例如很多<code>Redis</code>的客户端都自行实现了分片功能，也有向<code>Twemproxy</code>这样的以代理方式实现的<code>Redis</code>分片方案。然而首选的方案还应该是<code>Redis</code>官方在<strong>3.0</strong>版本中推出的<code>Redis Cluster</code>分片方案。</p>
+<h4 id="redis-cluster的能力">Redis Cluster的能力</h4>
+<ul>
+<li>能够自动将数据分散在多个节点上</li>
+<li>当访问的<code>key</code>不在当前分片上时，能够自动将请求转发至正确的分片</li>
+<li>当集群中部分节点失效时仍能提供服务</li>
+</ul>
+<p>其中第三点是基于主从复制来实现的，<code>Redis Cluster</code>的每个数据分片都采用了主从复制的结构，原理和前文所述的主从复制完全一致，唯一的区别是省去了<code>Redis Sentinel</code>这一额外的组件，由<code>Redis Cluster</code>负责进行一个分片内部的节点监控和自动<code>failover</code>。</p>
+<h4 id="redis-cluster分片原理">Redis Cluster分片原理</h4>
+<p><code>Redis Cluster</code>中共有<strong>16384</strong>个<code>hash slot</code>，<code>Redis</code>会计算每个<code>key</code>的<code>CRC16</code>，将结果与<strong>16384</strong>取模，来决定该<code>key</code>存储在哪一个<code>hash slot</code>中，同时需要指定<code>Redis Cluster</code>中每个数据分片负责的<code>Slot</code>数。</p>
+<p><code>Slot</code>的分配在任何时间点都可以进行重新分配。<br>
+客户端在对<code>key</code>进行读写操作时，可以连接<code>Cluster</code>中的任意一个分片，如果操作的<code>key</code>不在此分片负责的<code>Slot</code>范围内，<code>Redis Cluster</code>会自动将请求重定向到正确的分片上。</p>
+<h4 id="hash-tags">hash tags</h4>
+<p>在基础的分片原则上，<code>Redis</code>还支持<code>hash tags</code>功能，以<code>hash tags</code>要求的格式明明的<code>key</code>，将会确保进入同一个<code>Slot</code>中。例如：<code>{uiv}user:1000</code>和<code>{uiv}user:1001</code>拥有同样的<code>hash tag {uiv}</code>，会保存在同一个<code>Slot</code>中。</p>
+<p>使用<code>Redis Cluster</code>时，<code>pipelining</code>、事务和<code>LUA Script</code>功能涉及的<code>key</code>必须在同一个数据分片上，否则将会返回错误。如要在<code>Redis Cluster</code>中使用上述功能，就必须通过<code>hash tags</code>来确保一个<code>pipeline</code>或一个事务中操作的所有<code>key</code>都位于同一个<code>Slot</code>中。</p>
+<p>有一些客户端（如<code>Redisson</code>）实现了集群化的<code>pipelining</code>操作，可以自动将一个<code>pipeline</code>里的命令按<code>key</code>所在的分片进行分组，分别发到不同的分片上执行。</p>
+<p>但是<code>Redis</code>不支持跨分片的事务，事务和<code>LUA Script</code>还是必须遵循所有<code>key</code>在一个分片上的规则要求。</p>
+<h4 id="主从复制-vs-集群分片">主从复制 vs 集群分片</h4>
+<p>在设计软件架构时，要如何在主从复制和集群分片两种部署方案中取舍呢？<br>
+从各个方面看，<code>Redis Cluster</code>都是优于主从复制的方案</p>
+<ul>
+<li><code>Redis Cluster</code>能够解决单节点上数据量过大的问题</li>
+<li><code>Redis Cluster</code>能够解决单节点访问压力过大的问题</li>
+<li><code>Redis Cluster</code>包含了主从复制的能力</li>
+</ul>
+<p>那是不是代表<code>Redis Cluster</code>永远是优于主从复制的选择呢？</p>
+<p>并不是。</p>
+<p>软件架构永远不是越复杂越好，复杂的架构在带来显著好处的同时，一定也会带来相应的弊端。采用<code>Redis Cluster</code>的弊端包括：</p>
+<p>维护难度增加。在使用<code>Redis Cluster</code>时，需要维护的<code>Redis</code>实例数倍增，需要监控的主机数量也相应增加，数据备份/持久化的复杂度也会增加。</p>
+<p>同时在进行分片的增减操作时，还需要进行<code>reshard</code>操作，远比主从模式下增加一个<code>Slave</code>的复杂度要高。</p>
+<p>客户端资源消耗增加。当客户端使用连接池时，需要为每一个数据分片维护一个连接池，客户端同时需要保持的连接数成倍增多，加大了客户端本身和操作系统资源的消耗。</p>
+<p>性能优化难度增加。你可能需要在多个分片上查看<code>Slow Log</code>和<code>Swap</code>日志才能定位性能问题。</p>
+<p>事务和<code>LUA Script</code>的使用成本增加。在<code>Redis Cluster</code>中使用事务和<code>LUA Script</code>特性有严格的限制条件，事务和<code>Script</code>中操作的<code>key</code>必须位于同一个分片上，这就使得在开发时必须对相应场景下涉及的<code>key</code>进行额外的规划和规范要求。</p>
+<p>如果应用的场景中大量涉及事务和<code>Script</code>的使用，如何在保证这两个功能的正常运作前提下把数据平均分到多个数据分片中就会成为难点。</p>
+<p>所以说，在主从复制和集群分片两个方案中做出选择时，应该从应用软件的功能特性、数据和访问量级、未来发展规划等方面综合考虑，只在确实有必要引入数据分片时再使用<code>Redis Cluster</code>。</p>
+<p>综合上面几点考虑，如果单台主机的可用物理内存完全足以支撑对<code>Redis</code>的容量需求，且<code>Redis</code>面临的并发写压力距离Benchmark`值还尚有距离，建议采用主从复制的架构，可以省去很多不必要的麻烦。</p>
+<p>同时，如果应用中大量使用<code>pipelining</code>和事务，也建议尽可能选择主从复制架构，可以减少设计和开发时的复杂度。</p>
+<h2 id="相关链接">相关链接</h2>
+<ul>
+<li><a href="https://learnku.com/articles/25070">https://learnku.com/articles/25070</a></li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/yuan-ma-fen-xi-zhi-facades/" class="post-title gt-a-link">
+                    源码分析之-Facades
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/redis-ji-ben-gao-ji-te-xing-yi-ji-xing-neng-diao-you-zhuan-zai/" class="leancloud_visitors" data-flag-title="Redis基本高级特性以及性能调优(转载)">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,412 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>GitLab [Webhooks] 实现自动化服务器部署 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    GitLab [Webhooks] 实现自动化服务器部署
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-08-08 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/tuiAlV8lP/" class="post-tags">
+                            # Git
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>利用的GitLab创建私人仓库 通过钩子实现代码推送时能同步到服务器 这样也就实现了自动化的部署</p>
+<h2 id="简介">简介</h2>
+<p>我们在部署我们的<code>web</code>应用时 我们一般会寻求一些云平台服务器部署 当然也可以直接在服务器里拉取远程仓库的代码</p>
+<p>当然我们也可以实现通过<code>Webhooks</code>(钩子)来实现服务器与远程仓库代码的同步</p>
+<p>这样一来我们在本地提交功能分支到仓库中  仓库也会同步到服务器  这样我们就无需自己手动去同步项目代码</p>
+<h2 id="选择">选择</h2>
+<p>我们的项目大都托管在<code>Github</code>  当然<code>Github</code>在建立私有仓库时是需要付费的 那么在自己的网站部署时 我们完全可以选择其他的平台</p>
+<p>目前来说我们需要试下<code>Webhooks</code>自动化部署  那么我们可以选择自己合适的平台 这里我选择<a href="https://gitlab.com/">GitLab</a></p>
+<p>当然国内的话还可以选择 <a href="https://coding.net">Coding</a>  和  <a href="http://git.oschina.net">码云</a></p>
+<p>这些在国内都是不错的代码托管平台 你都可以创建自己的私有项目仓库</p>
+<p>之前我的网站项目是托管在<code>Coding</code>  但是近期我重写我的网站项目  因为<code>GitLab</code>本身可以建立自己的私有仓库并且没有限制</p>
+<p>同样的也可以设置成员的权限 分支的工作流也十分清晰强大 现在很多的公司也都选择了<code>GitLab</code> <code>so</code> 我还是会去尝试一下新的服务</p>
+<h2 id="前期准备">前期准备</h2>
+<p>和<code>Github</code>一样  我们都要去生成一个<code>ssh key</code>这样我们以后在提交项目和项目分支时就可以免去身份验证</p>
+<p>在本地终端执行</p>
+<pre><code class="language-shell">$ ssh-keygen -t rsa -C &quot;youremail@example.com&quot;
+</code></pre>
+<p>这里填写你<code>GitLLab</code>注册的邮箱即可(最好保持一致)</p>
+<p>你可以一直默认下去 当然为了和之前的发生冲突 你可以自己在生成的时候重新命名</p>
+<p>我这里生成的是<code>gitlab_rsa</code>和<code>gitlab_rsa.pub</code></p>
+<p>接着在命令行执行(添加刚生成的公钥和私钥)</p>
+<pre><code class="language-shell">eval $(ssh-agent -s)
+ssh-add ~/.ssh/gitlab_rsa
+</code></pre>
+<p>查看我们的公钥内容</p>
+<pre><code class="language-shell">cat ~/.ssh/gitlab_rsa.pub
+</code></pre>
+<p>拿到我们的公钥内容 我们就可以去<code>GitLab</code>添加我们的<code>sh key</code><br>
+<img src="https://GeekGhc.github.io/post-images/1616764991048.png" alt="" loading="lazy"></p>
+<p>添加完毕之后当然是测试本地连接</p>
+<pre><code class="language-shell">$ ssh -T git@gitlab.com
+</code></pre>
+<p>如果没有问题的话 会回馈给我们正确的欢迎信息</p>
+<blockquote>
+<p>具体的生成信息可以看官方的 <a href="https://gitlab.com/help/ssh/README">ssh文档</a></p>
+</blockquote>
+<p>我们在此之前在<code>GitLab</code>已经上传了我们的项目 在项目中的<code>Setting-&gt;Integrations</code>里添加脚本钩子</p>
+<p>比如这边我添加的url是<code>http://kobeman.com/hook/index.php</code></p>
+<p>然后填入的<code>token</code>是<code>ispace</code></p>
+<p>现在可以去服务器的站点目录下克隆远程仓库的项目 这里我的站点目录是<code>/data/www</code></p>
+<p>那么在这个目录下克隆我们远程的项目 克隆完毕后 当然这里以<code>Laravel</code>项目为例 完成一些权限 这些可自行查阅</p>
+<p>能够成功跑起来我们的项目就<strong>ok</strong>  这里我访问的网址是<code>www.kobeman.com</code>  下面就需要添加钩子文件</p>
+<p>这里我们项目的根目录 这里可以是<code>public</code>目录下新建<code>hook</code>目录  添加一个<code>index.php</code>  具体内容如下</p>
+<blockquote>
+<p>具体代码我已经放在我的<a href="https://gist.github.com/GeekGhc/43b0927de6016578f741bc6beab3023a">gist</a>上  如果有什么问题欢迎提出<code>issue</code></p>
+</blockquote>
+<pre><code class="language-php?start_inline=1">&lt;?php
+
+error_reporting(1);
+
+$target = '/data/www/ISpace'; // 生产环境web目录
+
+$token = 'ispace'; //GitLab 添加的token
+$wwwUser = 'root';
+$wwwGroup = 'root';
+
+
+if (empty($_SERVER['HTTP_X_GITLAB_TOKEN']) || $_SERVER['HTTP_X_GITLAB_TOKEN'] !== $token) {
+    exit('error request');
+}
+
+/*if($_SERVER['HTTP_X_GITLAB_TOKEN'] == $token){
+    echo &quot;校验成功&quot;;
+}*/
+
+//$repo = $json['repository']['name'];
+
+// $cmds = array(
+//     &quot;cd $target &amp;&amp; git pull&quot;,
+//     &quot;chown -R {$wwwUser}:{$wwwGroup} $target/&quot;,
+// );
+
+// foreach ($cmds as $cmd) {
+//     shell_exec($cmd);
+// }
+
+chdir($target);
+
+$cmd = &quot;sudo -Hu root git pull&quot;;
+
+shell_exec($cmd);
+</code></pre>
+<p>这里的钩子文件需要注意以下几点</p>
+<ul>
+<li><code>php</code>配置里需要注释掉<code>shell_exec</code>这些被禁用的函数 详见<a href="https://www.zhihu.com/question/57879484?from=profile_question_card">shell_exec</a></li>
+<li>执行命令时切换到管理员用户最好</li>
+<li>查看是否进入你的项目目录 这里我是通过<code>chdir</code>进入项目目录 因为<code>cd</code>命令是没有用的 详见<a href="https://stackoverflow.com/questions/12521053/cant-cd-with-php-shell-exec">Can't 'cd' with PHP shell_exec()</a></li>
+</ul>
+<p>这里为什么我们需要获取这个<code>$_SERVER</code>的参数呢 因为<code>GitLab</code>是通过<code>post</code>请求这个地址 所以为了验证之前填入的<code>token</code></p>
+<p>我们这里是去验证他的请求头部  因为他是以请求头部传递给我们的  如图所示<br>
+<img src="https://GeekGhc.github.io/post-images/1616765057945.png" alt="" loading="lazy"></p>
+<p>为了了解他的头部到底包含了什么信息  我们可以都打印出来看下<br>
+<img src="https://GeekGhc.github.io/post-images/1616765043630.png" alt="" loading="lazy"></p>
+<p>所以说如果我们验证这个<code>token</code>成功的话再去进入到项目目录 执行<code>git pull</code>拉取我们最新的代码 这样也就实现了<br>
+自动化的代码部署  在验证过程中我打印了下这个 <code>$_SERVER['HTTP_X_GITLAB_TOKEN']</code></p>
+<figure data-type="image" tabindex="1"><img src="https://GeekGhc.github.io/post-images/1616765051910.png" alt="" loading="lazy"></figure>
+<p>这样一来下次再去提交我们的最新的功能代码时就可以哦同步到我们的服务器</p>
+<h2 id="相关链接">相关链接</h2>
+<ul>
+<li><a href="https://gist.github.com/GeekGhc/43b0927de6016578f741bc6beab3023a">Gist 地址</a></li>
+<li><a href="https://gitlab.com/">GitLab 官网</a></li>
+<li><a href="https://coding.net">Coding 官网</a></li>
+<li><a href="http://git.oschina.net">码云 官网</a></li>
+<li><a href="https://gitlab.com/help/ssh/README">GitLab key生成</a></li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/api-wen-dang-bian-xie-apidocjs/" class="post-title gt-a-link">
+                    API文档编写-apidocJs
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/gitlab-webhooks-shi-xian-zi-dong-hua-fu-wu-qi-bu-shu/" class="leancloud_visitors" data-flag-title="GitLab [Webhooks] 实现自动化服务器部署">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

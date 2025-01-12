@@ -1,0 +1,489 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>vuelidate-vueJs验证解决方案 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    vuelidate-vueJs验证解决方案
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-02-26 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/Ynq0DwGia/" class="post-tags">
+                            # Vue
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>基于vueJs的轻量级的验证解决方案 在我们的登录注册以及表单提交时会是一个不错的选择</p>
+<h2 id="介绍">介绍</h2>
+<p>在后端项目里 比如我们的<code>Laravel</code>框架 对于表单验证有自己的一套<code>validation</code>机制 他将验证集成在<code>FormRequest</code></p>
+<p>我们只需要在我们的方法中依赖注入我们自己实例化后的验证类 当然也可以直接去在方法里去验证表单数据</p>
+<p>而在我们的前端的项目里 也就是在我们的<code>vue</code>项目里 也有比较好的验证解决方案 也就是这的<code>vuelidate</code></p>
+<h2 id="1安装">1.安装</h2>
+<p>和我们安装前端包一样 在项目终端执行:</p>
+<pre><code>$ npm install vuelidate --save
+</code></pre>
+<p>安装完成后和我们去使用<code>vuex</code>一样 在<code>main.js</code>去引入声明这个<code>package</code>:</p>
+<pre><code class="language-php?start_inline=1">import Vue from 'vue'
+import Vuelidate from 'vuelidate'
+Vue.use(Vuelidate)
+</code></pre>
+<p>当然你也可以在需要用到验证的组件里去引用一个相对小的版本:</p>
+<pre><code class="language-php?start_inline=1">import { validationMixin } from 'vuelidate'
+
+var Component = Vue.extend({
+  mixins: [validationMixin],
+  validation: { ... }
+})
+</code></pre>
+<p>如果你偏好通过<code>require</code>这样的形式 你也可以这样引入:</p>
+<pre><code class="language-php?start_inliine=1">const { validationMixin, default: Vuelidate } = require('vuelidate')
+const { required, minLength } = require('vuelidate/lib/validators')
+</code></pre>
+<h2 id="2使用">2.使用</h2>
+<p>其实使用起来真的很方便 下面举例来说就是在我的项目里的使用</p>
+<h4 id="1注册验证">1.注册验证</h4>
+<p>在用户注册时 我们通常的需要处理的表单字段就是<code>name</code>,<code>email</code>,<code>password</code>,<code>confirm_pwd</code></p>
+<p>首先我在<code>Register.vue</code>这个组件文件中把基本的样式结构写好 这取决于每个人</p>
+<p>接着是我们对表单数据的验证:</p>
+<p>这里是对用户名和邮箱的验证 就像之前提到的 我们先引入我们的验证规则:</p>
+<pre><code class="language-php?start_inline=1">import { required,minLength,between,email } from 'vuelidate/lib/validators'
+</code></pre>
+<p>因为我是对一个新用户的注册 所以我定义一个<code>data</code></p>
+<pre><code class="language-php?start_inline=1"> data(){
+    return{
+        newUser: {
+            name:'',
+            email:'',
+            password:'',
+            confirm_pwd:''
+        },
+    }
+},
+</code></pre>
+<p>接着去定义我们的验证字段的规则:</p>
+<pre><code class="language-php?start_inline=1">validations: {
+    newUser:{
+       name: {
+            required,
+            minLength: minLength(2)
+       },
+       email: {
+            required,email
+       }
+    }
+},
+</code></pre>
+<p>定义这些验证规则之后 下面是我的<code>html</code>部分内容</p>
+<pre><code class="language-html">&lt;div class=&quot;control-group&quot; v-bind:class=&quot;{ 'form-group--error': $v.newUser.name.$error }&quot;&gt;
+&lt;label class=&quot;control-label&quot;&gt;用户名&lt;/label&gt;
+&lt;el-input
+        placeholder=&quot;请输入你的用户名&quot;
+        v-model.trim=&quot;newUser.name&quot;
+        @input=&quot;$v.newUser.name.$touch()&quot;
+&gt;
+&lt;/el-input&gt;
+&lt;/div&gt;
+&lt;span class=&quot;form-group__message&quot; v-if=&quot;!$v.newUser.name.required&quot;&gt;用户名不能为空&lt;/span&gt;
+&lt;span class=&quot;form-group__message&quot; v-if=&quot;!$v.newUser.name.minLength&quot;&gt;用户名不能太短&lt;/span&gt;
+
+&lt;div class=&quot;control-group&quot; v-bind:class=&quot;{ 'form-group--error': $v.newUser.email.$error }&quot;&gt;
+&lt;label class=&quot;control-label&quot;&gt;邮箱&lt;/label&gt;
+&lt;el-input
+        placeholder=&quot;请输入你的邮箱&quot;
+        v-model.trim=&quot;newUser.email&quot;
+        @input=&quot;$v.newUser.email.$touch()&quot;
+&gt;
+&lt;/el-input&gt;
+&lt;/div&gt;
+&lt;span class=&quot;form-group__message&quot; v-if=&quot;!$v.newUser.email.required&quot;&gt;邮箱不能为空&lt;/span&gt;
+&lt;span class=&quot;form-group__message&quot; v-if=&quot;!$v.newUser.email.email&quot;&gt;请填写正确的邮箱格式&lt;/span&gt;
+</code></pre>
+<p>每个人可以都不一样 官方文档上也给出了<code>demo</code></p>
+<p>我们先这样举例 值得注意的是我们需要去知道他的<code>$v.name</code>里面的内容</p>
+<p>也就是 <code>$invalid</code> <code>$dirty</code> <code>$error</code> <code>$pending</code> <code>$each</code> 这个<code>value</code></p>
+<blockquote>
+<p>特别的注意 <code>$error</code>里的解释：<code>It is a shorthand to $invalid &amp;&amp; $dirty</code></p>
+<p>也就是一个与的组合 你可以去试着改变这两者的值 再去看<code>$error</code>的值</p>
+</blockquote>
+<p>当然还有两个重要的方法: <code>$touch</code> <code>$reset</code> 上面也有实例 说简单点就是设置这个以及子节点的<code>$dirty</code> 为<code>true</code>或者<code>false</code></p>
+<p>而设置这个<code>$dirty</code> 再结合 <code>$invalid</code>就可以判断验证成功与否</p>
+<blockquote>
+<p><code>$error</code> 是由<code>$dirty</code>和<code>$invalid</code>共同决定的</p>
+<p>在这里的验证规则流程是这样的 如果<code>$error</code>为<code>true</code>那么<code>form-group</code>会添加一个<code>form-group--error</code>这个<code>class</code><br>
+只有在<code>$error</code>为<code>true</code>时 如果你不符合任意一个验证规则 例如不符合<code>required</code> 那么就会提示验证失败</p>
+</blockquote>
+<p>如果验证错误就给出错误提示 这是我的错误样式:</p>
+<pre><code class="language-css">.form-group__message{
+    display: none;
+    font-size: .95rem;
+    color: #CC3333;
+    margin-left: 10em;
+    margin-bottom: 12px;
+}
+.form-group--error+.form-group__message {
+    display: block;
+    color: #CC3333;
+}
+
+.form-group--error input, .form-group--error input:focus, .form-group--error input:hover, .form-group--error textarea {
+    border-color: #CC3333;
+}
+</code></pre>
+<h4 id="2密码验证">2.密码验证</h4>
+<p>密码验证其实和上面的差不多 只不过他的验证规则时通过 <code>sameAs</code> 来进行验证的</p>
+<h4 id="3组合验证">3.组合验证</h4>
+<p>除了上面这些还有一个组合验证 也就是如果任意一个不符合验证规则就不通过 这个还是挺常用的</p>
+<p>我们可以在验证字段这样去组合:</p>
+<pre><code class="language-php?start_inline=1">validations: {
+    flatA: { required },
+    flatB: { required },
+    forGroup: {
+      nested: { required }
+    },
+    validationGroup: ['flatA', 'flatB', 'forGroup.nested']
+}
+</code></pre>
+<p>如果任意一个就是<code>FlatA flatB forGroup</code>其中一个不符合验证规则 那么<code>$v.validationGroup.$error</code>就是<code>false</code></p>
+<h4 id="4异步验证">4.异步验证</h4>
+<p>特别是在验证唯一性的时候 我们肯定会遇到这样的一个场景:</p>
+<p>就比如我们的邮箱 如果已经注册过这个邮箱了 那么再用这个邮箱去注册显然不是我们想要的</p>
+<p>还有就是我们登录时我们需要去核对我们的用户的密码</p>
+<p>这边我给出的实例就是对于用户名的注册 如果已经注册了就会提示已经注册过</p>
+<blockquote>
+<p>完全支持<code>async/await</code>语法。它与<code>Fetch API</code>结合使用也很出色 那么我们可以通过后端API提供的结果可以进行判断</p>
+</blockquote>
+<p>我们可以去增加我们唯一性的验证:</p>
+<pre><code class="language-php?start_inline=1">name: {
+    required,
+    minLength: minLength(4),
+    async isUnique (value) {
+       if (value === '') return true
+       const response = await fetch(`http://localhost:8000/api/unique/name/${value}`)
+       return Boolean(await response.json())
+    }
+},
+</code></pre>
+<p>这里我现在本地测试 通过<code>Laravel</code>作为后端来提供的数据校验 实际项目中的话可以再结合数据库</p>
+<pre><code class="language-php?start_inline=1">//用户验证路由
+Route::group(['prefix'=&gt;'unique','middleware'=&gt;['api','cors']], function () {
+    Route::get('/name/{value}',function(Request $request,$value){
+        if($value===&quot;gavin&quot;){
+            return response()-&gt;json(false);
+        }
+        return response()-&gt;json(true);
+    });
+});
+</code></pre>
+<p>如果我们去注册 <strong>gavin</strong>这个用户就会提示该昵称已经被注册 因为在用户名我增加了<code>isUnique</code>验证</p>
+<pre><code class="language-php?start_inline=1">&lt;span class=&quot;form-group__message&quot; v-if=&quot;!$v.newUser.name.isUnique&quot;&gt;用户名已经被注册&lt;/span&gt;
+</code></pre>
+<p>显示结果应该是这样的:<br>
+<img src="https://GeekGhc.github.io/post-images/1616936164992.gif" alt="" loading="lazy"></p>
+<h4 id="5自定义验证">5.自定义验证</h4>
+<p>同样的我们不仅可以使用它提供给我们的验证规则 我们也可以自定义验证规则并与之前的进行组合</p>
+<p>官方给出了一个简单实例:</p>
+<pre><code class="language-php?start_inline=1">export default value =&gt; {
+  if (Array.isArray(value)) return !!value.length
+
+  return value === undefined || value === null
+    ? false
+    : !!String(value).length
+}
+</code></pre>
+<h4 id="相关网址">相关网址</h4>
+<ul>
+<li><a href="https://github.com/monterail/vuelidate">github地址</a></li>
+<li><a href="https://monterail.github.io/vuelidate/">package官网</a></li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/shi-yong-vuejs-kai-fa-spa-ying-yong/" class="post-title gt-a-link">
+                    使用VueJs开发SPA应用
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/vuelidate-vuejs-yan-zheng-jie-jue-fang-an/" class="leancloud_visitors" data-flag-title="vuelidate-vueJs验证解决方案">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

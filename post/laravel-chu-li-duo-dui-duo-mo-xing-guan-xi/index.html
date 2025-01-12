@@ -1,0 +1,411 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Laravel处理多对多模型关系 | GeekGhc&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://GeekGhc.github.io/favicon.ico?v=1736692760153">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://GeekGhc.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <style>
+    /* 导航栏样式 */
+    .navbar {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        line-height: inherit;
+        white-space: nowrap;
+    }
+
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        text-decoration: none;
+    }
+
+    .navbar-nav {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+
+    .navbar-collapse {
+        -ms-flex-preferred-size: 100%;
+        flex-basis: 100%;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
+
+    .navbar-toggler:hover,
+    .navbar-toggler:focus {
+        text-decoration: none;
+    }
+
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+        }
+
+        .navbar-expand-lg .navbar-nav {
+            -ms-flex-direction: row;
+            flex-direction: row;
+        }
+
+        .navbar-expand-lg .navbar-collapse {
+            display: -ms-flexbox !important;
+            display: flex !important;
+            -ms-flex-preferred-size: auto;
+            flex-basis: auto;
+        }
+
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    @media (max-width: 991px) {
+        #navbarSupportedContent {
+            display: none;
+        }
+    }
+</style>
+<nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            GeekGhc&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    Tags
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1736692760153"
+                action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = function () {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Laravel处理多对多模型关系
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2017-03-10 ·
+                    </time>
+                    
+                        <a href="https://GeekGhc.github.io/tag/b0tSda50f/" class="post-tags">
+                            # Laravel
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>在一个社区和论坛里 我们常常会遇到用户收藏帖子或文章这种应用场景 那么我们需要的就是对帖子和用户这两者之间的一种多对多的关系处理</p>
+<h2 id="介绍">介绍</h2>
+<p>在实际应用中 比如我们在知乎社区中 我们可以对一个帖子进行收藏 点赞的功能 这个其实就是一种<strong>多对多</strong>的关系<br>
+因为一个用户可以收藏多篇帖子 一篇帖子也可以被多个用户收藏 这边我就以用户收藏一篇帖子举例</p>
+<p>还有一种情况就是模型的<strong>多态关联</strong> 意思就是就比如评论既可以是对帖子 也可以是对文章 也可以是对视频<br>
+这个我在之前的社区项目里就遇到过 对于这种应用场景<code>Laravel</code>提供多态关联这样的解决方案</p>
+<p>而在这我们只需要处理一种<strong>多对多</strong>的关系 针对的是用户和帖子之间的关系处理</p>
+<h2 id="定义模型信息">定义模型信息</h2>
+<p>1.生成中间关系表<br>
+为了定义用户与帖子之间的关系 我生成了一个<code>Collect Model</code></p>
+<pre><code class="language-shell">$ php artisan make:model Collect -m
+</code></pre>
+<p>2.定义中间表的字段信息<br>
+在生成<code>Collects</code>表后 去定义好表的字段信息</p>
+<pre><code class="language-php?start_inline=1">Schema::create('collects', function (Blueprint $table) {
+    $table-&gt;increments('id');
+    $table-&gt;integer('user_id')-&gt;unsigned()-&gt;index();
+    $table-&gt;integer('post_id')-&gt;unsigned()-&gt;index();
+    $table-&gt;timestamps();
+});
+</code></pre>
+<p>这边因为我们定义的是用户和帖子之间的关系 所以包含了各自的<code>id</code>值</p>
+<p>当然其实在多对多的关系里 默认是通过 <code>post_user</code> 这样的中间表来决定模型间的关系的</p>
+<p>这个当然也可以自定义 也就是这里的<code>collects</code>表</p>
+<p>当然<code>users table</code> 和 <code>posts table</code> 根据具体的业务需求来定义即可</p>
+<p>定义完毕之后 去生成我们的表</p>
+<pre><code class="language-shell">$ php artisan migrate
+</code></pre>
+<p>定义好模型表的信息 接下来就可以去各自的<code>Model</code>声明对应关系了</p>
+<p>3.声明模型关系<br>
+在<code>User Model</code> 里面声明</p>
+<pre><code class="language-php?start_inline=1">//用户----帖子(收藏)
+public function collect()
+{
+    return $this-&gt;belongsToMany(Post::class,'collects')-&gt;withTimestamps();
+}
+
+//收藏帖子
+public function collectThis($post)
+{
+     $this-&gt;collect()-&gt;toggle($post);
+}
+</code></pre>
+<p>这里的<code>collects</code>是声明了用户和帖子之间的多对多的关系 其中两者的中间关系表就是我们定义好的<code>collects table</code></p>
+<p><code>collectThis</code> 方法是用户收藏帖子的操作 同样的点赞的功能我们也是用到这个方法</p>
+<blockquote>
+<p>在多对多的模型附加和卸载时 是使用<code>attach</code> 和 <code>detach</code>方法 而<code>toggle</code>则是一个开关式的操作</p>
+</blockquote>
+<p>接下来就去定义<code>Post Model</code>里的关系</p>
+<pre><code class="language-php?start_inline=1">//帖子----用户
+ public function user()
+ {
+     return $this-&gt;belongsTo('App\User');//$post-&gt;user
+ }
+
+//帖子----最后更新用户
+ public function last_user()
+ {
+     return $this-&gt;belongsTo('App\User');
+ }
+
+//帖子---用户(收藏)
+ public function collected()
+ {
+     return $this-&gt;belongsToMany(User::class,'collects')-&gt;withTimestamps();
+ }
+</code></pre>
+<p>这里边同时定义了一个预加载(eager load) 也就是<code>last_user</code>这样的一个关系 即代表帖子最后更新的用户</p>
+<p>其实到这里就已经定义好了多对多的关系 那么接下来我们可以去生成一个控制器 写下我们收藏帖子这个方法</p>
+<pre><code class="language-shell">$ php srtisan make:controller CollectController
+</code></pre>
+<p>生成完后我们的控制器 我们去定义收藏这个操作的方法</p>
+<pre><code class="language-php?start_inline=1">//用户收藏帖子
+public function store(Request $request)
+{
+    $user = User::find($request-&gt;get(&quot;userId&quot;));
+    $collect = $user-&gt;collectThis($request-&gt;get(&quot;postId&quot;));
+    return json_encode([&quot;isCollect&quot; =&gt; true, &quot;status&quot; =&gt; &quot;true&quot;]);
+}
+</code></pre>
+<p>这边我们可以对任意的用户去收藏帖子 因为在collectThis 这个function 里我们已经定义好了</p>
+<pre><code class="language-php?start_inline=1">//收藏帖子
+public function collectThis($post)
+{
+     $this-&gt;collect()-&gt;toggle($post);
+}
+</code></pre>
+<p>其实这个方法不一定要这样写在<code>Model</code>里面 也可以直接在控制器方法体里面去执行这个<code>function</code></p>
+<p>但是为了更加直观和更好的重用 这样写还是很有必要的</p>
+<p>其实我们也可以去<code>tinker</code>测试一下 是不是可以成功执行收藏</p>
+<pre><code class="language-shell">$ php artisan tinker;
+</code></pre>
+<pre><code class="language-shell">$ namespace App;
+</code></pre>
+<p>接着获取一个<code>user</code></p>
+<pre><code class="language-shell">$ $user = User::find(2)
+</code></pre>
+<pre><code class="language-shell">$ $user-&gt;collectThis(23)
+</code></pre>
+<p>这样之后再去数据库里 我们就可以看到数据成功生成了 也就是<code>id</code>为<strong>2</strong>的用户收藏了<code>id</code>为<strong>23</strong>的这篇帖子</p>
+<p>当再次执行</p>
+<pre><code class="language-shell">$ $user-&gt;collectThis(23)
+</code></pre>
+<p>我们数据就可以撤销了 因为收藏和点赞本来就是一个开关式的操作逻辑</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://GeekGhc.github.io/post/laravel-mo-tai-guan-lian-chu-li-fa-bu-tie-zi/" class="post-title gt-a-link">
+                    Laravel模态关联处理发布帖子
+                </a>
+            </div>
+        
+
+        
+            <span id="/post/laravel-chu-li-duo-dui-duo-mo-xing-guan-xi/" class="leancloud_visitors" data-flag-title="Laravel处理多对多模型关系">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: 'retro',
+		pageSize: 10,
+		recordIp: true,
+		placeholder: 'everything you want to say',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">生活不止于工作，是的，我很棒 ^=^</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/GeekGhc" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/GeekGhc" target="_blank">ByteWriter</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://GeekGhc.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+    </div>
+</div>
+</body>
+</html>
